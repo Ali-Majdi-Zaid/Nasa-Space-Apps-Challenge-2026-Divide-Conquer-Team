@@ -1,0 +1,1 @@
+# Nasa-Space-Apps-Challenge-2026-Divide-Conquer-Team

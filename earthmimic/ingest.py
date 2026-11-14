@@ -46,6 +46,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .demo_data import _on_land
+
 PDS = "https://pds-geosciences.wustl.edu"
 SOURCES = {
     "diviner_prp_south": dict(
@@ -60,6 +62,14 @@ SOURCES = {
         url=f"{PDS}/ody/ody-m-grs-5-elements-v1/odgm_xxxx/data/smoothed/h2o_sr_5x5.tab",
         file="h2o_sr_5x5.tab", bytes=186_624,
         version="Mars Odyssey GRS element concentration maps (ODY-M-GRS-5-ELEMENTS-V1.0), smoothed 5x5 deg"),
+    "tes_albedo": dict(
+        url=f"{PDS}/mgs/mgs-m-tes-special-v1/global_albedo_8ppd.img",
+        file="global_albedo_8ppd.img", bytes=16_588_800,
+        version="MGS TES global bolometric albedo, 8 px/deg (MGS-M-TES-SPECIAL-V1.0)"),
+    "lola_albedo": dict(
+        url=f"{PDS}/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/polar/float_img/ldam_50s_3000m_float.img",
+        file="ldam_50s_3000m_float.img", bytes=2_849_344,
+        version="LRO LOLA derived albedo map, south polar, 3000 m/px (LRO-L-LOLA-3-RDR-V1.0)"),
 }
 POWER_URL = "https://power.larc.nasa.gov/api/temporal/climatology/point"
 POWER_VERSION = "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
@@ -188,6 +198,27 @@ _KNOWN_EARTH = [
     ("Utah desert (MDRS)", 38.41, -110.79, "Mars"), ("Dallol, Ethiopia", 14.24, 40.30, "Mars"),
     ("Svalbard", 78.2, 15.6, "Mars"), ("Qaidam Basin", 38.0, 93.0, "Mars"),
 ]
+# Places near Earth's physical extremes. A coarse grid misses them, yet they are
+# exactly where Earth comes closest to Moon/Mars conditions (coldest, driest,
+# highest, hottest ground, thinnest air), so they anchor the edges of every
+# Earth range the matcher reports.
+_EXTREME_EARTH = [
+    ("Vostok Station, Antarctica", -78.46, 106.84), ("Dome A, Antarctica", -80.37, 77.35),
+    ("Dome Fuji, Antarctica", -77.32, 39.70), ("Summit Station, Greenland", 72.58, -38.46),
+    ("Eureka, Ellesmere Island", 79.99, -85.94), ("Oymyakon, Siberia", 63.46, 142.79),
+    ("Chajnantor Plateau, Chile", -23.01, -67.76), ("Ojos del Salado, Andes", -27.11, -68.54),
+    ("Changtang, Tibetan Plateau", 34.50, 88.00), ("Taklamakan Desert", 38.90, 82.20),
+    ("Death Valley, California", 36.46, -116.87), ("Lut Desert, Iran", 30.60, 58.80),
+    ("Tanezrouft, Sahara", 24.00, 1.00), ("Namib Desert", -24.70, 15.30),
+    ("Salar de Uyuni, Bolivia", -20.13, -67.49),
+    # Rugged terrain: without these, the steepest "Earth" came from grid cells on
+    # plains, and crater-rim slopes on the Moon looked untestable anywhere.
+    ("Karakoram, Baltoro", 35.74, 76.51), ("Khumbu, Nepal Himalaya", 27.90, 86.80),
+    ("Grand Canyon, Arizona", 36.10, -112.10), ("Valais Alps, Switzerland", 46.00, 7.75),
+    ("Southern Alps, New Zealand", -43.50, 170.30), ("Cordillera Blanca, Peru", -9.12, -77.60),
+    ("St. Elias Mountains, Alaska", 60.50, -139.50), ("Tien Shan", 42.00, 80.00),
+]
+GRID_MAX_LAT = 84.0   # the terrain tiles stop at 85 degrees; cells without terrain data distort the ranking
 
 
 def write_default_site_files(folder: Path, grid_step: float = 10.0) -> None:
@@ -202,14 +233,18 @@ def write_default_site_files(folder: Path, grid_step: float = 10.0) -> None:
     if not (folder / "earth_sites.csv").exists():
         rows = [dict(cell_id=f"K{i:02d}", lat=la, lon=lo, region="", known_analog=n, known_for=b)
                 for i, (n, la, lo, b) in enumerate(_KNOWN_EARTH)]
-        lats = np.arange(-85, 85.01, grid_step)
-        k = 0
+        rows += [dict(cell_id=f"E{i:02d}", lat=la, lon=lo, region=n, known_analog="", known_for="")
+                 for i, (n, la, lo) in enumerate(_EXTREME_EARTH)]
+        lats = [la for la in np.arange(-85, 85.01, grid_step) if abs(la) <= GRID_MAX_LAT]
+        pts = []
         for la in lats:  # fewer longitudes near the poles so cells cover similar areas
             n_lon = max(1, int(round(360 / grid_step * math.cos(math.radians(la)))))
-            for lo in np.linspace(-180, 180, n_lon, endpoint=False):
-                rows.append(dict(cell_id=f"G{k:04d}", lat=round(float(la), 2), lon=round(float(lo), 2),
-                                 region="", known_analog="", known_for=""))
-                k += 1
+            pts += [(round(float(la), 2), round(float(lo), 2)) for lo in np.linspace(-180, 180, n_lon, endpoint=False)]
+        # Only grid points on land: the analogs are field sites, and the ocean-floor
+        # terrain and sea-surface climate of an open-water cell mean nothing here.
+        keep = _on_land(np.array([p[0] for p in pts]), np.array([p[1] for p in pts]))
+        rows += [dict(cell_id=f"G{k:04d}", lat=la, lon=lo, region="", known_analog="", known_for="")
+                 for k, (la, lo) in enumerate(p for p, ok in zip(pts, keep) if ok)]
         pd.DataFrame(rows).to_csv(folder / "earth_sites.csv", index=False)
 
 
@@ -327,6 +362,75 @@ def read_mola(path: Path, sites: pd.DataFrame, log=print) -> pd.DataFrame:
             # Estimate, not a measurement: pressure falls off exponentially with height above the datum.
             surf_pressure_Pa=float(MARS_REFERENCE_PA * math.exp(-elev / MARS_SCALE_HEIGHT_M))))
     log(f"  MOLA grid: {len(rows)} sites sampled")
+    return pd.DataFrame(rows)
+
+
+# ------------------------------------------------- Mars: TES bolometric albedo
+# From global_albedo_8ppd.lbl: 1440 lines x 2880 samples, PC_REAL (little-endian
+# 32-bit float), simple cylindrical, 8 px/deg, latitude 90 to -90, east
+# longitude -180 to 180. Zeros mark areas without TES coverage.
+TES_LINES, TES_SAMPLES, TES_PPD = 1440, 2880, 8
+
+
+def read_tes_albedo(path: Path, sites: pd.DataFrame, log=print) -> pd.DataFrame:
+    """Mean TES bolometric albedo within the radius around each Mars site."""
+    size = Path(path).stat().st_size
+    if size != TES_LINES * TES_SAMPLES * 4:
+        raise IOError(f"{path} is {size} bytes; expected {TES_LINES * TES_SAMPLES * 4} for the 8 px/deg TES albedo map")
+    grid = np.memmap(path, dtype="<f4", mode="r", shape=(TES_LINES, TES_SAMPLES))
+    km_per_px = MARS_RADIUS_KM * math.pi / 180 / TES_PPD
+    rows = []
+    for _, s in sites.iterrows():
+        lon = (s["lon"] + 180) % 360 - 180
+        half = int(math.ceil(s["radius_km"] / km_per_px)) + 2
+        i0 = int((90 - s["lat"]) * TES_PPD)
+        j0 = int((lon + 180) * TES_PPD)
+        ii = np.clip(np.arange(i0 - half, i0 + half + 1), 0, TES_LINES - 1)
+        jj = np.arange(j0 - half, j0 + half + 1) % TES_SAMPLES          # wraps around the date line
+        a = np.asarray(grid[np.ix_(ii, jj)], dtype=float)
+        lat = 90 - (ii + 0.5) / TES_PPD
+        lon_px = (jj + 0.5) / TES_PPD - 180
+        d = _distance_km(s["lat"], lon, lat[:, None], lon_px[None, :], MARS_RADIUS_KM)
+        m = (d <= s["radius_km"]) & (a > 0) & (a <= 1)
+        rows.append(dict(target_id=s["target_id"], albedo=float(a[m].mean()) if m.any() else np.nan))
+    log(f"  TES albedo: {sum(1 for r in rows if not np.isnan(r['albedo']))} of {len(rows)} sites in coverage")
+    return pd.DataFrame(rows)
+
+
+# --------------------------------------------------- Moon: LOLA albedo (south)
+# From ldam_50s_3000m_float.lbl/.xml: 844 x 844, PC_REAL (little-endian 32-bit
+# float), south polar stereographic, 3000 m/px, upper-left corner at
+# (-1266 km, +1266 km); x = rho sin(lon), y = rho cos(lon),
+# rho = 2 R tan((90 + lat) / 2). Covers 50 S to the pole.
+LDAM_SIZE, LDAM_SCALE_M, LDAM_CORNER_M = 844, 3000.0, 1_266_000.0
+
+
+def read_lola_albedo(path: Path, sites: pd.DataFrame, log=print) -> pd.DataFrame:
+    """Mean LOLA 1064 nm albedo within the radius around each lunar site (south of 50 S)."""
+    size = Path(path).stat().st_size
+    if size != LDAM_SIZE * LDAM_SIZE * 4:
+        raise IOError(f"{path} is {size} bytes; expected {LDAM_SIZE * LDAM_SIZE * 4} for the 3000 m LOLA albedo map")
+    grid = np.memmap(path, dtype="<f4", mode="r", shape=(LDAM_SIZE, LDAM_SIZE))
+    rows = []
+    for _, s in sites.iterrows():
+        if s["lat"] > -50 or np.isnan(s.get("radius_km", np.nan)):
+            rows.append(dict(target_id=s["target_id"], albedo=np.nan))
+            continue
+        rho = 2 * MOON_RADIUS_KM * 1000.0 * math.tan(math.radians(90 + s["lat"]) / 2)
+        x = rho * math.sin(math.radians(s["lon"]))
+        y = rho * math.cos(math.radians(s["lon"]))
+        j0 = int((x + LDAM_CORNER_M) / LDAM_SCALE_M)
+        i0 = int((LDAM_CORNER_M - y) / LDAM_SCALE_M)
+        half = int(math.ceil(s["radius_km"] * 1000.0 / LDAM_SCALE_M)) + 2
+        ii = np.clip(np.arange(i0 - half, i0 + half + 1), 0, LDAM_SIZE - 1)
+        jj = np.clip(np.arange(j0 - half, j0 + half + 1), 0, LDAM_SIZE - 1)
+        a = np.asarray(grid[np.ix_(ii, jj)], dtype=float)
+        px = -LDAM_CORNER_M + (jj + 0.5) * LDAM_SCALE_M
+        py = LDAM_CORNER_M - (ii + 0.5) * LDAM_SCALE_M
+        d = np.hypot(px[None, :] - x, py[:, None] - y)
+        m = (d <= s["radius_km"] * 1000.0) & np.isfinite(a) & (a > 0) & (a < 2)
+        rows.append(dict(target_id=s["target_id"], albedo=float(a[m].mean()) if m.any() else np.nan))
+    log(f"  LOLA albedo: {sum(1 for r in rows if not np.isnan(r['albedo']))} of {len(rows)} sites in coverage")
     return pd.DataFrame(rows)
 
 
@@ -635,6 +739,14 @@ def _meta(name, label, dimension, quantity, unit, concept, version, **extra):
                 concept=concept, version=version, **extra)
 
 
+def _named_sites(sites: pd.DataFrame) -> np.ndarray:
+    """True for rows the user named (a region or a known analog): they are kept as given."""
+    named = (sites.get("region", pd.Series("", index=sites.index)).fillna("").astype(str).str.strip() != "").to_numpy().copy()
+    if "known_analog" in sites.columns:
+        named |= (sites["known_analog"].fillna("").astype(str).str.strip() != "").to_numpy()
+    return named
+
+
 def earth_table(sites: pd.DataFrame, power: pd.DataFrame, terrain: pd.DataFrame | None = None,
                 drop_ocean: bool = True) -> tuple[pd.DataFrame, list[dict]]:
     """Earth cells and their metadata from POWER values and terrain tiles."""
@@ -661,12 +773,19 @@ def earth_table(sites: pd.DataFrame, power: pd.DataFrame, terrain: pd.DataFrame 
         "relief_m": get("relief_m"),
         "elevation_m": get("elevation_m"),
     })
+    if drop_ocean:
+        # POWER answers over open water too (sea-surface values, soil wetness 1.0),
+        # and the terrain tiles contain ocean-floor bathymetry, so the only reliable
+        # test is the land outline itself. Named sites are kept as given.
+        named = _named_sites(sites)
+        try:
+            land = _on_land(out["lat"].to_numpy(float), out["lon"].to_numpy(float))
+        except OSError:
+            land = out["soil_wetness"].notna().to_numpy()
+        out = out[named | land].reset_index(drop=True)
     band = lambda la: ("Arctic" if la >= 66.5 else "Antarctic" if la <= -66.5 else "Tropics" if abs(la) < 23.5
                        else "Northern mid-latitudes" if la > 0 else "Southern mid-latitudes")
     out["region"] = [r or band(la) for r, la in zip(out["region"], out["lat"])]
-    if drop_ocean and out["soil_wetness"].notna().any():
-        # Soil wetness is only defined over land, so a location without it is open water.
-        out = out[out["soil_wetness"].notna()].reset_index(drop=True)
     v = POWER_VERSION
     meta = [
         _meta("temp_mean_c", "Mean surface temperature", "thermal", "temperature", "degC", "mean_temperature", v),
@@ -734,6 +853,10 @@ def targets_table(moon_sites, moon, mars_sites, mars, mars_climate=None, climate
                    "Moon: across Diviner surface triangles. Mars: across MOLA grid cells. Baselines differ."),
         _meta("relief_m", "Relief within the site", "terrain", "length", "m", "relief", both, priority=6,
               note="Standard deviation of elevation inside the site radius."),
+        _meta("albedo", "Surface albedo", "geology", "fraction", "fraction", "albedo",
+              f"{SOURCES['lola_albedo']['version']}; {SOURCES['tes_albedo']['version']}", priority=5,
+              note="How bright the surface is: a proxy for dust cover versus exposed rock. "
+                   "Moon: LOLA 1064 nm albedo. Mars: TES broadband bolometric albedo. Wavelengths differ."),
         _meta("surf_pressure_Pa", "Surface pressure", "physics", "pressure", "Pa", "surface_pressure",
               f"{mv}; {cs}" if measured_pressure else mv, priority=7, uncertainty=90.0,
               note=("Mars: from the climate database where entered, otherwise estimated " if measured_pressure else "Mars: estimated ")
@@ -757,12 +880,39 @@ def fetch(out_dir: str | Path, config_dir: str | Path | None = None, downloads_d
     write_default_site_files(cfg, grid_step)
     log(f"Site lists: {cfg} (edit these and rerun to change sites)")
 
+    def _reuse(body: str):
+        """Carry a skipped body's rows over from the existing targets.csv."""
+        if not (out / "targets.csv").exists():
+            return None, None
+        prev = pd.read_csv(out / "targets.csv")
+        prev = prev[prev["body"].astype(str) == body]
+        if not len(prev):
+            return None, None
+        head = ["target_id", "body", "name", "description", "lat", "lon"]
+        sites = prev[head].copy()
+        sites["radius_km"] = np.nan
+        cfg_file = cfg / ("moon_sites.csv" if body == "Moon" else "mars_sites.csv")
+        if cfg_file.exists():   # recover each site's radius for any per-site sampling that still runs
+            radii = pd.read_csv(cfg_file)[["target_id", "radius_km"]]
+            sites = sites.drop(columns=["radius_km"]).merge(radii, on="target_id", how="left")
+        values = prev.drop(columns=[c for c in head if c != "target_id"]).copy()
+        values["n_samples"] = 0
+        log(f"{body}: skipped; keeping the existing {body} rows from targets.csv")
+        return sites, values
+
     moon_sites = mars_sites = moon = mars = None
     if "moon" not in skip:
         moon_sites = pd.read_csv(cfg / "moon_sites.csv")
         src = SOURCES["diviner_prp_south"]
         log("Moon: LRO Diviner south polar resource product (605 MB)")
         moon = read_diviner_prp(download(src["url"], dl / src["file"], src["bytes"], log), moon_sites, log=log)
+    else:
+        moon_sites, moon = _reuse("Moon")
+    if moon is not None and len(moon):
+        src = SOURCES["lola_albedo"]
+        log("Moon: LOLA south polar albedo map (3 MB)")
+        alb = read_lola_albedo(download(src["url"], dl / src["file"], src["bytes"], log), moon_sites, log=log)
+        moon = moon.drop(columns=["albedo"], errors="ignore").merge(alb, on="target_id", how="left")
     if "mars" not in skip:
         mars_sites = pd.read_csv(cfg / "mars_sites.csv")
         src = SOURCES["mola_megt16"]
@@ -772,32 +922,50 @@ def fetch(out_dir: str | Path, config_dir: str | Path | None = None, downloads_d
         log("Mars: Odyssey GRS subsurface water map (0.2 MB)")
         grs = read_grs_h2o(download(src["url"], dl / src["file"], src["bytes"], log), mars_sites, log=log)
         mars = mars.merge(grs, on="target_id", how="left")
+        src = SOURCES["tes_albedo"]
+        log("Mars: TES global albedo map (17 MB)")
+        alb = read_tes_albedo(download(src["url"], dl / src["file"], src["bytes"], log), mars_sites, log=log)
+        mars = mars.merge(alb, on="target_id", how="left")
         write_mars_climate_template(cfg / "mars_climate.csv", mars_sites)
+    else:
+        mars_sites, mars = _reuse("Mars")
     climate, climate_source = read_mars_climate(cfg / "mars_climate.csv")
     if len(climate):
         log(f"Mars climate: hand-entered values for {len(climate)} sites ({climate_source})")
     elif "mars" not in skip:
         log(f"Mars climate: {cfg / 'mars_climate.csv'} is empty. Fill it in to compare temperature, wind and dust.")
-    targets, t_meta = targets_table(moon_sites, moon, mars_sites, mars, climate, climate_source)
+    targets = t_meta = None
+    if moon is not None or mars is not None:
+        targets, t_meta = targets_table(moon_sites, moon, mars_sites, mars, climate, climate_source)
+    elif (out / "targets.csv").exists():
+        log("Targets: moon and mars skipped; keeping the existing targets.csv")
+    else:
+        raise FileNotFoundError(f"Moon and Mars were both skipped but {out / 'targets.csv'} does not exist yet; "
+                                "run fetch without --skip moon mars first.")
 
     earth_sites = pd.read_csv(cfg / "earth_sites.csv")
     log(f"Earth: NASA POWER climatology for {len(earth_sites)} locations (cached in {dl / 'power'})")
     power = fetch_power(earth_sites, dl / "power", get, pause, log)
     terrain = None
     if "terrain" not in skip:
-        land = earth_sites[earth_sites["cell_id"].isin(power.loc[power.get("GWETTOP", pd.Series(dtype=float)).notna(), "cell_id"])] \
-            if "GWETTOP" in power.columns and power["GWETTOP"].notna().any() else earth_sites
+        try:
+            keep = _named_sites(earth_sites) | _on_land(earth_sites["lat"].to_numpy(float), earth_sites["lon"].to_numpy(float))
+            land = earth_sites[keep]
+        except OSError:
+            land = earth_sites
         log(f"Earth: terrain tiles for {len(land)} land locations (cached in {dl / 'terrain'})")
         terrain = fetch_terrain(land, dl / "terrain", get_bytes=get_bytes, log=log)
     earth, e_meta = earth_table(earth_sites, power, terrain)
 
     earth.to_csv(out / "earth_cells.csv", index=False)
-    targets.to_csv(out / "targets.csv", index=False)
     (out / "earth_meta.json").write_text(json.dumps(e_meta, indent=1), encoding="utf-8")
-    (out / "targets_meta.json").write_text(json.dumps(t_meta, indent=1), encoding="utf-8")
+    if targets is not None:
+        targets.to_csv(out / "targets.csv", index=False)
+        (out / "targets_meta.json").write_text(json.dumps(t_meta, indent=1), encoding="utf-8")
     known = earth_sites[earth_sites["known_analog"].fillna("") != ""]
     known = known[known["cell_id"].isin(earth["cell_id"])]
     known.rename(columns={"known_analog": "name", "known_for": "body"})[["cell_id", "name", "body"]].to_csv(
         out / "known_analogs.csv", index=False)
-    log(f"Wrote {len(earth)} Earth cells and {len(targets)} target sites to {out}")
+    n_targets = len(targets) if targets is not None else "the existing"
+    log(f"Wrote {len(earth)} Earth cells and {n_targets} target sites to {out}")
     return out

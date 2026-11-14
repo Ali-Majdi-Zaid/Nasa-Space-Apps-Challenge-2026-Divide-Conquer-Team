@@ -681,6 +681,51 @@ class TestIngest(unittest.TestCase):
             (self.tmp / "short.img").write_bytes(b"\0" * 10)
             ingest.read_mola(self.tmp / "short.img", sites)
 
+    def make_tes_albedo(self, path, value=0.22):
+        """Full-size 8 px/deg albedo map, little-endian float32, zeros poleward of 80 degrees (no coverage)."""
+        from earthmimic.ingest import TES_LINES, TES_PPD, TES_SAMPLES
+        lat = 90 - (np.arange(TES_LINES) + 0.5) / TES_PPD
+        a = np.where(np.abs(lat) <= 80, value, 0.0).astype("<f4")
+        np.repeat(a[:, None], TES_SAMPLES, axis=1).tofile(path)
+
+    def test_tes_albedo_reader_samples_sites_and_skips_gaps(self):
+        from earthmimic import ingest
+        path = self.tmp / "alb.img"
+        self.make_tes_albedo(path, value=0.22)
+        sites = pd.DataFrame([dict(target_id="a", name="A", lat=18.0, lon=77.0, radius_km=25.0),
+                              dict(target_id="b", name="B", lat=-30.0, lon=359.99, radius_km=25.0),
+                              dict(target_id="c", name="C", lat=-88.0, lon=0.0, radius_km=25.0)])
+        out = ingest.read_tes_albedo(path, sites, log=lambda *_: None).set_index("target_id")
+        self.assertAlmostEqual(out.loc["a", "albedo"], 0.22, places=4)
+        self.assertAlmostEqual(out.loc["b", "albedo"], 0.22, places=4)            # 360 wraps to 0
+        self.assertTrue(np.isnan(out.loc["c", "albedo"]))                         # zeros = no TES coverage
+        with self.assertRaises(IOError):
+            (self.tmp / "alb_short.img").write_bytes(b"\0" * 10)
+            ingest.read_tes_albedo(self.tmp / "alb_short.img", sites)
+
+    def make_lola_albedo(self, path, upper=0.20, lower=0.40):
+        """Full-size 844 x 844 south polar albedo map. The upper image half is y > 0, the lon-0 side."""
+        from earthmimic.ingest import LDAM_SIZE
+        a = np.full((LDAM_SIZE, LDAM_SIZE), lower, "<f4")
+        a[: LDAM_SIZE // 2, :] = upper
+        a.tofile(path)
+
+    def test_lola_albedo_polar_geometry(self):
+        from earthmimic import ingest
+        path = self.tmp / "ldam.img"
+        self.make_lola_albedo(path, upper=0.20, lower=0.40)
+        sites = pd.DataFrame([dict(target_id="a", name="A", lat=-80.0, lon=0.0, radius_km=10.0),
+                              dict(target_id="b", name="B", lat=-80.0, lon=180.0, radius_km=10.0),
+                              dict(target_id="c", name="C", lat=-40.0, lon=0.0, radius_km=10.0)])
+        out = ingest.read_lola_albedo(path, sites, log=lambda *_: None).set_index("target_id")
+        # lon 0 has y = +rho, which lies in the low-line (upper) half of the image.
+        self.assertAlmostEqual(out.loc["a", "albedo"], 0.20, places=4)
+        self.assertAlmostEqual(out.loc["b", "albedo"], 0.40, places=4)
+        self.assertTrue(np.isnan(out.loc["c", "albedo"]))      # north of the map's coverage
+        with self.assertRaises(IOError):
+            (self.tmp / "ldam_short.img").write_bytes(b"\0" * 10)
+            ingest.read_lola_albedo(self.tmp / "ldam_short.img", sites)
+
     @staticmethod
     def power_reply(land=True, t=15.0, p=98.0):
         months = lambda base: {m: base + i for i, m in enumerate(
@@ -838,6 +883,8 @@ class TestIngest(unittest.TestCase):
         get_bytes, _ = self.tile_server(metres_per_pixel_east=3.0)
         self.make_prp(dl / "dlre_prp_south.tab", tilt_deg=8.0)
         self.make_mola(dl / "megt90n000eb.img", metres_per_degree=50.0)
+        self.make_tes_albedo(dl / "global_albedo_8ppd.img")
+        self.make_lola_albedo(dl / "ldam_50s_3000m_float.img")
         calls = []
 
         def get(url):
@@ -864,7 +911,10 @@ class TestIngest(unittest.TestCase):
         self.assertEqual(len(calls), n_calls)
 
         earth = pd.read_csv(raw / "earth_cells.csv")
-        self.assertTrue((earth["lon"].abs() <= 150).all())    # open-water cells were dropped
+        from earthmimic.demo_data import _on_land
+        grid = earth[earth["cell_id"].str.startswith("G")]
+        self.assertTrue(_on_land(grid["lat"].to_numpy(float), grid["lon"].to_numpy(float)).all())  # grid cells are on land
+        self.assertIn("K04", set(earth["cell_id"]))           # named sites (Mauna Kea) are kept even where POWER has no soil wetness
         self.assertGreater(len(earth), 100)
         targets = pd.read_csv(raw / "targets.csv")
         self.assertEqual(set(targets["body"]), {"Moon", "Mars"})

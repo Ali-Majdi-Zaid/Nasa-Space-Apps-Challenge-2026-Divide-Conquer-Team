@@ -135,6 +135,9 @@ sources, each read according to its published label or documentation:
 |---|---|---|
 | Moon | LRO Diviner South Polar Resource Product (PDS, `dlre_prp_south.tab`, 605 MB) | Mean and maximum surface temperature, share of area with ice stable in the top metre, slope, relief |
 | Mars | MGS MOLA topography, 16 px/deg (PDS, `megt90n000eb.img`, 33 MB) | Elevation, slope, relief, and a pressure estimate from elevation |
+| Moon | LRO LOLA derived albedo map, south polar 3 km (PDS, 3 MB) | Surface albedo |
+| Mars | MGS TES global bolometric albedo, 8 px/deg (PDS, 17 MB) | Surface albedo |
+| Mars | Mars Odyssey GRS water map (PDS, 0.2 MB) | Water-equivalent hydrogen in the shallow subsurface |
 | Mars | Mars Climate Database (LMD, with ESA and CNES), entered by hand | Surface temperature, day-night swing, pressure, wind, dust |
 | Earth | NASA POWER climatology API (no login) | Surface temperature, warmest-month high, day-night swing, wind, pressure, soil wetness, UV, precipitation, albedo, aerosol optical depth |
 | Earth | Terrain Tiles on AWS Open Data (built from SRTM and others) | Slope and relief over the same 3.7 km baseline as the Mars grid |
@@ -150,8 +153,14 @@ Sites are listed in `data/real_raw/sites/` (`moon_sites.csv`, `mars_sites.csv`,
 `earth_sites.csv`). Edit them and rerun; downloads and replies are cached, so
 reruns are fast. The default coordinates are approximate starting points:
 check them against the IAU Gazetteer and mission pages before presenting.
-The default Earth list is a 10-degree grid plus ten known analog sites; use
-`--grid-step 5` for a denser grid (about four times as many requests).
+The default Earth list is a grid of land points (ocean points are excluded
+with the Natural Earth land outline; POWER answers over open water too, so
+missing data cannot be used as an ocean test), plus ten known analog sites
+and fifteen sites near Earth's physical extremes (Vostok, Dome A, the
+Chajnantor plateau, the Lut desert...), which anchor the edges of every
+Earth range the matcher reports. Use `--grid-step 5` for a denser grid.
+To refresh only the Earth side without re-downloading the 605 MB Diviner
+table, add `--skip moon mars`: the existing `targets.csv` is kept.
 
 Which properties end up comparable on both sides:
 
@@ -165,6 +174,7 @@ Which properties end up comparable on both sides:
 | Wind force | none (no atmosphere) | climate database | POWER |
 | Dust | none (no atmosphere) | climate database | POWER aerosol optical depth |
 | Low-Sun lighting | computed | computed | computed |
+| Surface albedo | LOLA (1064 nm, south polar) | TES | POWER |
 | Ice stable in the top metre | Diviner | not available | no Earth counterpart yet |
 
 Not covered yet: surface composition and mineralogy, radar, vegetation, and an

@@ -1,20 +1,32 @@
 {
- "used": 0,
+ "used": 18,
  "max": 15,
  "runs": [
   {
-   "run": 25,
-   "used": 0,
+   "run": 1,
+   "used": 13,
    "max": 15,
    "log": [
-    "Computed 'grazing_sun_share' for 422 Earth cells from latitude.",
+    "Computed 'grazing_sun_share' for 494 Earth cells from latitude.",
     "Computed 'grazing_sun_share' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
-    "Computed 'insolation_wm2' for 422 Earth cells from latitude.",
+    "Computed 'insolation_wm2' for 494 Earth cells from latitude.",
     "Computed 'insolation_wm2' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
-    "Proposer suggested 13 candidate pairings.",
+    "Proposer suggested 14 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-    "Reused 12 decisions from the relationship store (data unchanged).",
-    "Run 25 finished: 12 accepted, 0 pending, 2 denied; 0 of 15 tool calls used.",
+    "Tool call 1: surf_temp_mean_K ~ temp_mean_c -> accepted (confidence 1.00)",
+    "Tool call 2: slope_deg ~ slope_deg -> accepted (confidence 1.00)",
+    "Tool call 3: temp_swing_K ~ temp_swing_c -> accepted (confidence 1.00)",
+    "Tool call 4: grazing_sun_share ~ grazing_sun_share -> accepted (confidence 1.00)",
+    "Tool call 5: roughness_deg ~ roughness_deg -> accepted (confidence 0.50)",
+    "Tool call 6: surf_pressure_Pa ~ pressure_kpa -> accepted (confidence 1.00)",
+    "Tool call 7: insolation_wm2 ~ insolation_wm2 -> accepted (confidence 0.50)",
+    "Tool call 8: wind_ms ~ wind_ms -> accepted (confidence 1.00)",
+    "Tool call 9: dust_tau ~ dust_aod -> accepted (confidence 1.00)",
+    "Tool call 10: relief_m ~ relief_m -> accepted (confidence 0.50)",
+    "Tool call 11: albedo ~ albedo -> accepted (confidence 1.00)",
+    "Tool call 12: surf_temp_max_K ~ warm_month_high_c -> accepted (confidence 0.60)",
+    "Tool call 13: subsurface_h2o_share ~ soil_wetness -> accepted (confidence 0.50)",
+    "Run 1 finished: 13 accepted, 0 pending, 2 denied; 13 of 15 tool calls used.",
     "Derived 'daily_high_c' (Typical daily high) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'daily_low_c' (Typical daily low) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'liquid_window_c' (Liquid-water temperature window) from surface_pressure. [Magnus saturation vapour pressure fit: Alduchov & Eskridge (1996), J. Appl. Meteorol. 35, 601-609.]",
@@ -23,22 +35,32 @@
    ]
   },
   {
-   "run": 26,
-   "used": 0,
+   "run": 2,
+   "used": 5,
    "max": 15,
    "log": [
-    "Proposer suggested 18 candidate pairings.",
+    "Proposer suggested 19 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-    "Reused 17 decisions from the relationship store (data unchanged).",
-    "Run 26 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
+    "Reused 13 decisions from the relationship store (data unchanged).",
+    "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
+    "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
+    "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
+    "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
+    "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
+    "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
    ]
   }
  ],
  "log": [
-  "Proposer suggested 18 candidate pairings.",
+  "Proposer suggested 19 candidate pairings.",
   "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-  "Reused 17 decisions from the relationship store (data unchanged).",
-  "Run 26 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
+  "Reused 13 decisions from the relationship store (data unchanged).",
+  "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
+  "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
+  "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
+  "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
+  "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
+  "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
  ],
  "relationships": [
   {
@@ -64,7 +86,7 @@
    ],
    "scored": true,
    "origin": "checked",
-   "decided_in_run": 26,
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Area with ice stable in the top metre",
    "earth_label": "No counterpart",
@@ -81,10 +103,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "K -> degC",
-   "bandwidth": 11.315326167531504,
-   "sigma": 15.087101556708673,
-   "earth_lo": -50.56485,
-   "earth_hi": 29.775849999999995,
+   "bandwidth": 14.37175685693106,
+   "sigma": 19.16234247590808,
+   "earth_lo": -57.5005,
+   "earth_hi": 30.615600000000004,
    "scale": "linear",
    "checks": [
     {
@@ -120,7 +142,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span -50.6 \u00b0C to 29.8 \u00b0C (typical spread 15.1 \u00b0C)."
+     "detail": "Earth values span -57.5 \u00b0C to 30.6 \u00b0C (typical spread 19.2 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
@@ -130,7 +152,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 5,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Mean surface temperature",
    "earth_label": "Mean surface temperature",
@@ -147,10 +169,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "K_delta -> degC_delta",
-   "bandwidth": 2.795126019273536,
-   "sigma": 3.7268346923647147,
-   "earth_lo": 0.4,
-   "earth_hi": 16.376399999999993,
+   "bandwidth": 3.4831356560415125,
+   "sigma": 4.644180874722017,
+   "earth_lo": 2.75465,
+   "earth_hi": 16.734450000000006,
    "scale": "linear",
    "checks": [
     {
@@ -186,7 +208,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.4 \u00b0C to 16.4 \u00b0C (typical spread 3.73 \u00b0C)."
+     "detail": "Earth values span 2.75 \u00b0C to 16.7 \u00b0C (typical spread 4.64 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
@@ -196,7 +218,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 5,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Day-night temperature swing",
    "earth_label": "Day-night temperature swing",
@@ -213,10 +235,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 1.5831171237954043,
-   "sigma": 2.1108228317272055,
-   "earth_lo": 0.8742,
-   "earth_hi": 11.250599999999995,
+   "bandwidth": 1.1313936249073389,
+   "sigma": 1.5085248332097851,
+   "earth_lo": 0.6746500000000001,
+   "earth_hi": 12.972600000000009,
    "scale": "linear",
    "checks": [
     {
@@ -252,7 +274,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.874 m/s to 11.3 m/s (typical spread 2.11 m/s)."
+     "detail": "Earth values span 0.675 m/s to 13 m/s (typical spread 1.51 m/s)."
     },
     {
      "name": "Not a duplicate signal",
@@ -267,7 +289,7 @@
    ],
    "scored": false,
    "origin": "reused",
-   "decided_in_run": 5,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Mean wind speed",
    "earth_label": "Mean wind speed at 10 m",
@@ -284,10 +306,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.06115641215715345,
-   "sigma": 0.0815418828762046,
+   "bandwidth": 0.12231282431430689,
+   "sigma": 0.16308376575240918,
    "earth_lo": 0.0,
-   "earth_hi": 0.6915999999999985,
+   "earth_hi": 0.9260500000000007,
    "scale": "linear",
    "checks": [
     {
@@ -323,7 +345,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0 to 0.692 (typical spread 0.0815)."
+     "detail": "Earth values span 0 to 0.926 (typical spread 0.163)."
     },
     {
      "name": "Not a duplicate signal",
@@ -333,7 +355,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 5,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Dust optical depth",
    "earth_label": "Aerosol optical depth",
@@ -350,10 +372,10 @@
    "confidence": 0.6,
    "rationale": "'annual_max_temperature' is registered as related to 'warmest_month_high' (prior 0.6).",
    "conversion": "K -> degC",
-   "bandwidth": 5.737583395107487,
-   "sigma": 7.65011119347665,
-   "earth_lo": -15.35065,
-   "earth_hi": 49.22794999999999,
+   "bandwidth": 7.21645663454411,
+   "sigma": 9.621942179392146,
+   "earth_lo": -19.11715,
+   "earth_hi": 49.877700000000004,
    "scale": "linear",
    "checks": [
     {
@@ -389,7 +411,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span -15.4 \u00b0C to 49.2 \u00b0C (typical spread 7.65 \u00b0C)."
+     "detail": "Earth values span -19.1 \u00b0C to 49.9 \u00b0C (typical spread 9.62 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
@@ -399,7 +421,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 3,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Annual maximum surface temperature",
    "earth_label": "Warmest-month daily high",
@@ -414,11 +436,11 @@
    "dimension": "water",
    "verdict": "accepted",
    "confidence": 0.5,
-   "rationale": "Surface soil wetness serves as a conceptual stand-in for shallow subsurface water-equivalent hydrogen fraction.",
+   "rationale": "'subsurface_water' is registered as related to 'soil_moisture' (prior 0.5).",
    "conversion": "",
-   "bandwidth": 0.09868421052631579,
-   "sigma": 0.13157894736842105,
-   "earth_lo": 0.09104999999999999,
+   "bandwidth": 0.2223869532987398,
+   "sigma": 0.2965159377316531,
+   "earth_lo": 0.04465,
    "earth_hi": 1.0,
    "scale": "linear",
    "checks": [
@@ -455,7 +477,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.091 to 1 (typical spread 0.132)."
+     "detail": "Earth values span 0.0447 to 1 (typical spread 0.297)."
     },
     {
      "name": "Not a duplicate signal",
@@ -465,7 +487,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 17,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Water in the shallow subsurface",
    "earth_label": "Surface soil wetness",
@@ -479,13 +501,13 @@
    "earth_col": "slope_deg",
    "dimension": "terrain",
    "verdict": "accepted",
-   "confidence": 0.986,
+   "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.3425662098877536,
-   "sigma": 0.4567549465170048,
-   "earth_lo": 0.01393996970825694,
-   "earth_hi": 5.736872538930635,
+   "bandwidth": 0.4927377920284829,
+   "sigma": 0.6569837227046439,
+   "earth_lo": 0.012106389323511263,
+   "earth_hi": 5.8075131009047105,
    "scale": "log",
    "checks": [
     {
@@ -516,17 +538,17 @@
     {
      "name": "Earth data completeness",
      "outcome": "pass",
-     "detail": "1.4% of Earth cells have no value."
+     "detail": "0.0% of Earth cells have no value."
     },
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.0139\u00b0 to 5.74\u00b0 (typical spread 0.983\u00b0)."
+     "detail": "Earth values span 0.0121\u00b0 to 5.81\u00b0 (typical spread 0.692\u00b0)."
     },
     {
      "name": "Scale",
      "outcome": "pass",
-     "detail": "Earth values span a factor of 412, so sites are compared by ratio (logarithmic scale) rather than by difference."
+     "detail": "Earth values span a factor of 480, so sites are compared by ratio (logarithmic scale) rather than by difference."
     },
     {
      "name": "Not a duplicate signal",
@@ -536,7 +558,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 3,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Mean slope",
    "earth_label": "Mean slope",
@@ -550,13 +572,13 @@
    "earth_col": "roughness_deg",
    "dimension": "terrain",
    "verdict": "accepted",
-   "confidence": 0.444,
-   "rationale": "Both columns quantify terrain roughness as the standard deviation of surface slopes within a local radius.",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.3455863453435701,
-   "sigma": 0.46078179379142675,
-   "earth_lo": 0.007466073540850156,
-   "earth_hi": 4.203215913037516,
+   "bandwidth": 0.5569486162131663,
+   "sigma": 0.7425981549508884,
+   "earth_lo": 0.005817921009456917,
+   "earth_hi": 2.9716510195522856,
    "scale": "log",
    "checks": [
     {
@@ -581,33 +603,33 @@
     },
     {
      "name": "Concept match",
-     "outcome": "warn",
-     "detail": "Related but not identical concepts; confidence starts at 0.90."
+     "outcome": "pass",
+     "detail": "Identical concepts."
     },
     {
      "name": "Earth data completeness",
      "outcome": "pass",
-     "detail": "1.4% of Earth cells have no value."
+     "detail": "0.0% of Earth cells have no value."
     },
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.00747\u00b0 to 4.2\u00b0 (typical spread 0.591\u00b0)."
+     "detail": "Earth values span 0.00582\u00b0 to 2.97\u00b0 (typical spread 0.453\u00b0)."
     },
     {
      "name": "Scale",
      "outcome": "pass",
-     "detail": "Earth values span a factor of 563, so sites are compared by ratio (logarithmic scale) rather than by difference."
+     "detail": "Earth values span a factor of 511, so sites are compared by ratio (logarithmic scale) rather than by difference."
     },
     {
      "name": "Not a duplicate signal",
      "outcome": "warn",
-     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.96); counted at half weight so the same signal is not counted twice."
+     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.97); counted at half weight so the same signal is not counted twice."
     }
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 17,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Terrain roughness",
    "earth_label": "Terrain roughness",
@@ -621,14 +643,14 @@
    "earth_col": "relief_m",
    "dimension": "terrain",
    "verdict": "accepted",
-   "confidence": 0.493,
+   "confidence": 0.5,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.3506294254435095,
-   "sigma": 0.467505900591346,
-   "earth_lo": 2.2726345962707857,
-   "earth_hi": 1146.4207538353548,
-   "scale": "log",
+   "bandwidth": 69.22571552771295,
+   "sigma": 92.3009540369506,
+   "earth_lo": 1.9420213226435914,
+   "earth_hi": 753.1396337978799,
+   "scale": "linear",
    "checks": [
     {
      "name": "Columns exist",
@@ -658,32 +680,93 @@
     {
      "name": "Earth data completeness",
      "outcome": "pass",
-     "detail": "1.4% of Earth cells have no value."
+     "detail": "0.0% of Earth cells have no value."
     },
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 2.27 m to 1.15e+03 m (typical spread 130 m)."
-    },
-    {
-     "name": "Scale",
-     "outcome": "pass",
-     "detail": "Earth values span a factor of 504, so sites are compared by ratio (logarithmic scale) rather than by difference."
+     "detail": "Earth values span 1.94 m to 753 m (typical spread 92.3 m)."
     },
     {
      "name": "Not a duplicate signal",
      "outcome": "warn",
-     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.97); counted at half weight so the same signal is not counted twice."
+     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.98); counted at half weight so the same signal is not counted twice."
     }
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 3,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Relief within the site",
    "earth_label": "Relief within the site",
    "target_source": "dataset",
    "target_note": "Standard deviation of elevation inside the site radius.",
+   "formula": ""
+  },
+  {
+   "id": "albedo__albedo",
+   "target_col": "albedo",
+   "earth_col": "albedo",
+   "dimension": "geology",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.09451445515196444,
+   "sigma": 0.12601927353595258,
+   "earth_lo": 0.05,
+   "earth_hi": 0.7853500000000003,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in fraction."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.05 to 0.785 (typical spread 0.126)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Surface albedo",
+   "earth_label": "Surface albedo",
+   "target_source": "dataset",
+   "target_note": "How bright the surface is: a proxy for dust cover versus exposed rock. Moon: LOLA 1064 nm albedo. Mars: TES broadband bolometric albedo. Wavelengths differ.",
    "formula": ""
   },
   {
@@ -695,10 +778,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "Pa -> kPa",
-   "bandwidth": 1.6067457375833956,
-   "sigma": 2.142327650111194,
-   "earth_lo": 62.03725,
-   "earth_hi": 102.19,
+   "bandwidth": 5.551334321719793,
+   "sigma": 7.40177909562639,
+   "earth_lo": 54.9902,
+   "earth_hi": 101.6307,
    "scale": "linear",
    "checks": [
     {
@@ -734,7 +817,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 62 kPa to 102 kPa (typical spread 2.14 kPa)."
+     "detail": "Earth values span 55 kPa to 102 kPa (typical spread 7.4 kPa)."
     },
     {
      "name": "Not a duplicate signal",
@@ -744,7 +827,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 5,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Surface pressure",
    "earth_label": "Surface pressure",
@@ -780,7 +863,7 @@
    ],
    "scored": true,
    "origin": "checked",
-   "decided_in_run": 26,
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Elevation",
    "earth_label": "Elevation",
@@ -797,10 +880,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.00734640543063449,
-   "sigma": 0.009795207240845987,
+   "bandwidth": 0.014671361502347418,
+   "sigma": 0.019561815336463225,
    "earth_lo": 0.028973765432098765,
-   "earth_hi": 0.1008005401234568,
+   "earth_hi": 0.10396412037037037,
    "scale": "linear",
    "checks": [
     {
@@ -836,7 +919,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 2.9% of the year to 10.1% of the year (typical spread 0.98% of the year)."
+     "detail": "Earth values span 2.9% of the year to 10.4% of the year (typical spread 1.96% of the year)."
     },
     {
      "name": "Not a duplicate signal",
@@ -846,7 +929,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 3,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Time with the Sun low on the horizon",
    "earth_label": "Time with the Sun low on the horizon",
@@ -863,10 +946,10 @@
    "confidence": 0.5,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 53.22982321805262,
-   "sigma": 70.97309762407016,
-   "earth_lo": 173.75270370846675,
-   "earth_hi": 414.0966468178253,
+   "bandwidth": 73.6560742536087,
+   "sigma": 98.20809900481159,
+   "earth_lo": 178.08897057953192,
+   "earth_hi": 415.52035439744037,
    "scale": "linear",
    "checks": [
     {
@@ -902,7 +985,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 174 W_per_m2 to 414 W_per_m2 (typical spread 71 W_per_m2)."
+     "detail": "Earth values span 178 W/m\u00b2 to 416 W/m\u00b2 (typical spread 98.2 W/m\u00b2)."
     },
     {
      "name": "Not a duplicate signal",
@@ -912,7 +995,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 7,
+   "decided_in_run": 1,
    "pending_reason": "",
    "target_label": "Mean solar energy flux",
    "earth_label": "Mean solar energy flux",
@@ -929,10 +1012,10 @@
    "confidence": 0.5,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 10.630791326908819,
-   "sigma": 14.174388435878425,
-   "earth_lo": -47.4224,
-   "earth_hi": 36.7224,
+   "bandwidth": 14.491984803558191,
+   "sigma": 19.322646404744255,
+   "earth_lo": -55.072475,
+   "earth_hi": 37.841525000000004,
    "scale": "linear",
    "checks": [
     {
@@ -973,17 +1056,17 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span -47.4 \u00b0C to 36.7 \u00b0C (typical spread 14.2 \u00b0C)."
+     "detail": "Earth values span -55.1 \u00b0C to 37.8 \u00b0C (typical spread 19.3 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
      "outcome": "warn",
-     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.95); counted at half weight so the same signal is not counted twice."
+     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.99); counted at half weight so the same signal is not counted twice."
     }
    ],
    "scored": true,
-   "origin": "reused",
-   "decided_in_run": 6,
+   "origin": "checked",
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Typical daily high",
    "earth_label": "Typical daily high",
@@ -1000,10 +1083,10 @@
    "confidence": 0.5,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 11.397331356560414,
-   "sigma": 15.19644180874722,
-   "earth_lo": -53.7073,
-   "earth_hi": 29.23055,
+   "bandwidth": 13.840113046701259,
+   "sigma": 18.453484062268345,
+   "earth_lo": -59.912475,
+   "earth_hi": 24.524200000000004,
    "scale": "linear",
    "checks": [
     {
@@ -1044,17 +1127,17 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span -53.7 \u00b0C to 29.2 \u00b0C (typical spread 15.2 \u00b0C)."
+     "detail": "Earth values span -59.9 \u00b0C to 24.5 \u00b0C (typical spread 18.5 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
      "outcome": "warn",
-     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.96); counted at half weight so the same signal is not counted twice."
+     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.98); counted at half weight so the same signal is not counted twice."
     }
    ],
    "scored": true,
-   "origin": "reused",
-   "decided_in_run": 6,
+   "origin": "checked",
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Typical daily low",
    "earth_label": "Typical daily low",
@@ -1071,10 +1154,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.4386578948686999,
-   "sigma": 0.5848771931582665,
-   "earth_lo": 86.35186628843638,
-   "earth_hi": 99.49815907388196,
+   "bandwidth": 1.5986290535807344,
+   "sigma": 2.1315054047743125,
+   "earth_lo": 83.32573170001903,
+   "earth_hi": 99.34789733214274,
    "scale": "linear",
    "checks": [
     {
@@ -1115,7 +1198,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 86.4 \u00b0C to 99.5 \u00b0C (typical spread 0.585 \u00b0C)."
+     "detail": "Earth values span 83.3 \u00b0C to 99.3 \u00b0C (typical spread 2.13 \u00b0C)."
     },
     {
      "name": "Not a duplicate signal",
@@ -1124,8 +1207,8 @@
     }
    ],
    "scored": true,
-   "origin": "reused",
-   "decided_in_run": 6,
+   "origin": "checked",
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Liquid-water temperature window",
    "earth_label": "Liquid-water temperature window",
@@ -1142,8 +1225,8 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.25701501060601967,
-   "sigma": 0.3426866808080262,
+   "bandwidth": 0.3098422906231888,
+   "sigma": 0.41312305416425177,
    "earth_lo": 0.0,
    "earth_hi": 1.0,
    "scale": "linear",
@@ -1186,7 +1269,7 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0 to 1 (typical spread 0.343)."
+     "detail": "Earth values span 0 to 1 (typical spread 0.413)."
     },
     {
      "name": "Not a duplicate signal",
@@ -1195,8 +1278,8 @@
     }
    ],
    "scored": true,
-   "origin": "reused",
-   "decided_in_run": 8,
+   "origin": "checked",
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Share of the day above freezing",
    "earth_label": "Share of the day above freezing",
@@ -1213,10 +1296,10 @@
    "confidence": 1.0,
    "rationale": "Both columns measure the same thing.",
    "conversion": "",
-   "bandwidth": 0.2493687939234635,
-   "sigma": 0.3324917252312847,
-   "earth_lo": 0.4448122777369074,
-   "earth_hi": 76.00357563776834,
+   "bandwidth": 0.2864065564184733,
+   "sigma": 0.38187540855796437,
+   "earth_lo": 0.2581187230371419,
+   "earth_hi": 95.25930926039847,
    "scale": "log",
    "checks": [
     {
@@ -1257,12 +1340,12 @@
     {
      "name": "Tells sites apart",
      "outcome": "pass",
-     "detail": "Earth values span 0.445 Pa to 76 Pa (typical spread 15.9 Pa)."
+     "detail": "Earth values span 0.258 Pa to 95.3 Pa (typical spread 6.33 Pa)."
     },
     {
      "name": "Scale",
      "outcome": "pass",
-     "detail": "Earth values span a factor of 171, so sites are compared by ratio (logarithmic scale) rather than by difference."
+     "detail": "Earth values span a factor of 369, so sites are compared by ratio (logarithmic scale) rather than by difference."
     },
     {
      "name": "Not a duplicate signal",
@@ -1271,8 +1354,8 @@
     }
    ],
    "scored": true,
-   "origin": "reused",
-   "decided_in_run": 6,
+   "origin": "checked",
+   "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Wind force on surfaces",
    "earth_label": "Wind force on surfaces",

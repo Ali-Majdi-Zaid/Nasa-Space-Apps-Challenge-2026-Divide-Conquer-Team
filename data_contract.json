@@ -1,0 +1,151 @@
+{
+  "contract": "EarthMimic clean-data contract v1",
+  "generated": "2026-11-14",
+  "purpose": "Defines every input file the EarthMimic pipeline consumes, the exact columns, units, types and valid ranges. Data engineers delivering clean data must match these schemas byte-for-byte (column names are case-sensitive). All data must come from NASA or challenge-partner sources.",
+  "general_rules": {
+    "encoding": "UTF-8, comma-separated, header row required",
+    "missing_values": "leave the cell empty (no 'NA', 'null', '-999')",
+    "ids": "cell_id / target_id must be unique, stable across deliveries, and never reused for a different place",
+    "coordinates": "lat in [-90, 90]; lon in [-180, 180] for Earth, [0, 360] accepted for Moon/Mars; decimal degrees",
+    "outliers": "do NOT delete or cap outliers - the pipeline flags anything beyond robust z-score 6 itself and keeps the value; your job is only to remove genuinely corrupt rows (sensor error codes, duplicated rows, impossible physics)",
+    "units": "exactly as specified per column; no unit conversion surprises (the pipeline converts K to degC itself, do not pre-convert)"
+  },
+  "files": [
+    {
+      "file": "earth_cells.csv",
+      "role": "One row per Earth location (grid cell or named site). The candidate pool that target sites are matched against.",
+      "paired_metadata": "earth_meta.json",
+      "row_count_current": 422,
+      "columns": [
+        {"name": "cell_id", "type": "string", "required": true, "note": "unique key, e.g. 'K00' for known analogs, 'C123' for grid cells"},
+        {"name": "lat", "type": "float", "unit": "deg", "required": true, "range": [-90, 90]},
+        {"name": "lon", "type": "float", "unit": "deg", "required": true, "range": [-180, 180]},
+        {"name": "region", "type": "string", "required": false, "note": "human-readable label, e.g. 'Tropics', 'Antarctic'"},
+        {"name": "temp_mean_c", "type": "float", "unit": "degC", "required": true, "range": [-90, 60], "source": "NASA POWER climatology (MERRA-2/CERES)"},
+        {"name": "warm_month_high_c", "type": "float", "unit": "degC", "range": [-40, 60], "note": "mean daily max of warmest month"},
+        {"name": "temp_swing_c", "type": "float", "unit": "degC_delta", "range": [0, 40], "note": "mean day-night swing"},
+        {"name": "wind_ms", "type": "float", "unit": "m_per_s", "range": [0, 60], "note": "mean wind speed at 10 m"},
+        {"name": "pressure_kpa", "type": "float", "unit": "kPa", "range": [30, 110], "note": "surface pressure (altitude-dependent)"},
+        {"name": "soil_wetness", "type": "float", "unit": "fraction", "range": [0, 1], "note": "top-layer soil wetness; empty over ocean (ocean rows are dropped)"},
+        {"name": "uv_index", "type": "float", "unit": "unitless", "range": [0, 25]},
+        {"name": "precip_mm_day", "type": "float", "unit": "mm_per_day", "range": [0, 60]},
+        {"name": "albedo", "type": "float", "unit": "fraction", "range": [0, 1]},
+        {"name": "dust_aod", "type": "float", "unit": "unitless", "range": [0, 5], "note": "aerosol optical depth at 550 nm"},
+        {"name": "slope_deg", "type": "float", "unit": "deg", "range": [0, 60], "note": "mean slope from terrain tiles inside the cell"},
+        {"name": "relief_m", "type": "float", "unit": "m", "range": [0, 5000], "note": "std-dev of elevation inside the cell"},
+        {"name": "elevation_m", "type": "float", "unit": "m", "range": [-430, 9000], "note": "above sea level; never compared across bodies, kept for reference"}
+      ],
+      "sample_row": "K00,-24.5,-69.25,Southern mid-latitudes,15.73,32.75,16.01,4.01,76.87,0.09,2.64,0.03,0.23,0.04,2.554,503.45,2701.26"
+    },
+    {
+      "file": "targets.csv",
+      "role": "One row per Moon/Mars site we want Earth analogs for.",
+      "paired_metadata": "targets_meta.json",
+      "row_count_current": 13,
+      "columns": [
+        {"name": "target_id", "type": "string", "required": true, "note": "unique key, convention '<body>-<name>', e.g. 'mars-jezero'"},
+        {"name": "body", "type": "string", "required": true, "allowed": ["Moon", "Mars"]},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false, "note": "one sentence"},
+        {"name": "lat", "type": "float", "unit": "deg", "required": true, "range": [-90, 90]},
+        {"name": "lon", "type": "float", "unit": "deg", "required": true, "range": [0, 360]},
+        {"name": "surf_temp_mean_K", "type": "float", "unit": "K", "range": [20, 350], "source": "Moon: LRO Diviner PRP v2 (modelled annual avg at 2 cm depth). Mars: lander met archives (PDS Atmospheres)."},
+        {"name": "surf_temp_max_K", "type": "float", "unit": "K", "range": [20, 420], "note": "annual maximum"},
+        {"name": "shallow_ice_share", "type": "float", "unit": "fraction", "range": [0, 1], "note": "Moon only (Diviner ice-stability depth <= 1 m); empty for Mars"},
+        {"name": "slope_deg", "type": "float", "unit": "deg", "range": [0, 45], "note": "Moon: Diviner surface triangles. Mars: MOLA over 3.7 km baseline. Baselines differ - keep as-is."},
+        {"name": "relief_m", "type": "float", "unit": "m", "range": [0, 5000], "note": "std-dev of elevation inside site radius"},
+        {"name": "surf_pressure_Pa", "type": "float", "unit": "Pa", "range": [0, 1500], "note": "Moon: exactly 0 (physical prior). Mars: measured where a lander exists, else 610*exp(-elev/10800)"},
+        {"name": "elevation_m", "type": "float", "unit": "m", "range": [-9000, 11000], "note": "from each body's own reference surface; marked non-comparable in metadata"}
+      ],
+      "sample_row": "mars-jezero,Mars,Jezero crater (Perseverance),Ancient river delta in an impact crater.,18.44,77.45,,,,1.629,284.76,755.57,-2311.35"
+    },
+    {
+      "file": "known_analogs.csv",
+      "role": "Ground truth for the benchmark: Earth sites the literature already calls Moon/Mars analogs. Used to sanity-check the ranking, never to train it.",
+      "columns": [
+        {"name": "cell_id", "type": "string", "required": true, "note": "must exist in earth_cells.csv"},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "body", "type": "string", "required": true, "allowed": ["Moon", "Mars"]}
+      ],
+      "sample_row": "K00,Atacama Desert,Mars"
+    },
+    {
+      "file": "sites/earth_sites.csv",
+      "role": "Fetch input: named Earth locations added on top of the regular grid.",
+      "columns": [
+        {"name": "cell_id", "type": "string", "required": true},
+        {"name": "lat", "type": "float", "required": true},
+        {"name": "lon", "type": "float", "required": true},
+        {"name": "region", "type": "string", "required": false},
+        {"name": "known_analog", "type": "string", "required": false, "note": "set to the analog name to include the row in known_analogs.csv"},
+        {"name": "known_for", "type": "string", "required": false, "allowed": ["Moon", "Mars", ""]}
+      ],
+      "sample_row": "K00,-24.5,-69.25,,Atacama Desert,Mars"
+    },
+    {
+      "file": "sites/moon_sites.csv and sites/mars_sites.csv",
+      "role": "Fetch input: which Moon/Mars sites to sample from Diviner (Moon) and MOLA (Mars).",
+      "columns": [
+        {"name": "target_id", "type": "string", "required": true},
+        {"name": "body", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "lat", "type": "float", "required": true},
+        {"name": "lon", "type": "float", "required": true, "range": [0, 360]},
+        {"name": "radius_km", "type": "float", "required": true, "note": "site radius used when averaging gridded data; Moon sites use ~5, Mars sites ~25"},
+        {"name": "description", "type": "string", "required": false}
+      ],
+      "sample_row": "mars-jezero,Mars,Jezero crater (Perseverance),18.44,77.45,25,Ancient river delta in an impact crater."
+    },
+    {
+      "file": "sites/mars_climate.csv",
+      "role": "Manual/derived Mars climate values merged into targets.csv at fetch time. THIS IS THE FILE WE ARE CURRENTLY FILLING from NASA PDS lander archives (Viking, Phoenix, InSight, REMS, MEDA).",
+      "columns": [
+        {"name": "target_id", "type": "string", "required": true, "note": "must match mars_sites.csv"},
+        {"name": "name", "type": "string", "required": false},
+        {"name": "surf_temp_mean_K", "type": "float", "unit": "K", "range": [140, 280], "note": "annual-mean near-surface air temperature"},
+        {"name": "temp_swing_K", "type": "float", "unit": "K_delta", "range": [0, 130], "note": "mean within-sol max minus min"},
+        {"name": "surf_pressure_Pa", "type": "float", "unit": "Pa", "range": [400, 1400], "note": "annual mean; overrides the elevation-based estimate when present"},
+        {"name": "wind_ms", "type": "float", "unit": "m_per_s", "range": [0, 40], "note": "mean near-surface horizontal wind"},
+        {"name": "dust_tau", "type": "float", "unit": "unitless", "range": [0, 6], "note": "visible dust column optical depth"},
+        {"name": "source", "type": "string", "required": true, "note": "dataset id + sols used + caveats, e.g. 'VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0, 333 sols; temp at 1.6 m'"}
+      ],
+      "sample_row": "mars-chryse,Chryse Planitia (Viking 1),207.3,48.4,778.4,3.9,1.05,\"Viking Lander 1 binned met (PDS vl_1001) 333 sols + VL1 camera opacity; temp at 1.6 m boom\""
+    },
+    {
+      "file": "earth_meta.json / targets_meta.json",
+      "role": "Column metadata the matching agent reasons over. One entry per data column (not for id/lat/lon/region).",
+      "entry_schema": {
+        "name": "column name, must match the CSV exactly",
+        "label": "human-readable label",
+        "dimension": "grouping used for balanced weights: thermal | terrain | physics | water | dust | light",
+        "quantity": "physical quantity: temperature | temperature_delta | pressure | speed | angle | length | fraction | optical_depth | unitless",
+        "unit": "degC | K | kPa | Pa | m_per_s | deg | m | fraction | unitless | mm_per_day | degC_delta | K_delta",
+        "concept": "semantic tag used for pairing, e.g. mean_temperature, wind_speed, slope, relief, surface_pressure, dust_optical_depth",
+        "version": "source dataset + version string - REQUIRED for provenance",
+        "priority": "int 1-9, targets only: how much this property matters (9 = critical)",
+        "note": "measurement caveats (height, baseline, modelling)",
+        "comparable": "bool, set false to forbid cross-body comparison (e.g. elevation_m)"
+      },
+      "sample_entry": {
+        "name": "surf_temp_mean_K",
+        "label": "Mean surface temperature",
+        "dimension": "thermal",
+        "quantity": "temperature",
+        "unit": "K",
+        "concept": "mean_temperature",
+        "version": "LRO Diviner PRP v2 (LRO-L-DLRE-5-PRP-V2.0); PDS lander met archives",
+        "priority": 9,
+        "note": "Moon: modelled annual average at 2 cm depth. Mars: lander annual mean."
+      }
+    }
+  ],
+  "delivery_checklist": [
+    "Column names and order match this contract exactly (case-sensitive)",
+    "Every data column present in the CSV has a metadata entry with name/label/dimension/quantity/unit/concept/version",
+    "No placeholder values - empty cell means missing",
+    "Each value's source dataset and version recorded in metadata 'version' (and 'source' column for mars_climate.csv)",
+    "Units NOT pre-converted (Kelvin stays Kelvin, Pa stays Pa)",
+    "All sources are NASA or challenge-partner archives (PDS, POWER, LRO, MOLA); no third-party climate models",
+    "Row counts: every target_id in targets.csv appears in sites/*.csv and vice versa; every known_analogs.cell_id exists in earth_cells.csv"
+  ]
+}

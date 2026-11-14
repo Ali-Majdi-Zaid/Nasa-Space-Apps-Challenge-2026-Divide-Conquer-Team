@@ -1,0 +1,382 @@
+{
+ "625025e70ad6f27db39e9430db82463ef0b3b157": [
+  {
+   "target_col": "surf_temp_mean_K",
+   "earth_col": "temp_mean_c",
+   "prior": 0.95,
+   "rationale": "Both measure the average surface temperature, differing only in the unit of measurement (Kelvin vs. Celsius)."
+  },
+  {
+   "target_col": "temp_swing_K",
+   "earth_col": "temp_swing_c",
+   "prior": 0.95,
+   "rationale": "Both measure the diurnal temperature range, where temperature differences in Kelvin delta equal Celsius delta."
+  },
+  {
+   "target_col": "wind_ms",
+   "earth_col": "wind_ms",
+   "prior": 0.9,
+   "rationale": "Both measure mean wind speed in meters per second."
+  },
+  {
+   "target_col": "dust_tau",
+   "earth_col": "dust_aod",
+   "prior": 0.85,
+   "rationale": "Earth aerosol optical depth is a direct physical stand-in for extraterrestrial dust optical depth."
+  },
+  {
+   "target_col": "surf_temp_max_K",
+   "earth_col": "warm_month_high_c",
+   "prior": 0.75,
+   "rationale": "The warmest-month daily high air temperature on Earth serves as a reasonable proxy for the peak annual surface temperature."
+  },
+  {
+   "target_col": "shallow_ice_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.6,
+   "rationale": "Surface soil wetness fraction acts as a defensible Earth stand-in for near-surface water ice abundance."
+  },
+  {
+   "target_col": "slope_deg",
+   "earth_col": "slope_deg",
+   "prior": 0.9,
+   "rationale": "Both measure mean terrain slope in degrees despite differences in spatial baselines."
+  },
+  {
+   "target_col": "relief_m",
+   "earth_col": "relief_m",
+   "prior": 0.9,
+   "rationale": "Both measure local topographic relief defined by the standard deviation of elevation."
+  },
+  {
+   "target_col": "surf_pressure_Pa",
+   "earth_col": "pressure_kpa",
+   "prior": 0.95,
+   "rationale": "Both measure surface atmospheric pressure, differing only in scale units (Pascals vs. kilopascals)."
+  },
+  {
+   "target_col": "elevation_m",
+   "earth_col": "elevation_m",
+   "prior": 0.95,
+   "rationale": "Both measure topographic height relative to each body's standard reference surface."
+  },
+  {
+   "target_col": "grazing_sun_share",
+   "earth_col": "grazing_sun_share",
+   "prior": 1.0,
+   "rationale": "Both share an identical mathematical definition calculating low-horizon solar presence from latitude and axial tilt."
+  },
+  {
+   "target_col": "insolation_wm2",
+   "earth_col": "insolation_wm2",
+   "prior": 1.0,
+   "rationale": "Both share an identical mathematical definition calculating top-of-atmosphere annual mean solar flux."
+  }
+ ],
+ "7ad732e5d313f5421909ef837a374b80c24c2097": [
+  {
+   "target_col": "surf_temp_mean_K",
+   "earth_col": "temp_mean_c",
+   "prior": 0.9,
+   "rationale": "Both measure annual mean surface temperature, differing only in temperature units (Kelvin vs. Celsius)."
+  },
+  {
+   "target_col": "temp_swing_K",
+   "earth_col": "temp_swing_c",
+   "prior": 0.95,
+   "rationale": "Both measure the day-night surface temperature variation in equivalent differential units."
+  },
+  {
+   "target_col": "wind_ms",
+   "earth_col": "wind_ms",
+   "prior": 0.9,
+   "rationale": "Both measure mean horizontal wind speed in meters per second."
+  },
+  {
+   "target_col": "dust_tau",
+   "earth_col": "dust_aod",
+   "prior": 0.75,
+   "rationale": "Earth aerosol optical depth is a suitable stand-in for extraterrestrial dust optical depth."
+  },
+  {
+   "target_col": "surf_temp_max_K",
+   "earth_col": "warm_month_high_c",
+   "prior": 0.7,
+   "rationale": "Earth's warmest-month daily high temperature serves as a defensible proxy for maximum surface temperature."
+  },
+  {
+   "target_col": "shallow_ice_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.5,
+   "rationale": "Surface soil wetness represents near-surface moisture content, serving as a rough stand-in for shallow ice fraction."
+  },
+  {
+   "target_col": "slope_deg",
+   "earth_col": "slope_deg",
+   "prior": 0.85,
+   "rationale": "Both measure mean terrain slope in degrees, despite minor spatial baseline differences."
+  },
+  {
+   "target_col": "relief_m",
+   "earth_col": "relief_m",
+   "prior": 0.9,
+   "rationale": "Both quantify topographic relief standard deviation in meters over local site footprints."
+  },
+  {
+   "target_col": "surf_pressure_Pa",
+   "earth_col": "pressure_kpa",
+   "prior": 0.9,
+   "rationale": "Both measure surface atmospheric pressure, differing only by unit scale (Pascals vs. kilopascals)."
+  },
+  {
+   "target_col": "elevation_m",
+   "earth_col": "elevation_m",
+   "prior": 0.95,
+   "rationale": "Both measure surface elevation relative to the respective planetary datum."
+  },
+  {
+   "target_col": "grazing_sun_share",
+   "earth_col": "grazing_sun_share",
+   "prior": 1.0,
+   "rationale": "Identical physical definition and geometric calculation for low-horizon solar presence."
+  },
+  {
+   "target_col": "insolation_wm2",
+   "earth_col": "insolation_wm2",
+   "prior": 1.0,
+   "rationale": "Identical physical metric measuring top-of-atmosphere annual mean solar irradiance."
+  },
+  {
+   "target_col": "daily_high_c",
+   "earth_col": "daily_high_c",
+   "prior": 1.0,
+   "rationale": "Identical property measuring typical daily maximum air temperature in Celsius."
+  },
+  {
+   "target_col": "daily_low_c",
+   "earth_col": "daily_low_c",
+   "prior": 1.0,
+   "rationale": "Identical property measuring typical daily minimum air temperature in Celsius."
+  },
+  {
+   "target_col": "liquid_window_c",
+   "earth_col": "liquid_window_c",
+   "prior": 1.0,
+   "rationale": "Identical property measuring the thermal liquid-water stability range based on ambient pressure."
+  },
+  {
+   "target_col": "thaw_share",
+   "earth_col": "thaw_share",
+   "prior": 1.0,
+   "rationale": "Identical definition measuring the fraction of the day above the freezing point."
+  },
+  {
+   "target_col": "wind_pressure_pa",
+   "earth_col": "wind_pressure_pa",
+   "prior": 1.0,
+   "rationale": "Identical physical property measuring dynamic wind force exerted on surfaces in Pascals."
+  }
+ ],
+ "4291e84536f338de2199dc34b81595d7b4f5575b": [
+  {
+   "target_col": "surf_temp_mean_K",
+   "earth_col": "temp_mean_c",
+   "prior": 0.95,
+   "rationale": "Both columns measure annual mean surface temperature, differing only in temperature units (Kelvin vs. Celsius)."
+  },
+  {
+   "target_col": "temp_swing_K",
+   "earth_col": "temp_swing_c",
+   "prior": 0.95,
+   "rationale": "Both columns measure the magnitude of diurnal temperature variation using equivalent delta units."
+  },
+  {
+   "target_col": "wind_ms",
+   "earth_col": "wind_ms",
+   "prior": 0.9,
+   "rationale": "Both columns measure mean horizontal wind speed in meters per second."
+  },
+  {
+   "target_col": "dust_tau",
+   "earth_col": "dust_aod",
+   "prior": 0.85,
+   "rationale": "Earth aerosol optical depth is a direct functional proxy for atmospheric dust optical depth."
+  },
+  {
+   "target_col": "surf_temp_max_K",
+   "earth_col": "warm_month_high_c",
+   "prior": 0.8,
+   "rationale": "Warmest-month daily maximum temperature is a defensible stand-in for annual maximum surface temperature."
+  },
+  {
+   "target_col": "shallow_ice_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.7,
+   "rationale": "Surface soil wetness acts as a terrestrial proxy for the fraction of ground hosting stable near-surface water ice."
+  },
+  {
+   "target_col": "subsurface_h2o_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.65,
+   "rationale": "Surface soil wetness serves as a conceptual stand-in for shallow subsurface water-equivalent hydrogen fraction."
+  },
+  {
+   "target_col": "slope_deg",
+   "earth_col": "slope_deg",
+   "prior": 0.9,
+   "rationale": "Both columns measure average terrain slope in degrees over multi-kilometer baselines."
+  },
+  {
+   "target_col": "roughness_deg",
+   "earth_col": "roughness_deg",
+   "prior": 0.9,
+   "rationale": "Both columns quantify terrain roughness as the standard deviation of surface slopes within a local radius."
+  },
+  {
+   "target_col": "relief_m",
+   "earth_col": "relief_m",
+   "prior": 0.95,
+   "rationale": "Both columns measure local topographic relief via the standard deviation of elevation within a site radius."
+  },
+  {
+   "target_col": "surf_pressure_Pa",
+   "earth_col": "pressure_kpa",
+   "prior": 0.95,
+   "rationale": "Both measure atmospheric surface pressure, differing only in unit scaling (Pascals vs. kilopascals)."
+  },
+  {
+   "target_col": "elevation_m",
+   "earth_col": "elevation_m",
+   "prior": 0.95,
+   "rationale": "Both columns measure surface elevation in meters relative to each planetary body's reference datum."
+  },
+  {
+   "target_col": "grazing_sun_share",
+   "earth_col": "grazing_sun_share",
+   "prior": 1.0,
+   "rationale": "Both columns share identical physical and mathematical definitions of annual low-sun exposure."
+  },
+  {
+   "target_col": "insolation_wm2",
+   "earth_col": "insolation_wm2",
+   "prior": 1.0,
+   "rationale": "Both columns measure mean top-of-atmosphere solar flux calculated from identical geometric formulas."
+  }
+ ],
+ "dfa204c61307277eeed02b84598a5936b5c3e3e1": [
+  {
+   "target_col": "surf_temp_mean_K",
+   "earth_col": "temp_mean_c",
+   "prior": 0.95,
+   "rationale": "Both measure annual mean surface temperature, differing only in temperature scale."
+  },
+  {
+   "target_col": "temp_swing_K",
+   "earth_col": "temp_swing_c",
+   "prior": 0.95,
+   "rationale": "Both measure diurnal temperature range in delta units."
+  },
+  {
+   "target_col": "wind_ms",
+   "earth_col": "wind_ms",
+   "prior": 0.95,
+   "rationale": "Both measure average wind speed in meters per second."
+  },
+  {
+   "target_col": "dust_tau",
+   "earth_col": "dust_aod",
+   "prior": 0.85,
+   "rationale": "Both measure atmospheric optical depth caused by airborne particles."
+  },
+  {
+   "target_col": "surf_temp_max_K",
+   "earth_col": "warm_month_high_c",
+   "prior": 0.85,
+   "rationale": "Both measure maximum thermal exposure during the warmest period of the year."
+  },
+  {
+   "target_col": "shallow_ice_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.65,
+   "rationale": "Earth soil wetness serves as a functional proxy for near-surface water ice abundance."
+  },
+  {
+   "target_col": "subsurface_h2o_share",
+   "earth_col": "soil_wetness",
+   "prior": 0.75,
+   "rationale": "Earth surface soil moisture is a reasonable stand-in for shallow subsurface water-equivalent hydrogen fraction."
+  },
+  {
+   "target_col": "slope_deg",
+   "earth_col": "slope_deg",
+   "prior": 0.95,
+   "rationale": "Both measure average terrain slope in degrees over multi-kilometer baselines."
+  },
+  {
+   "target_col": "roughness_deg",
+   "earth_col": "roughness_deg",
+   "prior": 0.95,
+   "rationale": "Both measure localized terrain slope variability (standard deviation) in degrees."
+  },
+  {
+   "target_col": "relief_m",
+   "earth_col": "relief_m",
+   "prior": 0.95,
+   "rationale": "Both measure elevation variability within a regional baseline around the location."
+  },
+  {
+   "target_col": "surf_pressure_Pa",
+   "earth_col": "pressure_kpa",
+   "prior": 0.95,
+   "rationale": "Both measure surface atmospheric pressure, differing only by unit scaling."
+  },
+  {
+   "target_col": "elevation_m",
+   "earth_col": "elevation_m",
+   "prior": 0.9,
+   "rationale": "Both measure terrain height relative to each body's standard reference surface."
+  },
+  {
+   "target_col": "grazing_sun_share",
+   "earth_col": "grazing_sun_share",
+   "prior": 0.98,
+   "rationale": "Both compute the fraction of the year the Sun sits between 0 and 5 degrees above the horizon based on orbital geometry."
+  },
+  {
+   "target_col": "insolation_wm2",
+   "earth_col": "insolation_wm2",
+   "prior": 0.98,
+   "rationale": "Both measure annual-mean top-of-atmosphere solar flux on level ground."
+  },
+  {
+   "target_col": "daily_high_c",
+   "earth_col": "daily_high_c",
+   "prior": 0.98,
+   "rationale": "Both represent the typical maximum daily temperature in degrees Celsius."
+  },
+  {
+   "target_col": "daily_low_c",
+   "earth_col": "daily_low_c",
+   "prior": 0.98,
+   "rationale": "Both represent the typical minimum daily temperature in degrees Celsius."
+  },
+  {
+   "target_col": "liquid_window_c",
+   "earth_col": "liquid_window_c",
+   "prior": 0.98,
+   "rationale": "Both measure the temperature range above 0 degC before liquid water boils at local ambient pressure."
+  },
+  {
+   "target_col": "thaw_share",
+   "earth_col": "thaw_share",
+   "prior": 0.98,
+   "rationale": "Both compute the daily time fraction where ambient temperatures exceed the freezing point of water."
+  },
+  {
+   "target_col": "wind_pressure_pa",
+   "earth_col": "wind_pressure_pa",
+   "prior": 0.98,
+   "rationale": "Both measure dynamic wind pressure exerted on surfaces in Pascals."
+  }
+ ]
+}

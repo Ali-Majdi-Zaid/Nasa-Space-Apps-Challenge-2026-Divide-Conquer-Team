@@ -1,0 +1,24 @@
+{
+ "5ccdba220b3d87708414af69f6689cb9bfd56600": {
+  "daily_high_c": {
+   "apply": true,
+   "caution": ""
+  },
+  "daily_low_c": {
+   "apply": true,
+   "caution": ""
+  },
+  "liquid_window_c": {
+   "apply": true,
+   "caution": ""
+  },
+  "thaw_share": {
+   "apply": true,
+   "caution": ""
+  },
+  "wind_pressure_pa": {
+   "apply": true,
+   "caution": ""
+  }
+ }
+}

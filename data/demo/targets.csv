@@ -1,0 +1,7 @@
+target_id,body,name,description,lat,lon,slope_deg,rms_roughness_m,craters_per_1000km2,surf_temp_mean_K,diurnal_amp_K,dark_days_per_year,noon_sun_elev_deg,weh_fraction,wind_ms,dust_tau,basalt_abundance_pct,fines_fraction,uv_index,ndvi,surf_pressure_Pa,elevation_m
+moon-ridge,Moon,South-pole ridge,Sunlit ridge beside permanently shadowed craters; candidate base site.,-89.5,222.0,14.0,3.5,350.0,110.0,45.0,75.0,1.6,0.02,0.0,0.0,15.0,0.8,30.0,0.0,0.0,1500.0
+moon-shadow,Moon,Shadowed crater floor,Permanently shadowed floor where water ice may be trapped.,-88.0,45.0,6.0,2.0,300.0,45.0,5.0,365.0,0.0,0.08,0.0,0.0,10.0,0.85,0.0,0.0,0.0,-2800.0
+moon-mare,Moon,Mare lava-tube field,Basalt plain with pits that may open into lava tubes.,14.0,303.0,3.0,1.2,120.0,255.0,280.0,0.0,76.0,0.002,0.0,0.0,95.0,0.6,32.0,0.0,0.0,-1900.0
+mars-delta,Mars,Ancient delta crater,Dried river delta inside an impact crater; habitability target.,18.4,77.6,5.0,1.5,35.0,215.0,70.0,0.0,71.6,0.04,6.0,0.5,70.0,0.45,22.0,0.0,700.0,-2600.0
+mars-ice,Mars,Mid-latitude ice plain,Flat plain with shallow buried ice; candidate human landing zone.,39.8,202.0,1.0,0.4,12.0,200.0,55.0,0.0,50.2,0.55,5.0,0.4,50.0,0.6,16.0,0.0,800.0,-3900.0
+mars-volcano,Mars,Volcanic flank with skylights,Lava flows with collapse pits that may lead to caves.,1.5,239.0,4.0,2.5,8.0,220.0,80.0,0.0,88.5,0.01,8.0,0.6,98.0,0.3,26.0,0.0,350.0,6500.0

@@ -1,0 +1,157 @@
+[
+ {
+  "name": "slope_deg",
+  "label": "Mean slope",
+  "dimension": "terrain",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "slope",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "roughness_m",
+  "label": "Surface roughness",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "roughness",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "crater_density",
+  "label": "Crater density",
+  "dimension": "terrain",
+  "quantity": "areal_density",
+  "unit": "per_1000km2",
+  "concept": "crater_density",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "temp_mean_c",
+  "label": "Mean surface temperature",
+  "dimension": "thermal",
+  "quantity": "temperature",
+  "unit": "degC",
+  "concept": "mean_temperature",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "temp_swing_c",
+  "label": "Day-night temperature swing",
+  "dimension": "thermal",
+  "quantity": "temperature_delta",
+  "unit": "degC_delta",
+  "concept": "diurnal_swing",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "dark_days",
+  "label": "Days per year without sunlight",
+  "dimension": "illumination",
+  "quantity": "duration",
+  "unit": "days_per_year",
+  "concept": "dark_days",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "noon_sun_deg",
+  "label": "Mean noon sun elevation",
+  "dimension": "illumination",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "noon_sun_elevation",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "ice_fraction",
+  "label": "Ground ice fraction",
+  "dimension": "water",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "ground_ice",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "soil_moisture",
+  "label": "Soil moisture",
+  "dimension": "water",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "soil_moisture",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "wind_ms",
+  "label": "Mean wind speed",
+  "dimension": "dust",
+  "quantity": "speed",
+  "unit": "m_per_s",
+  "concept": "wind_speed",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "dust_aod",
+  "label": "Dust optical depth",
+  "dimension": "dust",
+  "quantity": "optical_depth",
+  "unit": "unitless",
+  "concept": "dust_optical_depth",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "basalt_fraction",
+  "label": "Basaltic surface fraction",
+  "dimension": "geology",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "basalt",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "fines_fraction",
+  "label": "Fine-grained surface fraction",
+  "dimension": "geology",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "fine_regolith",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "uv_index",
+  "label": "Surface UV index",
+  "dimension": "habitability",
+  "quantity": "uv_index",
+  "unit": "index",
+  "concept": "uv",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "ndvi",
+  "label": "Vegetation index (NDVI)",
+  "dimension": "habitability",
+  "quantity": "ndvi",
+  "unit": "unitless",
+  "concept": "vegetation",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "pressure_kpa",
+  "label": "Surface pressure",
+  "dimension": "physics",
+  "quantity": "pressure",
+  "unit": "kPa",
+  "concept": "surface_pressure",
+  "version": "synthetic demo v1"
+ },
+ {
+  "name": "elevation_m",
+  "label": "Elevation",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "elevation",
+  "comparable": false,
+  "note": "Measured from sea level.",
+  "version": "synthetic demo v1"
+ }
+]

@@ -1,0 +1,353 @@
+{
+ "raw_folder": "data\\real_raw",
+ "files": [
+  {
+   "name": "earth_cells.csv",
+   "sha256": "47ef40886ebae8c208a3126a3a3369146831974c559817f53616c1b3449269c1",
+   "bytes": 68015
+  },
+  {
+   "name": "targets.csv",
+   "sha256": "cc3ab7fec9366929edc55a86538b6255d3fb09e3e8071b5c1f672dda5686c2a3",
+   "bytes": 2976
+  },
+  {
+   "name": "earth_meta.json",
+   "sha256": "1905c73d4b5580b69fc6701dc03b5dfa522f2a76657400df3685127be9997284",
+   "bytes": 4041
+  },
+  {
+   "name": "targets_meta.json",
+   "sha256": "c56fc8fd61206583ebb7121d993483f8722ddc99b998265502227e3c4c702b28",
+   "bytes": 7912
+  },
+  {
+   "name": "known_analogs.csv",
+   "sha256": "b8d5d2368dfca27dced330c894df1f3332704685fbb26029de19c1bc52e7aef8",
+   "bytes": 302
+  }
+ ],
+ "tables": [
+  {
+   "table": "Earth cells",
+   "rows_in": 422,
+   "rows_out": 422
+  },
+  {
+   "table": "Target sites",
+   "rows_in": 13,
+   "rows_out": 13
+  }
+ ],
+ "changes": [
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "temp_mean_c",
+   "action": "flagged, value kept",
+   "count": 4,
+   "examples": [
+    "G0002",
+    "G0008",
+    "G0010",
+    "G0011"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "warm_month_high_c",
+   "action": "flagged, value kept",
+   "count": 1,
+   "examples": [
+    "G0002"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "slope_deg",
+   "action": "flagged, value kept",
+   "count": 1,
+   "examples": [
+    "G0030"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "roughness_deg",
+   "action": "flagged, value kept",
+   "count": 4,
+   "examples": [
+    "G0030",
+    "G0139",
+    "G0275",
+    "G0307"
+   ]
+  }
+ ],
+ "columns": [
+  {
+   "table": "Earth cells",
+   "column": "temp_mean_c",
+   "label": "Mean surface temperature",
+   "unit": "degC",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "warm_month_high_c",
+   "label": "Warmest-month daily high",
+   "unit": "degC",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "temp_swing_c",
+   "label": "Day-night temperature swing",
+   "unit": "degC_delta",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "wind_ms",
+   "label": "Mean wind speed at 10 m",
+   "unit": "m_per_s",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "pressure_kpa",
+   "label": "Surface pressure",
+   "unit": "kPa",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "soil_wetness",
+   "label": "Surface soil wetness",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "uv_index",
+   "label": "Surface UV index",
+   "unit": "index",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "precip_mm_day",
+   "label": "Precipitation",
+   "unit": "mm_per_day",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "albedo",
+   "label": "Surface albedo",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "dust_aod",
+   "label": "Aerosol optical depth",
+   "unit": "unitless",
+   "source": "dataset",
+   "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "slope_deg",
+   "label": "Mean slope",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+   "uncertainty": 0.0,
+   "missing": 0.0142
+  },
+  {
+   "table": "Earth cells",
+   "column": "roughness_deg",
+   "label": "Terrain roughness",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+   "uncertainty": 0.0,
+   "missing": 0.0142
+  },
+  {
+   "table": "Earth cells",
+   "column": "relief_m",
+   "label": "Relief within the site",
+   "unit": "m",
+   "source": "dataset",
+   "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+   "uncertainty": 0.0,
+   "missing": 0.0142
+  },
+  {
+   "table": "Earth cells",
+   "column": "elevation_m",
+   "label": "Elevation",
+   "unit": "m",
+   "source": "dataset",
+   "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+   "uncertainty": 0.0,
+   "missing": 0.0142
+  },
+  {
+   "table": "Target sites",
+   "column": "surf_temp_mean_K",
+   "label": "Mean surface temperature",
+   "unit": "K",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+   "uncertainty": 0.0,
+   "missing": 0.0769
+  },
+  {
+   "table": "Target sites",
+   "column": "temp_swing_K",
+   "label": "Day-night temperature swing",
+   "unit": "K_delta",
+   "source": "dataset",
+   "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+   "uncertainty": 0.0,
+   "missing": 0.6154
+  },
+  {
+   "table": "Target sites",
+   "column": "wind_ms",
+   "label": "Mean wind speed",
+   "unit": "m_per_s",
+   "source": "dataset",
+   "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+   "uncertainty": 0.0,
+   "missing": 0.6923
+  },
+  {
+   "table": "Target sites",
+   "column": "dust_tau",
+   "label": "Dust optical depth",
+   "unit": "unitless",
+   "source": "dataset",
+   "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+   "uncertainty": 0.0,
+   "missing": 0.9231
+  },
+  {
+   "table": "Target sites",
+   "column": "surf_temp_max_K",
+   "label": "Annual maximum surface temperature",
+   "unit": "K",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0)",
+   "uncertainty": 0.0,
+   "missing": 0.4615
+  },
+  {
+   "table": "Target sites",
+   "column": "shallow_ice_share",
+   "label": "Area with ice stable in the top metre",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0)",
+   "uncertainty": 0.0,
+   "missing": 0.4615
+  },
+  {
+   "table": "Target sites",
+   "column": "subsurface_h2o_share",
+   "label": "Water in the shallow subsurface",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "Mars Odyssey GRS element concentration maps (ODY-M-GRS-5-ELEMENTS-V1.0), smoothed 5x5 deg",
+   "uncertainty": 0.0,
+   "missing": 0.6154
+  },
+  {
+   "table": "Target sites",
+   "column": "slope_deg",
+   "label": "Mean slope",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "roughness_deg",
+   "label": "Terrain roughness",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "relief_m",
+   "label": "Relief within the site",
+   "unit": "m",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "surf_pressure_Pa",
+   "label": "Surface pressure",
+   "unit": "Pa",
+   "source": "dataset",
+   "version": "MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0); NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+   "uncertainty": 90.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "elevation_m",
+   "label": "Elevation",
+   "unit": "m",
+   "source": "dataset",
+   "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  }
+ ],
+ "total_changes": 10
+}

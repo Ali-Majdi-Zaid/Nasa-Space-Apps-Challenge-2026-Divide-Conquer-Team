@@ -1,0 +1,3 @@
+numpy>=1.26
+pandas>=2.0
+truststore>=0.9   # lets Python use the operating system's certificate checking (needed for some NASA servers)

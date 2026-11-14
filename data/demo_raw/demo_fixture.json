@@ -1,0 +1,67 @@
+[
+ {
+  "target": "moon-ridge",
+  "known": true,
+  "cell_id": "E1500"
+ },
+ {
+  "target": "moon-ridge",
+  "known": false,
+  "cell_id": "E1501"
+ },
+ {
+  "target": "moon-ridge",
+  "known": false,
+  "cell_id": "E1502"
+ },
+ {
+  "target": "moon-shadow",
+  "known": false,
+  "cell_id": "E1503"
+ },
+ {
+  "target": "moon-mare",
+  "known": true,
+  "cell_id": "E1504"
+ },
+ {
+  "target": "moon-mare",
+  "known": false,
+  "cell_id": "E1505"
+ },
+ {
+  "target": "mars-delta",
+  "known": true,
+  "cell_id": "E1506"
+ },
+ {
+  "target": "mars-delta",
+  "known": false,
+  "cell_id": "E1507"
+ },
+ {
+  "target": "mars-delta",
+  "known": false,
+  "cell_id": "E1508"
+ },
+ {
+  "target": "mars-ice",
+  "known": true,
+  "cell_id": "E1509"
+ },
+ {
+  "target": "mars-ice",
+  "known": false,
+  "cell_id": "E1510"
+ },
+ {
+  "target": "mars-volcano",
+  "known": true,
+  "cell_id": "E1511"
+ },
+ {
+  "target": "mars-volcano",
+  "known": false,
+  "cell_id": "E1512"
+ }
+]

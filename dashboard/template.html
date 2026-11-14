@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>EarthMimic</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: a control band, then one wide equal-area map with two polar insets,
+   then the ranked sites beside a target-versus-site comparison. */
+:root {
+  --bg: #ECEEF1; --surface: #F8F9FA; --ink: #18202B; --muted: #566270; --line: #C9CFD6; --track: #D2D8DF;
+  --ocean: #F8FAFB; --land: #E6EAEE; --grat: rgba(24, 32, 43, .08);
+  --moon: #2F5D8A; --mars: #A9471F; --ok: #2A684B; --warn: #7D5F0C; --bad: #9B2F2F;
+  /* Match-score ramps, weakest to strongest. One hue per world. */
+  --moon1: #89A6C4; --moon2: #6C92B8; --moon3: #4F7CA8; --moon4: #336495; --moon5: #173F6B;
+  --mars1: #CF967A; --mars2: #C27B56; --mars3: #B06138; --mars4: #954820; --mars5: #6E2C0D;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --text: Barlow, "Segoe UI", system-ui, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #10151B; --surface: #19212A; --ink: #E4E8EC; --muted: #9AA6B2; --line: #2E3945; --track: #33404E;
+    --ocean: #141B23; --land: #232D39; --grat: rgba(228, 232, 236, .07);
+    --moon: #7FA9D6; --mars: #E08A5C; --ok: #6FBF98; --warn: #D9B44A; --bad: #E58585;
+    --moon1: #4E7299; --moon2: #6189B5; --moon3: #7BA3CF; --moon4: #9DC0E6; --moon5: #C6DEF8;
+    --mars1: #96512F; --mars2: #B4683F; --mars3: #CF8254; --mars4: #E6A078; --mars5: #F8C8AC;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #10151B; --surface: #19212A; --ink: #E4E8EC; --muted: #9AA6B2; --line: #2E3945; --track: #33404E;
+  --ocean: #141B23; --land: #232D39; --grat: rgba(228, 232, 236, .07);
+  --moon: #7FA9D6; --mars: #E08A5C; --ok: #6FBF98; --warn: #D9B44A; --bad: #E58585;
+  --moon1: #4E7299; --moon2: #6189B5; --moon3: #7BA3CF; --moon4: #9DC0E6; --moon5: #C6DEF8;
+  --mars1: #96512F; --mars2: #B4683F; --mars3: #CF8254; --mars4: #E6A078; --mars5: #F8C8AC;
+}
+*, *::before, *::after { box-sizing: inherit; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1rem/1.5 var(--text); }
+#app { --accent: var(--moon); --r1: var(--moon1); --r2: var(--moon2); --r3: var(--moon3); --r4: var(--moon4); --r5: var(--moon5); }
+#app[data-body="Mars"] { --accent: var(--mars); --r1: var(--mars1); --r2: var(--mars2); --r3: var(--mars3); --r4: var(--mars4); --r5: var(--mars5); }
+.wrap { max-width: 74rem; margin: 0 auto; padding-block: 1.25rem 3rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 { font-size: 2.4rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.75rem; margin-bottom: .35rem; }
+h3 { font-size: 1.2rem; margin: 1.5rem 0 .5rem; }
+p { margin: 0 0 .75rem; max-width: 68ch; }
+a { color: inherit; }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.eyebrow { font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 .15rem; }
+header p { margin: .2rem 0 0; color: var(--muted); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.themebtn { flex: none; padding: .35rem .75rem; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; font-size: .9rem; }
+.notice { margin: .9rem 0 0; padding: .55rem .8rem; border-left: 4px solid var(--warn); background: var(--surface); font-size: .9rem; max-width: none; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- controls */
+.controls { margin-top: 1.25rem; display: grid; gap: 1rem 2rem; }
+@media (min-width: 60rem) { .controls { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: start; } }
+.field > span, .field label > span { display: block; font-weight: 600; margin-bottom: .35rem; }
+.targets { display: grid; gap: .4rem; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); }
+.targets button { text-align: left; padding: .45rem .65rem; background: var(--surface); border: 1px solid var(--line);
+  border-left: 4px solid var(--moon); border-radius: 3px; cursor: pointer; line-height: 1.25; }
+.targets button[data-b="Mars"] { border-left-color: var(--mars); }
+.targets button small { display: block; color: var(--muted); }
+.targets button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.targets button[aria-pressed="true"] small { color: inherit; opacity: .75; }
+select { width: 100%; padding: .5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; }
+details.weights { margin-top: .5rem; }
+details.weights summary { cursor: pointer; color: var(--muted); }
+.sliders { display: grid; gap: .3rem; margin-top: .6rem; }
+.sliders label { display: grid; grid-template-columns: minmax(0, 1fr) 6.5rem 2rem; align-items: center; gap: .5rem; font-size: .9rem; }
+.sliders input { width: 100%; accent-color: var(--accent); }
+.sliders output { text-align: right; font-variant-numeric: tabular-nums; }
+
+nav { display: flex; gap: 1.4rem; margin: 1.5rem 0 1.25rem; border-bottom: 1px solid var(--line); overflow-x: auto; }
+nav a { padding: .5rem 0; color: var(--muted); text-decoration: none; font-weight: 500; white-space: nowrap; border-bottom: 3px solid transparent; }
+nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+/* ---- analogs: heading, facts, maps */
+.thead { display: grid; gap: 1rem 2.5rem; margin-bottom: 1rem; }
+@media (min-width: 60rem) { .thead { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } }
+.thead p { margin-bottom: 0; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem 1.25rem; margin: 0; }
+.facts div { min-width: 0; }
+.facts dt { font: 600 1.7rem/1 var(--display); }
+.facts dd { margin: .2rem 0 0; font-size: .8rem; color: var(--muted); line-height: 1.3; }
+@media (min-width: 60rem) { .facts { grid-template-columns: repeat(3, minmax(0, 12.5rem)); gap: .75rem 2.25rem; } .facts dt { font-size: 2rem; } .facts dd { font-size: .875rem; } }
+.maps { display: grid; gap: 1rem; }
+@media (min-width: 60rem) { .maps { grid-template-columns: minmax(0, 1fr) 12.5rem; align-items: center; } }
+.mapbox { min-width: 0; }
+.poles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+@media (min-width: 60rem) { .poles { grid-template-columns: minmax(0, 1fr); } }
+figure { margin: 0; min-width: 0; }
+figcaption { font-size: .8rem; color: var(--muted); text-align: center; margin-top: .1rem; }
+.polebox { width: 100%; max-width: 13rem; margin-inline: auto; aspect-ratio: 1; }
+svg.mapsvg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.mapsvg .ocean { fill: var(--ocean); stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mapsvg .land { fill: var(--land); }
+.mapsvg .grat { fill: none; stroke: var(--grat); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.mapsvg .cell { cursor: pointer; }
+.c0 { fill: var(--r1); } .c1 { fill: var(--r2); } .c2 { fill: var(--r3); } .c3 { fill: var(--r4); } .c4 { fill: var(--r5); }
+.mapsvg .top { fill: var(--r5); stroke: var(--ocean); stroke-width: 2; cursor: pointer; }
+.mapsvg .known { fill: none; stroke: var(--ink); stroke-width: 1.5; cursor: pointer; pointer-events: all; }
+.mapsvg .selring { fill: none; stroke: var(--ink); stroke-width: 2; }
+.mapsvg .sellab { font: 600 12px var(--text); fill: var(--ink); stroke: var(--ocean); stroke-width: 3; paint-order: stroke; pointer-events: none; }
+.mapsvg .lonlab { font: 500 10px var(--text); fill: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.5rem; margin: .6rem 0 0; font-size: .875rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.legend svg { width: 1rem; height: 1rem; flex: none; }
+.scale { display: inline-flex; gap: 2px; }
+.scale i { width: 1.4rem; height: .7rem; }
+.scale i:first-child { border-radius: 2px 0 0 2px; } .scale i:last-child { border-radius: 0 2px 2px 0; }
+.scale .c0 { background: var(--r1); } .scale .c1 { background: var(--r2); } .scale .c2 { background: var(--r3); } .scale .c3 { background: var(--r4); } .scale .c4 { background: var(--r5); }
+#tip { position: fixed; z-index: 20; pointer-events: none; max-width: 16rem; padding: .4rem .6rem; background: var(--ink); color: var(--bg);
+  border-radius: 3px; font-size: .85rem; line-height: 1.35; }
+#tip b { display: block; font-weight: 600; }
+
+/* ---- analogs: ranked list beside the comparison panel */
+.duo { display: grid; gap: 1.5rem; margin-top: 1.75rem; }
+@media (min-width: 60rem) { .duo { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; }
+  .duo .panel { grid-column: 2; grid-row: 1 / span 2; } .duo .cannot { grid-column: 1; grid-row: 2; } }
+.cannot .prop { grid-template-columns: minmax(0, 1fr) 2.6rem; grid-template-areas: "label sim" "strip strip" "cap cap"; }
+.duo > * { min-width: 0; }
+ol.rank { list-style: none; padding: 0; margin: 0; }
+ol.rank > li { border-top: 1px solid var(--line); }
+ol.rank > li:last-child { border-bottom: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: .1rem .5rem; width: 100%; padding: .55rem .4rem;
+  background: none; border: 0; text-align: left; cursor: pointer; align-items: baseline; }
+.row[aria-pressed="true"] { background: var(--surface); box-shadow: inset 4px 0 0 var(--accent); }
+.row .n { font: 600 1.25rem var(--display); color: var(--muted); }
+.row .score { font: 600 1.25rem var(--display); font-variant-numeric: tabular-nums; }
+.row .name { font-weight: 600; }
+.row .sub { display: block; color: var(--muted); font-size: .875rem; }
+.row .sbar { grid-column: 2 / 4; height: 4px; background: var(--track); border-radius: 2px; overflow: hidden; margin-top: .25rem; }
+.row .sbar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+.tag { display: inline-block; font-size: .8rem; padding: 0 .4rem; border: 1px solid currentColor; border-radius: 2px; }
+.tag.new { color: var(--accent); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.1rem 1.2rem; scroll-margin-top: .5rem; }
+.vs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: .75rem; align-items: center; }
+.vs .side strong { display: block; font: 600 1.25rem/1.15 var(--display); }
+.vs .side:last-child { text-align: right; }
+.vs .mid { text-align: center; padding: 0 .25rem; }
+@media (max-width: 34rem) { .vs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vs .mid { grid-column: 1 / 3; grid-row: 1; } }
+.vs .big { display: block; font: 600 2.6rem/1 var(--display); }
+.sub { color: var(--muted); font-size: .875rem; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(4rem, 9rem) 2.6rem; gap: .5rem; align-items: center; font-size: .875rem; padding: .12rem 0; }
+.bar .track, .inbar { height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; }
+.bar .track i, .inbar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.bar .v { text-align: right; font-variant-numeric: tabular-nums; }
+.key { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; margin: 0 0 .6rem; font-size: .8rem; color: var(--muted); }
+.key span { display: inline-flex; align-items: center; gap: .35rem; }
+.key i { display: inline-block; flex: none; }
+.key .k-tgt { width: 2px; height: 14px; background: var(--ink); }
+.key .k-here { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.key .k-earth { width: 18px; height: 6px; border-radius: 3px; background: var(--track); }
+.key .k-band { width: 18px; height: 10px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.key .k-off { width: 0; height: 0; border: 5px solid transparent; border-left-color: var(--bad); margin-right: -5px; }
+.dimhead { display: flex; justify-content: space-between; gap: 1rem; margin: 1rem 0 .15rem; padding-bottom: .15rem; border-bottom: 1px solid var(--line);
+  font-size: .8rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.prop { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 2.6rem; grid-template-areas: "label strip sim" ". cap cap";
+  gap: 0 .75rem; align-items: center; padding: .3rem 0; font-size: .9rem; }
+@media (max-width: 34rem) { .prop { grid-template-columns: minmax(0, 1fr) 2.6rem; grid-template-areas: "label sim" "strip strip" "cap cap"; } }
+.prop .label { grid-area: label; }
+.prop .sim { grid-area: sim; text-align: right; font-variant-numeric: tabular-nums; }
+.prop .cap { grid-area: cap; font-size: .8rem; color: var(--muted); }
+.strip { grid-area: strip; display: block; position: relative; height: 22px; }
+.strip::before { content: ""; position: absolute; left: 0; right: 0; top: 10.5px; height: 1px; background: var(--line); }
+.strip i { position: absolute; display: block; }
+.strip .earth { top: 8px; height: 6px; border-radius: 3px; background: var(--track); }
+.strip .band { top: 5px; height: 12px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.strip .tgt { top: 1px; width: 2px; height: 20px; background: var(--ink); transform: translateX(-1px); }
+.strip .tgt.off-lo, .strip .tgt.off-hi { top: 5px; width: 0; height: 0; background: none; border: 6px solid transparent; transform: translateX(-6px); }
+.strip .tgt.off-lo { border-right-color: var(--bad); }
+.strip .tgt.off-hi { border-left-color: var(--bad); }
+.strip .here { top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--surface); transform: translateX(-6px); }
+
+/* ---- status glyphs, matrix, tables */
+.g { width: .95rem; height: .95rem; vertical-align: -.15rem; flex: none; }
+.g-match { color: var(--ok); } .g-partial { color: var(--warn); } .g-breaks_down { color: var(--bad); } .g-not_tested { color: var(--muted); }
+.glyphs { display: inline-flex; flex-wrap: wrap; gap: 2px; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.scroll { overflow-x: auto; }
+th, td { text-align: left; padding: .4rem .6rem .4rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-size: .8rem; font-weight: 600; color: var(--muted); vertical-align: bottom; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.matrix td, .matrix th { vertical-align: middle; }
+.matrix tbody th { font-weight: 400; padding-left: .5rem; }
+.matrix tbody th button { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; font-weight: 600; line-height: 1.25; }
+.matrix tbody th small { display: block; font-weight: 400; color: var(--muted); }
+.matrix tr.cur th, .matrix tr.cur td { background: var(--surface); }
+.matrix tr.cur th { box-shadow: inset 4px 0 0 var(--accent); }
+.matrix .cov { min-width: 8rem; white-space: nowrap; }
+.cov .inbar, td .inbar { display: inline-block; width: 5rem; vertical-align: middle; margin-right: .4rem; }
+.status { list-style: none; padding: 0; margin: 0; max-width: 54rem; }
+.status > li { padding: .5rem 0 .6rem; border-top: 1px solid var(--line); }
+.status li strong { display: inline; }
+.status .why { display: block; font-size: .875rem; max-width: 68ch; }
+.status .prop { padding-bottom: 0; }
+details.card { border-top: 1px solid var(--line); }
+details.card summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; padding: .6rem 0; cursor: pointer; align-items: baseline; }
+details.card summary small { display: block; color: var(--muted); }
+.verdict { font-weight: 600; white-space: nowrap; }
+.verdict.accepted { color: var(--ok); } .verdict.denied { color: var(--bad); } .verdict.pending { color: var(--warn); }
+.seg { display: flex; gap: 2px; height: 12px; margin: .6rem 0 .4rem; max-width: 40rem; }
+.seg i { display: block; border-radius: 3px; min-width: 3px; }
+.seg .accepted, .sw.accepted { background: var(--ok); } .seg .pending, .sw.pending { background: var(--warn); } .seg .denied, .sw.denied { background: var(--bad); }
+.sw { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; }
+.runs { display: grid; gap: .5rem 1.5rem; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); margin: .75rem 0 1rem; }
+.runs .inbar { margin-top: .2rem; }
+code { font-size: .85em; word-break: break-all; }
+.checks { list-style: none; padding: 0 0 .8rem; margin: 0; font-size: .9rem; }
+.checks li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); gap: .5rem; padding: .2rem 0; }
+.checks .pass { color: var(--ok); } .checks .warn { color: var(--warn); } .checks .fail { color: var(--bad); }
+.log { font-size: .875rem; color: var(--muted); padding-left: 1.2rem; }
+@media (prefers-reduced-motion: no-preference) { .row .sbar i, .bar .track i { transition: width .25s ease; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="g-match" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.6" fill="currentColor"/></symbol>
+  <symbol id="g-partial" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 2a4 4 0 0 0 0 8z" fill="currentColor"/></symbol>
+  <symbol id="g-breaks_down" viewBox="0 0 12 12"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="g-not_tested" viewBox="0 0 12 12"><circle cx="6" cy="6" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+</defs></svg>
+<div class="wrap" id="app">
+  <header>
+    <div class="top"><h1>EarthMimic</h1><button type="button" id="theme" class="themebtn">Dark mode</button></div>
+    <p>Where on Earth to rehearse a Moon or Mars mission, and where the comparison stops working.</p>
+    <div id="notice"></div>
+  </header>
+
+  <section class="controls" aria-label="Choose a target and a mission">
+    <div class="field"><span id="tl">Target site</span><div class="targets" id="targets" role="group" aria-labelledby="tl"></div></div>
+    <div class="field">
+      <label><span>Mission</span><select id="preset"></select></label>
+      <p class="muted small" id="presetAbout" style="margin:.35rem 0 0"></p>
+      <details class="weights"><summary>Adjust the weights</summary><div class="sliders" id="sliders"></div></details>
+      <label style="display:block;margin-top:.8rem"><span>Rank by</span><select id="focus"></select></label>
+    </div>
+  </section>
+
+  <nav aria-label="Views">
+    <a href="#analogs">Analogs</a><a href="#limits">Limits</a><a href="#plan">Test plan</a><a href="#validation">Validation</a><a href="#agent">Agent</a><a href="#data">Data</a>
+  </nav>
+  <main id="view"></main>
+</div>
+<div id="tip" role="status" hidden></div>
+
+<script>/*__SCORING_JS__*/</script>
+<script>
+(function () {
+  "use strict";
+  var D = __PAYLOAD__;
+  var LAND = __LAND__;   // land outlines: rings of [lon, lat, ...] in tenths of a degree (Natural Earth, public domain)
+  var UNITS = { degC: "°C", degC_delta: "°C", K_delta: "K", deg: "°", fraction: "", unitless: "", index: "",
+                m_per_s: "m/s", per_1000km2: "per 1000 km²", days_per_year: "days/yr", mm_per_day: "mm/day" };
+  var SHORT = { terrain: "Terrain", thermal: "Temperature", illumination: "Light", water: "Water, ice", dust: "Dust, wind",
+                geology: "Geology", habitability: "Habitability", physics: "Atmosphere" };
+  var WORDS = { match: "testable", partial: "partly", breaks_down: "breaks down", not_tested: "not tested yet" };
+  var TABS = ["analogs", "limits", "plan", "validation", "agent", "data"];
+  var P = D.params, N = D.earth.ids.length;
+  var REL = {}; D.agent.relationships.forEach(function (r) { REL[r.id] = r; });
+  var state = { target: D.targets[0].id, preset: "balanced", weights: Object.assign({}, D.presets.balanced.weights), selected: null, focus: null };
+  var cache = {};  // per-target similarities
+  var live = null; // results for the current target and weights
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function num(v) { var a = Math.abs(v); if (a === 0) return "0"; return a >= 100 ? v.toFixed(0) : a >= 10 ? v.toFixed(1) : a >= 1 ? v.toFixed(2) : v.toFixed(3); }
+  function unitName(u) { return u in UNITS && UNITS[u] ? UNITS[u] : u; }
+  function val(v, unit) { if (v == null) return "no data"; if (unit === "share_of_year") return num(100 * v) + "% of the year"; var u = unit in UNITS ? UNITS[unit] : unit; return num(v) + (u === "°" ? u : u ? " " + u : ""); }
+  function pct(v) { return Math.round(v * 100) + "%"; }
+  function ll(la, lo) { return Math.abs(la).toFixed(1) + "°" + (la >= 0 ? "N" : "S") + ", " + Math.abs(lo).toFixed(1) + "°" + (lo >= 0 ? "E" : "W"); }
+  function coords(i) { return ll(D.earth.lat[i], D.earth.lon[i]); }
+  function tcoords(t) { return ll(t.lat, t.lon > 180 ? t.lon - 360 : t.lon); }
+  function glyph(st) { return '<svg class="g g-' + st + '" viewBox="0 0 12 12" aria-hidden="true"><use href="#g-' + st + '"/></svg>'; }
+  function inbar(share) { return '<span class="inbar"><i style="width:' + Math.max(0, Math.min(100, 100 * share)).toFixed(0) + '%"></i></span>'; }
+  function target(id) { return D.targets.filter(function (t) { return t.id === (id || state.target); })[0]; }
+  function sims(t) { if (!cache[t.id]) { var u = EM.usedPairs(t); cache[t.id] = { used: u, sims: EM.similarities(D.earth.cols, u) }; } return cache[t.id]; }
+  function totals(t) { var c = sims(t); return EM.combine(c.sims, EM.pairWeights(c.used, state.weights), P.min_data_share); }
+  function has(i) { return live.total[i] === live.total[i]; }
+  function isNew(i) { var d = D.earth.dist_known[i]; return !D.earth.known[i] && (d == null || d >= P.min_km); }
+
+  function compute() {
+    var t = target(), c = sims(t), u = EM.pairWeights(c.used, state.weights), fi = -1;
+    c.used.forEach(function (p, j) { if (p.target_col === state.focus) fi = j; });
+    if (fi < 0) state.focus = null; else u = u.map(function (_, j) { return j === fi ? 1 : 0; });
+    var total = EM.combine(c.sims, u, P.min_data_share), order = EM.ranking(total), rank = new Int32Array(N);
+    order.forEach(function (i, r) { rank[i] = r + 1; });
+    live = { t: t, used: c.used, sims: c.sims, u: u, total: total, order: order, rank: rank,
+             coverage: EM.coverage(t.profile, state.weights),
+             stab: state.focus ? new Float64Array(N) : EM.stability(c.sims, c.used, state.weights, { n_runs: P.n_runs, top_k: P.top_k, seed: 1,
+               concentration: P.concentration, confidence_jitter: P.confidence_jitter, min_data_share: P.min_data_share }) };
+    live.top = order.slice(0, P.top_k).filter(has);
+    if (state.selected == null || state.selected >= N) state.selected = order[0];
+  }
+
+  // ------------------------------------------------------------ controls
+  function drawControls() {
+    document.getElementById("notice").innerHTML = D.synthetic
+      ? '<p class="notice">Running on synthetic demo data. Every site and score here is generated, not measured. It shows how the system works, not real findings.</p>' : "";
+    document.getElementById("targets").innerHTML = D.targets.map(function (t) {
+      return '<button type="button" data-t="' + esc(t.id) + '" data-b="' + esc(t.body) + '" aria-pressed="' + (t.id === state.target) + '">' +
+        esc(t.name) + "<small>" + esc(t.body) + "</small></button>";
+    }).join("");
+    var sel = document.getElementById("preset");
+    sel.innerHTML = Object.keys(D.presets).map(function (k) { return '<option value="' + k + '">' + esc(D.presets[k].label) + "</option>"; }).join("") +
+      '<option value="custom">Custom weights</option>';
+    sel.value = state.preset;
+    document.getElementById("presetAbout").textContent = state.preset === "custom" ? "Using the weights you set below." : D.presets[state.preset].about;
+    document.getElementById("sliders").innerHTML = Object.keys(D.dims).map(function (d) {
+      var w = state.weights[d] || 0;
+      return "<label>" + esc(D.dims[d]) + '<input type="range" id="w-' + d + '" min="0" max="3" step="0.5" value="' + w + '" data-d="' + d + '"><output>' + w + "</output></label>";
+    }).join("");
+    document.getElementById("app").setAttribute("data-body", target().body);
+    var fs = document.getElementById("focus");
+    fs.innerHTML = '<option value="">All properties, weighted by mission</option>' + EM.usedPairs(target()).map(function (p) {
+      return '<option value="' + esc(p.target_col) + '">Only: ' + esc(p.label) + "</option>"; }).join("");
+    fs.value = state.focus || "";
+  }
+
+  // ---------------------------------------------------------------- maps
+  // Flat map: Equal Earth projection (equal-area, so dot density is honest).
+  var RAD = Math.PI / 180, A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2;
+  function eqEarth(lon, lat) {
+    var t = Math.asin(M * Math.sin(lat * RAD)), t2 = t * t, t6 = t2 * t2 * t2;
+    return [lon * RAD * Math.cos(t) / (M * (A1 + 3 * A2 * t2 + t6 * (7 * A3 + 9 * A4 * t2))), t * (A1 + A2 * t2 + t6 * (A3 + A4 * t2))];
+  }
+  var EX = eqEarth(180, 0)[0], EY = eqEarth(0, 90)[1], FW = 1000, FH = FW * EY / EX, FS = FW / (2 * EX);
+  function flat(lon, lat) { var p = eqEarth(lon, lat); return [FW / 2 + p[0] * FS, FH / 2 - p[1] * FS]; }
+  // Polar insets: distance from the pole is true to scale; 0 degrees longitude points down (north) or up (south).
+  var PR = 80, POLE_LAT = 60;
+  function polar(south) {
+    return function (lon, lat) {
+      var r = (90 - (south ? -lat : lat)) / (90 - POLE_LAT) * PR, a = lon * RAD;
+      return [100 + r * Math.sin(a), 100 + (south ? -r : r) * Math.cos(a)];
+    };
+  }
+  function ringPath(ring, fn, off, skipLat) {
+    var s = "", first = true;
+    for (var i = 0; i < ring.length; i += 2) {
+      if (ring[i + 1] === skipLat) continue;
+      var p = fn(ring[i] / 10 + off, ring[i + 1] / 10);
+      s += (first ? "M" : "L") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+      first = false;
+    }
+    return s + "Z";
+  }
+  var LAND_F = "", LAND_N = "", LAND_S = "";
+  LAND.forEach(function (ring) {
+    var lo = Infinity, hi = -Infinity, north = -Infinity, south = Infinity;
+    for (var i = 0; i < ring.length; i += 2) {
+      lo = Math.min(lo, ring[i]); hi = Math.max(hi, ring[i]);
+      north = Math.max(north, ring[i + 1]); south = Math.min(south, ring[i + 1]);
+    }
+    // Outlines that run past the date line are drawn again one turn over; the frame clips the excess.
+    [-360, 0, 360].forEach(function (off) { if (lo / 10 + off < 180 && hi / 10 + off > -180) LAND_F += ringPath(ring, flat, off); });
+    if (north >= 500) LAND_N += ringPath(ring, polar(false), 0, 900);
+    if (south <= -500) LAND_S += ringPath(ring, polar(true), 0, -900);
+  });
+  var OUT_F = (function () {
+    var s = "", la, p;
+    for (la = -90; la <= 90; la += 5) { p = flat(180, la); s += (s ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }
+    for (la = 90; la >= -90; la -= 5) { p = flat(-180, la); s += "L" + p[0].toFixed(1) + " " + p[1].toFixed(1); }
+    return s + "Z";
+  })();
+  var GRAT_F = (function () {
+    var s = "", lo, la, p;
+    for (lo = -150; lo <= 150; lo += 30) for (la = -90; la <= 90; la += 5) { p = flat(lo, la); s += (la === -90 ? "M" : "L") + p[0].toFixed(1) + " " + p[1].toFixed(1); }
+    for (la = -60; la <= 60; la += 30) { p = flat(-180, la); s += "M" + p[0].toFixed(1) + " " + p[1].toFixed(1); p = flat(180, la); s += "L" + p[0].toFixed(1) + " " + p[1].toFixed(1); }
+    return s;
+  })();
+  var GRAT_P = (function () {
+    var s = "", a;
+    for (a = 0; a < 360; a += 30) s += "M100 100L" + (100 + PR * Math.sin(a * RAD)).toFixed(1) + " " + (100 + PR * Math.cos(a * RAD)).toFixed(1);
+    [70, 80].forEach(function (la) { var r = (90 - la) / (90 - POLE_LAT) * PR; s += "M" + (100 - r) + " 100a" + r + " " + r + " 0 1 0 " + 2 * r + " 0a" + r + " " + r + " 0 1 0 " + -2 * r + " 0"; });
+    return s;
+  })();
+  var RB = [1.3, 1.7, 2.2, 2.7, 3.2];   // dot radius per score band, in pixels
+
+  function marks(inView, xy, size, width) {
+    var s = "", i, q, p;
+    for (q = live.order.length - 1; q >= 0; q--) {   // weakest first, so the best matches draw on top
+      i = live.order[q];
+      if (!has(i) || !inView(i)) continue;
+      var b = Math.min(4, Math.floor(live.total[i] * 5));
+      p = xy(i);
+      s += '<circle class="cell c' + b + '" data-i="' + i + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (RB[b] * size).toFixed(1) + '"/>';
+    }
+    D.earth.known.forEach(function (k, j) {
+      if (!k || !inView(j)) return;
+      p = xy(j);
+      s += '<path class="known" data-i="' + j + '" d="M' + p[0].toFixed(1) + " " + (p[1] - 7).toFixed(1) + "l7 7l-7 7l-7 -7z" + '"/>';
+    });
+    for (q = live.top.length - 1; q >= 0; q--) {
+      i = live.top[q];
+      if (!inView(i)) continue;
+      p = xy(i);
+      s += '<circle class="top" data-i="' + i + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="5"/>';
+    }
+    i = state.selected;
+    if (i != null && has(i) && inView(i)) {
+      p = xy(i);
+      var left = p[0] > width - 48;
+      s += '<circle class="selring" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="9"/>' +
+        '<text class="sellab" x="' + (p[0] + (left ? -13 : 13)).toFixed(1) + '" y="' + (p[1] + 4).toFixed(1) + '"' + (left ? ' text-anchor="end"' : "") + ">#" + live.rank[i] + "</text>";
+    }
+    return s;
+  }
+
+  function paintMaps() {
+    var box = document.getElementById("map-flat");
+    if (!box || !live || !live.used.length) return;
+    var dense = N > 1000 ? 1 : N > 350 ? 1.5 : 2.1;
+    var W = Math.max(280, Math.floor(box.clientWidth)), k = W / FW, H = FH * k, size = dense * (W < 520 ? 0.62 : 1);
+    box.innerHTML = '<svg class="mapsvg" width="' + W + '" height="' + H.toFixed(0) + '" viewBox="0 0 ' + W + " " + H.toFixed(1) +
+      '" role="img" aria-label="World map of Earth locations colored by how closely each matches ' + esc(live.t.name) + '"><defs><clipPath id="clipF"><path d="' + OUT_F +
+      '" transform="scale(' + k + ')"/></clipPath></defs><path class="ocean" d="' + OUT_F + '" transform="scale(' + k + ')"/><g clip-path="url(#clipF)"><g transform="scale(' + k +
+      ')"><path class="land" fill-rule="evenodd" d="' + LAND_F + '"/><path class="grat" d="' + GRAT_F + '"/></g></g>' +
+      marks(function () { return true; }, function (i) { var p = flat(D.earth.lon[i], D.earth.lat[i]); return [p[0] * k, p[1] * k]; }, size, W) + "</svg>";
+    [["map-n", false, LAND_N, "clipN"], ["map-s", true, LAND_S, "clipS"]].forEach(function (m) {
+      var el = document.getElementById(m[0]); if (!el) return;
+      var S = Math.max(120, Math.floor(el.clientWidth)), c = S / 200, fn = polar(m[1]);
+      el.innerHTML = '<svg class="mapsvg" width="' + S + '" height="' + S + '" viewBox="0 0 ' + S + " " + S + '" role="img" aria-label="' +
+        (m[1] ? "Antarctic" : "Arctic") + ' map of Earth locations colored by match"><defs><clipPath id="' + m[3] + '"><circle cx="' + 100 * c + '" cy="' + 100 * c + '" r="' + PR * c +
+        '"/></clipPath></defs><circle class="ocean" cx="' + 100 * c + '" cy="' + 100 * c + '" r="' + PR * c + '"/><g clip-path="url(#' + m[3] + ')"><g transform="scale(' + c +
+        ')"><path class="land" fill-rule="evenodd" d="' + m[2] + '"/><path class="grat" d="' + GRAT_P + '"/></g></g>' +
+        '<text class="lonlab" text-anchor="middle" x="' + 100 * c + '" y="' + ((100 - PR) * c - 4).toFixed(1) + '">' + (m[1] ? "0°" : "180°") + "</text>" +
+        '<text class="lonlab" text-anchor="middle" x="' + 100 * c + '" y="' + ((100 + PR) * c + 12).toFixed(1) + '">' + (m[1] ? "180°" : "0°") + "</text>" +
+        marks(function (i) { return m[1] ? D.earth.lat[i] <= -POLE_LAT : D.earth.lat[i] >= POLE_LAT; },
+              function (i) { var p = fn(D.earth.lon[i], D.earth.lat[i]); return [p[0] * c, p[1] * c]; }, size * 1.15, S) + "</svg>";
+    });
+  }
+
+  // ----------------------------------------------- target-versus-site strips
+  // One strip per property: the grey bar is the range found on Earth, the tick is the target's value,
+  // the dot is one Earth site. A red arrow means the target lies beyond anything on Earth.
+  function strip(p, site, band) {
+    var r = REL[p.rel_id];
+    if (!r || p.target_value == null || !(r.earth_hi > r.earth_lo)) return "";
+    var log = r.scale === "log" && r.earth_lo > 0;
+    var f = function (v) { return log ? Math.log10(Math.max(v, 1e-300)) : v; };
+    var lo = f(r.earth_lo), hi = f(r.earth_hi), pad = 0.12 * (hi - lo), d0 = lo - pad, span = hi - lo + 2 * pad;
+    var at = function (x) { return 100 * (x - d0) / span; }, cl = function (x) { return Math.max(0, Math.min(100, x)); };
+    var t = at(f(p.target_value)), off = t < 0 ? " off-lo" : t > 100 ? " off-hi" : "";
+    var label = "Target " + val(p.target_value, p.unit) + (site != null ? ", this site " + val(site, p.unit) : "") + ", range on Earth " + val(r.earth_lo, p.unit) + " to " + val(r.earth_hi, p.unit) +
+      (off ? ". The target is beyond anything on Earth" : "");
+    var h = '<span class="strip" role="img" aria-label="' + esc(label) + '"><i class="earth" style="left:' + at(lo).toFixed(1) + "%;width:" + (at(hi) - at(lo)).toFixed(1) + '%"></i>';
+    var b = band ? [at(f(band[0])), at(f(band[1]))] : p.factor > 0 ? [at(f(p.target_value) - p.bandwidth), at(f(p.target_value) + p.bandwidth)] : null;
+    if (b && cl(b[1]) > cl(b[0])) h += '<i class="band" style="left:' + cl(b[0]).toFixed(1) + "%;width:" + (cl(b[1]) - cl(b[0])).toFixed(1) + '%"></i>';
+    h += '<i class="tgt' + off + '" style="left:' + cl(t).toFixed(1) + '%"></i>';
+    if (site != null) h += '<i class="here" style="left:' + cl(at(f(site))).toFixed(1) + '%"></i>';
+    return h + "</span>";
+  }
+  function range(lo, hi, unit) {
+    if (unit === "share_of_year") return num(100 * lo) + "% to " + val(hi, unit);
+    return (UNITS[unit] === "°" ? val(lo, unit) : num(lo)) + " to " + val(hi, unit);
+  }
+  function stripCap(p, site) {
+    var r = REL[p.rel_id], bits = ["target " + val(p.target_value, p.unit) + (p.uncertainty ? " ± " + val(p.uncertainty, p.unit) : "")];
+    if (site !== undefined) bits.push("here " + val(site, p.unit));
+    if (r) bits.push("Earth " + range(r.earth_lo, r.earth_hi, p.unit));
+    // A property can break down even with the target inside Earth's range (a physical rule vetoed it): say why.
+    var inside = r && p.target_value >= r.earth_lo && p.target_value <= r.earth_hi;
+    return bits.join(" · ") + (p.status === "breaks_down" && inside && p.reason ? ". " + p.reason : "");
+  }
+  function stripKey(withSite) {
+    return '<p class="key"><span><i class="k-tgt"></i>target value</span>' + (withSite ? '<span><i class="k-here"></i>this Earth site</span>' : "") +
+      '<span><i class="k-earth"></i>range found on Earth</span><span><i class="k-band"></i>close enough to count</span><span><i class="k-off"></i>target is beyond Earth’s range</span></p>';
+  }
+
+  // -------------------------------------------------------------- views
+  function cellName(i) { return D.earth.known[i] || D.earth.region[i] || "Earth cell"; }
+  function tags(i) {
+    var d = D.earth.dist_known[i];
+    if (D.earth.known[i]) return '<span class="tag">Known analog</span>';
+    if (d == null || d >= P.min_km) return '<span class="tag new">Unrecognized candidate</span>';
+    return '<span class="tag">' + d + " km from a known analog</span>";
+  }
+
+  function rowHtml(i) {
+    return '<li><button type="button" class="row" data-i="' + i + '" data-row="1" aria-pressed="' + (i === state.selected) + '"><span class="n">' + live.rank[i] +
+      '</span><span><span class="name">' + esc(cellName(i)) + '</span><span class="sub">' + coords(i) + " " + tags(i) + '</span></span><span class="score">' +
+      (has(i) ? live.total[i].toFixed(3) : "n/a") + '</span><span class="sbar"><i style="width:' + (has(i) ? pct(live.total[i]) : "0") + '"></i></span></button></li>';
+  }
+
+  function panel(i) {
+    var t = live.t, dims = EM.dimScores(live.sims, live.used, i);
+    var h = '<div class="vs"><div class="side"><p class="eyebrow">Target on ' + (t.body === "Moon" ? "the Moon" : esc(t.body)) + "</p><strong>" + esc(t.name) + '</strong><span class="sub">' + tcoords(t) +
+      '</span></div><div class="mid"><span class="big">' + (has(i) ? live.total[i].toFixed(2) : "n/a") + '</span><span class="sub">match</span></div><div class="side"><p class="eyebrow">Earth site, rank ' +
+      live.rank[i] + "</p><strong>" + esc(cellName(i)) + '</strong><span class="sub">' + coords(i) + "</span></div></div>" +
+      '<p class="small" style="margin:.7rem 0 0">' + tags(i) + (state.focus ? "" : " Stays in the top " + P.top_k + " in " + pct(live.stab[i]) + " of " + P.n_runs + " re-weightings.") + "</p>";
+    if (!state.focus) {
+      h += "<h3>Match by dimension</h3>";
+      Object.keys(D.dims).forEach(function (d) {
+        if (!(d in dims) || !(state.weights[d] > 0)) return;
+        h += '<div class="bar"><span>' + esc(D.dims[d]) + '</span><span class="track"><i style="width:' + pct(dims[d]) + '"></i></span><span class="v">' + dims[d].toFixed(2) + "</span></div>";
+      });
+    }
+    h += "<h3>Property by property</h3>" + stripKey(true);
+    Object.keys(D.dims).forEach(function (d) {
+      var rows = "";
+      live.used.forEach(function (p, j) {
+        if (p.dimension !== d || (!(live.u[j] > 0) && !state.focus)) return;
+        var x = D.earth.cols[p.earth_col][i], s = live.sims[j][i];
+        rows += '<div class="prop"><span class="label">' + esc(p.label) + (p.status === "partial" ? " " + glyph("partial") : "") + "</span>" + strip(p, x) +
+          '<span class="sim">' + (s === s ? s.toFixed(2) : "n/a") + '</span><span class="cap">' + esc(stripCap(p, x)) + "</span></div>";
+      });
+      if (rows) h += '<div class="dimhead"><span>' + esc(D.dims[d]) + "</span></div>" + rows;
+    });
+    var g = t.profile.filter(function (p) { return p.target_col === "grazing_sun_share"; })[0], w = D.earth.window;
+    if (g && g.target_value >= 0.2 && w) {
+      h += '<h3>When to rehearse low-Sun lighting here</h3><p class="small">At the target the Sun sits ' + P.grazing_lo + " to " + P.grazing_hi +
+        "° above the horizon for " + val(g.target_value, g.unit) + ". " + (w.peak_hours[i] >= 1
+          ? "This site gets up to " + w.peak_hours[i] + " hours a day of that light, peaking around " + esc(w.peak_date[i]) + ", and " +
+            (w.days_6h[i] ? w.days_6h[i] + " days a year offer at least 6 hours." : "no day offers as much as 6 hours.")
+          : "This site never gets as much as an hour a day of that light.") + " Computed from latitude; real, not demo data.</p>";
+    }
+    return h;
+  }
+
+  function cannot(i) {
+    var broken = live.t.profile.filter(function (p) { return p.status === "breaks_down"; });
+    if (!broken.length) return "";
+    var h = '<section class="cannot"><h2>What no Earth site reproduces</h2><p class="muted small">Left out of the score. The dot is the selected site, for reference.</p>';
+    broken.forEach(function (p) {
+      var col = D.earth.cols[p.earth_col], x = col ? col[i] : undefined, st = strip(p, x);
+      h += '<div class="prop"><span class="label">' + glyph("breaks_down") + " " + esc(p.label) + "</span>" + (st || '<span class="strip"></span>') +
+        '<span class="sim"></span><span class="cap">' + esc(st ? stripCap(p, x) : p.reason) + "</span></div>";
+    });
+    return h + "</section>";
+  }
+
+  function viewAnalogs() {
+    var t = live.t, top = live.top, extra = top.indexOf(state.selected) < 0 && has(state.selected) ? state.selected : null;
+    var head = '<div><p class="eyebrow">Target site on ' + (t.body === "Moon" ? "the Moon" : esc(t.body)) + "</p><h2>" + esc(t.name) + '</h2><p class="muted">' + esc(t.description) + " " + tcoords(t) + ".</p></div>";
+    if (!live.used.length) return '<div class="thead">' + head + "</div>" +
+      '<p>Nothing about this site can be tested on Earth with the current data, so no sites are ranked. <a href="#limits">See why</a>.</p>';
+    var fresh = top.filter(isNew).length;
+    var facts = '<dl class="facts"><div><dt>' + live.total[top[0]].toFixed(2) + "</dt><dd>best match score, out of 1</dd></div><div><dt>" + pct(live.coverage) +
+      '</dt><dd>of this site can be tested on Earth. <a href="#limits">See the limits</a></dd></div><div><dt>' + fresh + " of " + top.length +
+      "</dt><dd>top sites are far from any known analog</dd></div></dl>";
+    return '<div class="thead">' + head + facts + "</div>" +
+      '<div class="maps"><figure><div class="mapbox" id="map-flat"></div></figure><div class="poles"><figure><div class="polebox" id="map-n"></div><figcaption>Arctic, north of ' + POLE_LAT +
+      '°N</figcaption></figure><figure><div class="polebox" id="map-s"></div><figcaption>Antarctic, south of ' + POLE_LAT + "°S</figcaption></figure></div></div>" +
+      '<div class="legend"><span>Match score 0<span class="scale"><i class="c0"></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></span>1</span>' +
+      '<span><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="var(--r5)" stroke="var(--ocean)" stroke-width="2"/></svg>Top ' + P.top_k + "</span>" +
+      '<span><svg viewBox="0 0 16 16"><path d="M8 2l6 6l-6 6l-6 -6z" fill="none" stroke="var(--ink)" stroke-width="1.5"/></svg>Known analog</span>' +
+      '<span><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>Selected</span><span>Point at a dot for details, click to compare.</span></div>' +
+      '<div class="duo"><section><h2>Closest Earth sites</h2><p class="muted small">' + (state.focus
+        ? "Ranked on one property only: " + esc(live.used.filter(function (p) { return p.target_col === state.focus; })[0].label.toLowerCase()) + ". Mission weights are ignored."
+        : "Scores run from 0 to 1 across the properties Earth can test. Pick a site to compare it with the target.") + "</p>" +
+      '<ol class="rank">' + top.map(rowHtml).join("") + "</ol>" +
+      (extra != null ? '<h3>Picked on the map</h3><ol class="rank">' + rowHtml(extra) + "</ol>" : "") + '</section><section class="panel" id="panel">' + panel(state.selected) + "</section>" + cannot(state.selected) + "</div>";
+  }
+
+  function cellGlyphs(t, d) {
+    var count = { match: 0, partial: 0, breaks_down: 0, not_tested: 0 }, s = "", words = [];
+    t.profile.forEach(function (p) { if (p.dimension === d && p.status in count) count[p.status]++; });
+    Object.keys(count).forEach(function (st) {
+      for (var k = 0; k < count[st]; k++) s += glyph(st);
+      if (count[st]) words.push(count[st] + " " + WORDS[st]);
+    });
+    return s ? '<span class="glyphs" role="img" aria-label="' + words.join(", ") + '">' + s + "</span>" : '<span class="muted" aria-label="no data">·</span>';
+  }
+
+  function viewLimits() {
+    var dims = Object.keys(D.dims).filter(function (d) { return D.targets.some(function (t) { return t.profile.some(function (p) { return p.dimension === d && p.status in WORDS; }); }); });
+    var h = "<h2>What Earth can and cannot stand in for</h2><p>Each mark is one property of a target site. Earth is never a full match: the crosses are where a field test on Earth would tell you nothing about the real site.</p>" +
+      '<p class="key"><span>' + glyph("match") + "testable on Earth</span><span>" + glyph("partial") + "only partly</span><span>" + glyph("breaks_down") + "breaks down</span><span>" + glyph("not_tested") + "not tested yet</span></p>" +
+      '<div class="scroll"><table class="matrix"><thead><tr><th>Target site</th>' + dims.map(function (d) { return "<th>" + esc(SHORT[d] || D.dims[d]) + "</th>"; }).join("") +
+      "<th>Earth can test</th></tr></thead><tbody>" + D.targets.map(function (t) {
+        var cov = EM.coverage(t.profile, state.weights);
+        return '<tr' + (t.id === state.target ? ' class="cur"' : "") + '><th scope="row"><button type="button" data-t="' + esc(t.id) + '">' + esc(t.name) + "<small>" + esc(t.body) + "</small></button></th>" +
+          dims.map(function (d) { return "<td>" + cellGlyphs(t, d) + "</td>"; }).join("") + '<td class="cov">' + inbar(cov) + pct(cov) + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+    var groups = [["breaks_down", "Where the analogy breaks down", "No Earth site reproduces these. They are left out of the score so they cannot quietly drag it down."],
+      ["partial", "Only partly reproducible", "Earth comes close at its extremes. These count at half weight."],
+      ["match", "Testable on Earth", "The target value falls inside the range found on Earth."],
+      ["not_tested", "Not tested yet", "Waiting for more data or another agent run."],
+      ["input_only", "Used only as an input", "Not scored directly; a derived property takes its place."],
+      ["not_comparable", "Not comparable between worlds", ""]];
+    var prof = live.t.profile;
+    h += '<h2 style="margin-top:2rem">' + esc(live.t.name) + ", property by property</h2>" + stripKey(false);
+    groups.forEach(function (g) {
+      var items = prof.filter(function (p) { return p.status === g[0]; });
+      if (!items.length) return;
+      h += "<h3>" + g[1] + "</h3>" + (g[2] ? '<p class="muted small">' + g[2] + "</p>" : "") + '<ul class="status">';
+      items.forEach(function (p) {
+        var line = p.reason || ("Compared with Earth’s " + p.earth_label.toLowerCase() + ", confidence " + p.confidence.toFixed(2) + ".");
+        var origin = p.source === "derived" ? "Derived: " + p.formula + "." : p.source === "computed" ? "Computed from latitude and axial tilt, not taken from a dataset." :
+          p.source === "physical prior" ? "Declared from physical knowledge, not measured." : "";
+        var st = strip(p);
+        h += "<li>" + (st ? '<div class="prop"><span class="label">' + (g[0] in WORDS ? glyph(g[0]) + " " : "") + "<strong>" + esc(p.label) + "</strong></span>" + st +
+            '<span class="sim"></span><span class="cap">' + esc(stripCap(p)) + "</span></div>" : "<strong>" + (g[0] in WORDS ? glyph(g[0]) + " " : "") + esc(p.label) + "</strong>") +
+          '<span class="why">' + esc(line) + "</span>" + (origin ? '<span class="why muted">' + esc(origin) + "</span>" : "") +
+          p.alternates.map(function (a) { return '<span class="why muted">Alternative considered. ' + esc(a) + "</span>"; }).join("") + "</li>";
+      });
+      h += "</ul>";
+    });
+    return h;
+  }
+
+  function viewPlan() {
+    var pl = live.t.plan, R = pl.requirements, coverable = R.length - pl.uncovered.length;
+    var h = "<h2>Test plan for " + esc(live.t.name) + "</h2><p>A field campaign needs yes-or-no answers. Each requirement is a tolerance band around the target value of one property. " +
+      "A site passes it when its own value falls inside the band.</p>";
+    if (!R.length) return h + "<p>No property of this target can be tested on Earth with the current data.</p>";
+    h += '<dl class="facts" style="margin:1rem 0 1.25rem"><div><dt>' + R.length + "</dt><dd>requirements can be tested on Earth</dd></div><div><dt>" + pl.best_single.covers.length +
+      "</dt><dd>passed by the best single site</dd></div><div><dt>" + pl.sites.length + "</dt><dd>" + (pl.sites.length === 1 ? "site passes " : "sites together pass ") + coverable +
+      (pl.exact ? "; no smaller set can" : " (an estimate; the exact search was too large)") + "</dd></div></dl>";
+    h += '<h3>Which site covers which requirement</h3><div class="scroll"><table class="matrix"><thead><tr><th>Requirement</th>' +
+      pl.sites.map(function (s, k) { return "<th>Site " + (k + 1) + "<br>" + esc(cellName(s.index)) + '<br><span style="font-weight:400">' + coords(s.index) + "</span></th>"; }).join("") +
+      '<th class="num">Earth cells passing</th></tr></thead><tbody>' + R.map(function (r, j) {
+        return '<tr><th scope="row">' + esc(r.label) + "</th>" + pl.sites.map(function (s) {
+          return "<td>" + (s.covers.indexOf(j) >= 0 ? '<span role="img" aria-label="passes">' + glyph("match") + "</span>" : '<span class="muted" aria-label="does not pass">·</span>') + "</td>";
+        }).join("") + '<td class="num">' + r.n_pass + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+    h += "<h3>The tolerance bands</h3>" + stripKey(false) + '<ul class="status">';
+    R.forEach(function (r) {
+      var p = live.t.profile.filter(function (q) { return q.target_col === r.target_col; })[0], st = p ? strip(p, null, [r.lo, r.hi]) : "";
+      h += '<li><div class="prop"><span class="label"><strong>' + esc(r.label) + "</strong></span>" + (st || '<span class="strip"></span>') + '<span class="sim"></span><span class="cap">must be between ' +
+        val(r.lo, r.unit) + " and " + val(r.hi, r.unit) + (p && REL[p.rel_id] ? " · Earth " + range(REL[p.rel_id].earth_lo, REL[p.rel_id].earth_hi, r.unit) : "") + "</span></div></li>";
+    });
+    h += "</ul>";
+    if (pl.untestable.length) h += "<h3>Cannot be tested anywhere on Earth</h3><p class=\"muted small\">Plan a chamber, a simulator or an analysis for these instead.</p><ul class=\"status\">" +
+      pl.untestable.map(function (u) { return "<li>" + glyph("breaks_down") + " <strong>" + esc(u.label) + '</strong><span class="why">' + esc(u.reason) + "</span></li>"; }).join("") + "</ul>";
+    h += campaignSection(R.length);
+    return h;
+  }
+
+  // ------------------------------------------------- field campaign routing
+  var campState = { start: (live.t.campaign && live.t.campaign.start) || null };
+
+  function haverKm(la1, lo1, la2, lo2) {
+    var r = Math.PI / 180, a = Math.sin((la2 - la1) * r / 2), b = Math.sin((lo2 - lo1) * r / 2);
+    return 2 * 6371 * Math.asin(Math.sqrt(a * a + Math.cos(la1 * r) * Math.cos(la2 * r) * b * b));
+  }
+
+  function campaignCurve(start) {
+    var R = live.t.plan.requirements, rows = [];
+    if (!R.length) return rows;
+    var pass = [], i, j, m;
+    for (i = 0; i < N; i++) {
+      m = 0;
+      for (j = 0; j < R.length; j++) {
+        var v = D.earth.cols[R[j].earth_col] ? D.earth.cols[R[j].earth_col][i] : null;
+        if (v != null && v >= R[j].lo && v <= R[j].hi) m |= 1 << j;
+      }
+      pass.push(m);
+    }
+    var rep = {};
+    for (i = 0; i < N; i++) {
+      m = pass[i];
+      if (!m) continue;
+      if (!(m in rep)) rep[m] = i;
+      else if (start && haverKm(start[0], start[1], D.earth.lat[i], D.earth.lon[i]) <
+                        haverKm(start[0], start[1], D.earth.lat[rep[m]], D.earth.lon[rep[m]])) rep[m] = i;
+    }
+    var masks = Object.keys(rep).map(Number), goal = 0;
+    masks.forEach(function (x) { goal |= x; });
+    var pop = function (x) { var c = 0; while (x) { c += x & 1; x >>= 1; } return c; };
+    var routeKm = function (order) {
+      var km = 0, prev = start;
+      order.forEach(function (ix) { if (prev) km += haverKm(prev[0], prev[1], D.earth.lat[ix], D.earth.lon[ix]); prev = [D.earth.lat[ix], D.earth.lon[ix]]; });
+      return km;
+    };
+    var bestOrder = function (idx) {   // all permutations of up to 5 stops
+      var best = idx.slice(), bk = Infinity;
+      var perm = function (cur, rest) {
+        if (!rest.length) { var km = routeKm(cur); if (km < bk) { bk = km; best = cur.slice(); } return; }
+        for (var q = 0; q < rest.length; q++) perm(cur.concat([rest[q]]), rest.slice(0, q).concat(rest.slice(q + 1)));
+      };
+      perm([], idx);
+      return { order: best, km: bk };
+    };
+    var maxCover = pop(goal);
+    for (var k = 1; k <= Math.min(5, masks.length); k++) {
+      var combos = [], pick = function (startAt, cur) {
+        if (cur.length === k) { combos.push(cur.slice()); return; }
+        for (var q = startAt; q < masks.length; q++) { cur.push(q); pick(q + 1, cur); cur.pop(); if (combos.length > 200000) return; }
+      };
+      pick(0, []);
+      var bestCov = 0;
+      combos.forEach(function (c) { var u = 0; c.forEach(function (q) { u |= masks[q]; }); if (pop(u) > bestCov) bestCov = pop(u); });
+      var best = null, tried = 0;
+      combos.forEach(function (c) {
+        var u = 0;
+        c.forEach(function (q) { u |= masks[q]; });
+        if (pop(u) !== bestCov || tried > 3000) return;
+        tried++;
+        var r = bestOrder(c.map(function (q) { return rep[masks[q]]; }));
+        if (!best || r.km < best.km) best = { covered: bestCov, km: r.km, order: r.order, union: u };
+      });
+      if (!best) break;
+      rows.push({ k: best.order.length, covered: best.covered, km: best.km, union: best.union,
+                  stops: best.order.map(function (ix) { return { index: ix, lat: D.earth.lat[ix], lon: D.earth.lon[ix] }; }) });
+      if (best.covered >= maxCover) break;
+    }
+    return rows;
+  }
+
+  function campaignSection(nReq) {
+    var s = campState.start;
+    var rows = campaignCurve(s);
+    var h = '<h3>Field campaign: cost against coverage</h3>' +
+      '<p class="muted small">Heavy equipment that needs setting up favours fewer sites; portable instruments favour fewer kilometres. ' +
+      'Each row is the best campaign for that number of sites: most requirements covered, shortest route among ties.</p>' +
+      '<p>Start from latitude <input id="camp-lat" type="number" step="any" min="-90" max="90" style="width:6em" value="' + (s ? s[0] : "") + '"> ' +
+      'longitude <input id="camp-lon" type="number" step="any" min="-180" max="180" style="width:6em" value="' + (s ? s[1] : "") + '"> ' +
+      '<button type="button" onclick="EMcampaign()">Plan routes</button>' +
+      (s ? ' <button type="button" onclick="EMcampaign(true)">Clear start</button>' : "") + "</p>";
+    if (!rows.length) return h + "<p>No requirement is testable, so there is nothing to route.</p>";
+    h += '<div class="scroll"><table><thead><tr><th>Sites</th><th>Covers</th><th class="num">Route km</th><th>Stops in order' + (s ? " (from your start)" : "") + "</th></tr></thead><tbody>";
+    rows.forEach(function (r) {
+      h += "<tr><td>" + r.k + "</td><td>" + r.covered + " of " + nReq + '</td><td class="num">' + Math.round(r.km).toLocaleString() + "</td><td>" +
+        r.stops.map(function (st) { return esc(cellName(st.index)) + ' <span class="muted">(' + coords(st.index) + ")</span>"; }).join(" → ") + "</td></tr>";
+    });
+    return h + "</tbody></table></div>";
+  }
+
+  window.EMcampaign = function (clear) {
+    var la = parseFloat(document.getElementById("camp-lat").value), lo = parseFloat(document.getElementById("camp-lon").value);
+    campState.start = (clear || isNaN(la) || isNaN(lo)) ? null : [la, lo];
+    render();
+  };
+
+  function viewValidation() {
+    var rows = [];
+    D.earth.known.forEach(function (name, i) {
+      if (!name) return;
+      var best = null;
+      D.targets.forEach(function (t) {
+        if (t.body !== D.earth.known_body[i] && D.earth.known_body[i]) return;
+        if (!EM.usedPairs(t).length) return;
+        var tot = totals(t), mine = tot[i] === tot[i] ? tot[i] : -1, r = 1;
+        for (var k = 0; k < N; k++) if ((tot[k] === tot[k] ? tot[k] : -1) > mine) r++;
+        if (!best || r < best.rank) best = { name: name, i: i, target: t, rank: r };
+      });
+      if (best) rows.push(best);
+    });
+    var cut = Math.max(1, Math.round(0.05 * N)), hit = rows.filter(function (r) { return r.rank <= cut; }).length;
+    var h = "<h2>Does it find the analogs scientists already use?</h2>";
+    if (!rows.length) h += "<p>No known analogs were supplied with this dataset.</p>";
+    else {
+      h += "<p>The engine is never told which sites are known analogs. Under the current weights, <strong>" + hit + " of " + rows.length +
+        "</strong> rank in the top 5% of " + N + " Earth cells for at least one target. Ranking at random would put about " + (0.05 * rows.length).toFixed(1) + " there.</p>" +
+        '<div class="scroll"><table><thead><tr><th>Known analog</th><th>Best matched target</th><th class="num">Rank</th><th>Share of Earth cells it outranks</th></tr></thead><tbody>' +
+        rows.map(function (r) { var share = 1 - (r.rank - 1) / N; return "<tr><td>" + esc(r.name) + '<br><span class="muted small">' + coords(r.i) + "</span></td><td>" + esc(r.target.name) + " (" + esc(r.target.body) +
+          ')</td><td class="num">' + r.rank + "</td><td>" + inbar(share) + (100 * share).toFixed(1) + "%</td></tr>"; }).join("") + "</tbody></table></div>";
+    }
+    var far = live.order.filter(function (i) { return has(i) && isNew(i); }).slice(0, 5);
+    h += "<h3>Beyond the known sites</h3><p>Best matches for " + esc(live.t.name) + " that lie more than " + P.min_km + " km from every known analog.</p>" +
+      '<div class="scroll"><table><thead><tr><th>Site</th><th class="num">Rank</th><th>Score</th><th>Stays in top ' + P.top_k + "</th></tr></thead><tbody>" +
+      far.map(function (i) { return "<tr><td>" + esc(cellName(i)) + '<br><span class="muted small">' + coords(i) + '</span></td><td class="num">' + live.rank[i] +
+        "</td><td>" + inbar(live.total[i]) + live.total[i].toFixed(3) + "</td><td>" + inbar(live.stab[i]) + pct(live.stab[i]) + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      "<h3>How stable is the ranking?</h3><p>Weights are a judgment call, so every ranking is recomputed " + P.n_runs +
+      " times with the dimension weights reshuffled around your choice and each pairing’s confidence nudged by up to " + pct(P.confidence_jitter) +
+      ". A site that stays in the top " + P.top_k + " through nearly all of them does not depend on one exact setting.</p>";
+    if (live.top.length && !state.focus) h += '<div class="scroll"><table><thead><tr><th class="num">Rank</th><th>Site</th><th>Stays in top ' + P.top_k + "</th></tr></thead><tbody>" +
+      live.top.map(function (i) { return '<tr><td class="num">' + live.rank[i] + "</td><td>" + esc(cellName(i)) + ' <span class="muted small">' + coords(i) + "</span></td><td>" + inbar(live.stab[i]) + pct(live.stab[i]) + "</td></tr>"; }).join("") +
+      "</tbody></table></div>";
+    return h;
+  }
+
+  function viewAgent() {
+    var a = D.agent, words = { accepted: "Accepted", denied: "Denied", pending: "Pending" },
+      marksW = { pass: "Passed", warn: "Caution", fail: "Failed" };
+    var n = function (v) { return a.relationships.filter(function (r) { return r.verdict === v; }).length; };
+    var h = "<h2>How the agent paired the datasets</h2><p>The agent proposes which Moon or Mars column corresponds to which Earth column, " +
+      "then every proposal must pass fixed checks before it can affect a score. Nothing is approved by hand. Each run may spend " + a.max +
+      " tool calls; anything left over stays pending and goes first in the next run. Decisions are stored and reused while the data is unchanged.</p>" +
+      '<div class="seg" role="img" aria-label="' + n("accepted") + " accepted, " + n("pending") + " pending, " + n("denied") + ' denied">' +
+      ["accepted", "pending", "denied"].map(function (v) { return n(v) ? '<i class="' + v + '" style="flex:' + n(v) + '"></i>' : ""; }).join("") + "</div>" +
+      '<p class="key">' + ["accepted", "pending", "denied"].map(function (v) { return '<span><i class="sw ' + v + '"></i>' + n(v) + " " + v + "</span>"; }).join("") + "</p>" + '<div class="runs">' +
+      a.runs.map(function (r) { return '<div><span class="small">Run ' + r.run + ": " + r.used + " of " + r.max + " tool calls</span>" + inbar(r.used / r.max).replace('class="inbar"', 'class="inbar" style="display:block"') + "</div>"; }).join("") + "</div>";
+    a.relationships.forEach(function (r) {
+      var label = words[r.verdict] + (r.verdict === "accepted" ? (r.scored ? " " + r.confidence.toFixed(2) : ", input only") : "");
+      h += '<details class="card"><summary><span>' + esc(r.target_label) + (r.earth_label === r.target_label ? "" : " and " + esc(r.earth_label)) + "<small>" + esc(r.target_col) + " with " + esc(r.earth_col || "nothing") +
+        (r.conversion ? ", converted " + esc(r.conversion.split(" -> ").map(unitName).join(" to ")) : "") + ", decided in run " + r.decided_in_run +
+        '</small></span><span class="verdict ' + r.verdict + '">' + label + "</span></summary>" +
+        (r.target_note ? '<p class="small muted">' + esc(r.target_note) + "</p>" : "") + '<ul class="checks">' +
+        r.checks.map(function (c) { return '<li><span class="' + c.outcome + '">' + marksW[c.outcome] + "</span><span><strong>" + esc(c.name) + ".</strong> " + esc(c.detail) + "</span></li>"; }).join("") + "</ul></details>";
+    });
+    a.runs.forEach(function (r) { h += "<h3>Run " + r.run + ' log</h3><ol class="log">' + r.log.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ol>"; });
+    return h;
+  }
+
+  function viewData() {
+    var c = D.cleaning, h = "<h2>Where the data came from and what was done to it</h2>";
+    if (!c) return h + "<p>This run started from data that was already clean, so there is no cleaning report.</p>";
+    h += "<p>Raw tables are cleaned before anything else runs. Nothing is filled in or guessed: bad values become missing values, and every change is counted here.</p>" +
+      '<div class="scroll"><table><thead><tr><th>Table</th><th class="num">Rows in</th><th class="num">Rows out</th></tr></thead><tbody>' +
+      c.tables.map(function (t) { return "<tr><td>" + esc(t.table) + '</td><td class="num">' + t.rows_in + '</td><td class="num">' + t.rows_out + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<h3>What was changed</h3><div class="scroll"><table><thead><tr><th>Problem found</th><th>Where</th><th class="num">Count</th><th>What was done</th></tr></thead><tbody>' +
+      c.changes.map(function (x) { return "<tr><td>" + esc(x.rule) + "</td><td>" + esc(x.table) + (x.column ? ", " + esc(x.column) : "") + '</td><td class="num">' + x.count + "</td><td>" + esc(x.action) + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<h3>Columns</h3><div class="scroll"><table><thead><tr><th>Column</th><th>Table</th><th>Source</th><th>Missing</th><th class="num">Uncertainty</th></tr></thead><tbody>' +
+      c.columns.map(function (x) { return "<tr><td>" + esc(x.label) + '<br><span class="muted small">' + esc(x.column) + "</span></td><td>" + esc(x.table) + "</td><td>" + esc(x.version || x.source) +
+        "</td><td>" + inbar(x.missing) + (100 * x.missing).toFixed(1) + '%</td><td class="num">' + (x.uncertainty ? "± " + val(x.uncertainty, x.unit) : "not given") + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<h3>Input files</h3><p class="muted small">A fingerprint of each file, so a result can be traced to the exact data behind it.</p><div class="scroll"><table><thead><tr><th>File</th><th class="num">Bytes</th><th>SHA-256 (first 16)</th></tr></thead><tbody>' +
+      c.files.map(function (f) { return "<tr><td>" + esc(f.name) + '</td><td class="num">' + f.bytes + "</td><td><code>" + esc(f.sha256.slice(0, 16)) + "</code></td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<p class="muted small" style="margin-top:1rem">Map outlines: Natural Earth 1:110m land, public domain.</p>';
+    return h;
+  }
+
+  function tab() { var h = location.hash.replace("#", ""); return TABS.indexOf(h) >= 0 ? h : "analogs"; }
+  function draw() {
+    var t = tab();
+    document.querySelectorAll("nav a").forEach(function (a) { if (a.getAttribute("href") === "#" + t) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    document.getElementById("tip").hidden = true;
+    document.getElementById("view").innerHTML = { analogs: viewAnalogs, limits: viewLimits, plan: viewPlan, validation: viewValidation, agent: viewAgent, data: viewData }[t]();
+    if (t === "analogs") paintMaps();
+  }
+  function refresh(resetSelection) { if (resetSelection) state.selected = null; compute(); drawControls(); draw(); }
+  function pickTarget(id) { state.target = id; state.focus = null; refresh(true); }
+
+  // -------------------------------------------------------------- events
+  document.getElementById("targets").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (b) pickTarget(b.getAttribute("data-t"));
+  });
+  document.getElementById("preset").addEventListener("change", function (e) {
+    if (e.target.value !== "custom") { state.preset = e.target.value; state.weights = Object.assign({}, D.presets[state.preset].weights); refresh(true); }
+  });
+  document.getElementById("focus").addEventListener("change", function (e) { state.focus = e.target.value || null; state.selected = null; compute(); draw(); });
+  document.getElementById("sliders").addEventListener("input", function (e) {
+    var d = e.target.getAttribute("data-d"); if (!d) return;
+    state.weights[d] = parseFloat(e.target.value); e.target.nextElementSibling.textContent = e.target.value;
+  });
+  document.getElementById("sliders").addEventListener("change", function () {
+    var any = Object.keys(state.weights).some(function (d) { return state.weights[d] > 0; });
+    if (!any) state.weights = Object.assign({}, D.presets.balanced.weights);  // all-zero weights score nothing
+    state.preset = any ? "custom" : "balanced";
+    state.selected = null; compute();
+    document.getElementById("preset").value = state.preset;
+    document.getElementById("presetAbout").textContent = any ? "Using the weights you set below." : "All weights were zero, so the balanced mission was restored.";
+    if (!any) drawControls();
+    draw();
+  });
+  var view = document.getElementById("view"), tip = document.getElementById("tip");
+  view.addEventListener("click", function (e) {
+    var tb = e.target.closest("[data-t]");
+    if (tb) { pickTarget(tb.getAttribute("data-t")); return; }
+    var el = e.target.closest("[data-i]"); if (!el) return;
+    state.selected = parseInt(el.getAttribute("data-i"), 10); draw();
+    if (el.hasAttribute("data-row") && window.matchMedia("(max-width: 59.99rem)").matches) {
+      var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("panel").scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    }
+  });
+  function showTip(e) {
+    var el = e.target.closest ? e.target.closest(".mapsvg [data-i]") : null;
+    if (!el) { tip.hidden = true; return; }
+    var i = parseInt(el.getAttribute("data-i"), 10);
+    tip.innerHTML = "<b>" + esc(cellName(i)) + "</b>" + coords(i) + "<br>Score " + (has(i) ? live.total[i].toFixed(2) : "n/a") + ", rank " + live.rank[i] + " of " + N +
+      (D.earth.known[i] ? "<br>Known analog" : isNew(i) && live.rank[i] <= P.top_k ? "<br>Unrecognized candidate" : "");
+    tip.hidden = false;
+    var w = tip.offsetWidth, hgt = tip.offsetHeight;
+    tip.style.left = Math.max(4, Math.min(window.innerWidth - w - 4, e.clientX + 14)) + "px";
+    tip.style.top = (e.clientY + 18 + hgt > window.innerHeight ? e.clientY - hgt - 10 : e.clientY + 18) + "px";
+  }
+  view.addEventListener("pointermove", showTip);
+  view.addEventListener("pointerleave", function () { tip.hidden = true; });
+  window.addEventListener("scroll", function () { tip.hidden = true; }, { passive: true });
+  var resizeTimer = null;
+  window.addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(function () { if (tab() === "analogs") paintMaps(); }, 150); });
+  window.addEventListener("hashchange", draw);
+
+  // Light/dark switch. With no choice made, the page follows the device or app theme.
+  var root = document.documentElement, themeBtn = document.getElementById("theme");
+  function isDark() {
+    var t = root.getAttribute("data-theme");
+    return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function labelTheme() { themeBtn.textContent = isDark() ? "Light mode" : "Dark mode"; }
+  try { var saved = localStorage.getItem("earthmimic-theme"); if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved); } catch (e) {}
+  themeBtn.addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("earthmimic-theme", next); } catch (e) {}
+    labelTheme();
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", labelTheme);
+  labelTheme();
+  refresh(true);
+})();
+</script>
+</body>
+</html>

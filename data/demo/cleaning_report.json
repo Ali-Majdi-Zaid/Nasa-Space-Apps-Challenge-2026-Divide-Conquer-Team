@@ -1,0 +1,542 @@
+{
+ "raw_folder": "data/demo_raw",
+ "files": [
+  {
+   "name": "earth_cells.csv",
+   "sha256": "ea519308e09fa7075d36c3c7e94dd0f312b88c18838a87edb51cd02564a90690",
+   "bytes": 228471
+  },
+  {
+   "name": "targets.csv",
+   "sha256": "866daa7a8f0fa0518bdf2ed45a12e7eb9e26a6ec1894f5e09d4a4e650c0523d3",
+   "bytes": 1422
+  },
+  {
+   "name": "earth_meta.json",
+   "sha256": "66f9a24070c0f042805539f71467bc1f4b2ed7d211e9ef20510d928daa7d4f30",
+   "bytes": 3472
+  },
+  {
+   "name": "targets_meta.json",
+   "sha256": "d3c22b1ba1ca5837725c0b5d72ef6f7a52f4bb80942c537a84457335b32ada72",
+   "bytes": 3786
+  },
+  {
+   "name": "known_analogs.csv",
+   "sha256": "347403ffb19fa61740168dc43bf2108d29fb0e5abfff28159c4c23416e91f9fa",
+   "bytes": 261
+  }
+ ],
+ "tables": [
+  {
+   "table": "Earth cells",
+   "rows_in": 1530,
+   "rows_out": 1509
+  },
+  {
+   "table": "Target sites",
+   "rows_in": 7,
+   "rows_out": 6
+  }
+ ],
+ "changes": [
+  {
+   "table": "Earth cells",
+   "rule": "Text where a number belongs",
+   "column": "wind_ms",
+   "action": "set to missing",
+   "count": 2,
+   "examples": [
+    "ERR"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "No-data sentinel code",
+   "column": "temp_mean_c",
+   "action": "set to missing",
+   "count": 5,
+   "examples": [
+    "-9999.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "No-data sentinel code",
+   "column": "wind_ms",
+   "action": "set to missing",
+   "count": 5,
+   "examples": [
+    "-9999.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "No-data sentinel code",
+   "column": "dust_aod",
+   "action": "set to missing",
+   "count": 5,
+   "examples": [
+    "-9999.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "No-data sentinel code",
+   "column": "uv_index",
+   "action": "set to missing",
+   "count": 5,
+   "examples": [
+    "-9999.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Longitude given as 0 to 360",
+   "column": "lon",
+   "action": "rewritten as -180 to 180",
+   "count": 6,
+   "examples": [
+    "E0325",
+    "E0442",
+    "E0541",
+    "E0572",
+    "E0715"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Missing or impossible coordinates",
+   "column": "lat/lon",
+   "action": "row dropped",
+   "count": 4,
+   "examples": [
+    "E0166",
+    "E0309",
+    "E0776",
+    "E1212"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Exact duplicate row",
+   "column": "",
+   "action": "row dropped",
+   "count": 12,
+   "examples": [
+    "E0154",
+    "E0447",
+    "E0689",
+    "E1294",
+    "E1006"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Same id with conflicting values",
+   "column": "cell_id",
+   "action": "merged (numeric columns averaged)",
+   "count": 5,
+   "examples": [
+    "E0054",
+    "E0230",
+    "E0735",
+    "E1209",
+    "E1227"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Physically impossible value",
+   "column": "slope_deg",
+   "action": "set to missing",
+   "count": 3,
+   "examples": [
+    "-4.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Physically impossible value",
+   "column": "temp_mean_c",
+   "action": "set to missing",
+   "count": 2,
+   "examples": [
+    "-400.0"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Physically impossible value",
+   "column": "ice_fraction",
+   "action": "set to missing",
+   "count": 4,
+   "examples": [
+    "1.7"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "slope_deg",
+   "action": "flagged, value kept",
+   "count": 1,
+   "examples": [
+    "E0795"
+   ]
+  },
+  {
+   "table": "Earth cells",
+   "rule": "Extreme outlier",
+   "column": "elevation_m",
+   "action": "flagged, value kept",
+   "count": 1,
+   "examples": [
+    "E0728"
+   ]
+  },
+  {
+   "table": "Target sites",
+   "rule": "Exact duplicate row",
+   "column": "",
+   "action": "row dropped",
+   "count": 1,
+   "examples": [
+    "moon-shadow"
+   ]
+  }
+ ],
+ "columns": [
+  {
+   "table": "Earth cells",
+   "column": "slope_deg",
+   "label": "Mean slope",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.002
+  },
+  {
+   "table": "Earth cells",
+   "column": "roughness_m",
+   "label": "Surface roughness",
+   "unit": "m",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "crater_density",
+   "label": "Crater density",
+   "unit": "per_1000km2",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "temp_mean_c",
+   "label": "Mean surface temperature",
+   "unit": "degC",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0046
+  },
+  {
+   "table": "Earth cells",
+   "column": "temp_swing_c",
+   "label": "Day-night temperature swing",
+   "unit": "degC_delta",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "dark_days",
+   "label": "Days per year without sunlight",
+   "unit": "days_per_year",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "noon_sun_deg",
+   "label": "Mean noon sun elevation",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "ice_fraction",
+   "label": "Ground ice fraction",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0027
+  },
+  {
+   "table": "Earth cells",
+   "column": "soil_moisture",
+   "label": "Soil moisture",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "wind_ms",
+   "label": "Mean wind speed",
+   "unit": "m_per_s",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0046
+  },
+  {
+   "table": "Earth cells",
+   "column": "dust_aod",
+   "label": "Dust optical depth",
+   "unit": "unitless",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.051
+  },
+  {
+   "table": "Earth cells",
+   "column": "basalt_fraction",
+   "label": "Basaltic surface fraction",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0212
+  },
+  {
+   "table": "Earth cells",
+   "column": "fines_fraction",
+   "label": "Fine-grained surface fraction",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0497
+  },
+  {
+   "table": "Earth cells",
+   "column": "uv_index",
+   "label": "Surface UV index",
+   "unit": "index",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0033
+  },
+  {
+   "table": "Earth cells",
+   "column": "ndvi",
+   "label": "Vegetation index (NDVI)",
+   "unit": "unitless",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "pressure_kpa",
+   "label": "Surface pressure",
+   "unit": "kPa",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Earth cells",
+   "column": "elevation_m",
+   "label": "Elevation",
+   "unit": "m",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "slope_deg",
+   "label": "Mean slope",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "rms_roughness_m",
+   "label": "RMS surface roughness",
+   "unit": "m",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "craters_per_1000km2",
+   "label": "Crater density",
+   "unit": "per_1000km2",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "surf_temp_mean_K",
+   "label": "Mean surface temperature",
+   "unit": "K",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 5.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "diurnal_amp_K",
+   "label": "Day-night temperature swing",
+   "unit": "K_delta",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "dark_days_per_year",
+   "label": "Days per year without sunlight",
+   "unit": "days_per_year",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "noon_sun_elev_deg",
+   "label": "Mean noon sun elevation",
+   "unit": "deg",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "weh_fraction",
+   "label": "Water-equivalent hydrogen",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.01,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "wind_ms",
+   "label": "Mean wind speed",
+   "unit": "m_per_s",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "dust_tau",
+   "label": "Dust optical depth",
+   "unit": "unitless",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.1,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "basalt_abundance_pct",
+   "label": "Basalt abundance",
+   "unit": "percent",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "fines_fraction",
+   "label": "Fine-grained regolith fraction",
+   "unit": "fraction",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "uv_index",
+   "label": "Surface UV index",
+   "unit": "index",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "ndvi",
+   "label": "Vegetation index (NDVI)",
+   "unit": "unitless",
+   "source": "physical prior",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "surf_pressure_Pa",
+   "label": "Surface pressure",
+   "unit": "Pa",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  },
+  {
+   "table": "Target sites",
+   "column": "elevation_m",
+   "label": "Elevation",
+   "unit": "m",
+   "source": "dataset",
+   "version": "synthetic demo v1",
+   "uncertainty": 0.0,
+   "missing": 0.0
+  }
+ ],
+ "total_changes": 61
+}

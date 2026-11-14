@@ -1,0 +1,14 @@
+target_id,body,name,description,lat,lon,surf_temp_mean_K,temp_swing_K,wind_ms,dust_tau,surf_temp_max_K,shallow_ice_share,subsurface_h2o_share,slope_deg,roughness_deg,relief_m,surf_pressure_Pa,elevation_m
+moon-shackleton-rim,Moon,Shackleton crater rim,Rim of Shackleton crater near the south pole.,-89.45,137.0,64.4339331158238,,,,322.303,0.9592169657422512,,24.694742879352223,8.773047050555087,1210.0288507343785,0.0,-747.3069816867863
+moon-connecting-ridge,Moon,Shackleton to de Gerlache ridge,Sunlit ridge between Shackleton and de Gerlache craters.,-89.45,222.7,125.37100492610838,,,,314.825,0.2972085385878489,,9.717372251519546,5.045113059084365,249.94418339927287,0.0,1467.9277171116582
+moon-shackleton-floor,Moon,Shackleton crater floor,Permanently shadowed crater floor.,-89.67,129.8,51.67476804123711,,,,104.593,1.0,,12.357216496903938,9.060413153828144,211.649714266346,0.0,-2565.6836208015466
+moon-malapert,Moon,Malapert massif,High massif with long sunlight and Earth visibility.,-86.0,357.1,144.1388715829625,,,,337.147,0.1665607120152574,,17.98151915007076,6.170103656708744,785.1509738637807,0.0,3758.027557499682
+moon-haworth,Moon,Haworth crater,Large permanently shadowed crater.,-87.45,354.8,38.9249274357929,,,,93.289,1.0,,4.101437205691545,4.304078684887267,177.4325043434178,0.0,-3337.6350185055035
+moon-cabeus,Moon,Cabeus crater,Shadowed crater where LCROSS detected water.,-85.3,317.9,68.46723486387648,,,,291.31,1.0,,7.3996623412678275,4.630945439815704,339.1232515562144,0.0,-3504.1814701015846
+moon-faustini,Moon,Faustini crater,Permanently shadowed crater.,-87.2,84.3,44.32551982018799,,,,89.337,1.0,,3.091697041277714,3.6653015678060856,93.6091027402297,0.0,-2669.833956416837
+mars-jezero,Mars,Jezero crater (Perseverance),Ancient river delta in an impact crater.,18.44,77.45,223.04,62.18,2.66,,,,0.03531,1.6288444675594451,1.622665663643272,284.7619477210291,715.63,-2311.3509933774835
+mars-gale,Mars,Gale crater (Curiosity),Crater floor at the foot of a layered mountain.,-4.59,137.44,225.32,63.09,5.92,,,,0.05415,5.275949463393643,4.542790957175583,1026.5807252365305,842.99,-3723.762237762238
+mars-elysium,Mars,Elysium Planitia (InSight),Smooth volcanic plain.,4.5,135.62,208.31,83.25,5.27,,,,0.05162,0.1931780545890939,0.1140443117074511,26.0696936350146,721.34,-2633.2162162162163
+mars-chryse,Mars,Chryse Planitia (Viking 1),Outflow-channel plain.,22.27,312.05,207.28,48.36,3.9,1.05,,,0.02622,0.177560012130643,0.1138915218220903,16.715664357214376,778.42,-3627.815789473684
+mars-vastitas,Mars,Vastitas Borealis (Phoenix),High-latitude plain with shallow ground ice.,68.22,234.25,215.62,56.52,,,,,,0.5650693399738551,0.4706899918555609,55.9174813911111,778.35,-4090.0539419087136
+mars-arcadia,Mars,Arcadia Planitia,Mid-latitude plain with shallow ice; candidate human landing zone.,40.0,200.0,,,,,,,0.04838,0.1438665452787631,0.0847473899068135,13.5181195514242,877.5350054787764,-3927.5052083333335

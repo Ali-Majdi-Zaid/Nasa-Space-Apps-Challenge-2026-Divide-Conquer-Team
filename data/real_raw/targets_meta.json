@@ -1,0 +1,132 @@
+[
+ {
+  "name": "surf_temp_mean_K",
+  "label": "Mean surface temperature",
+  "dimension": "thermal",
+  "quantity": "temperature",
+  "unit": "K",
+  "concept": "mean_temperature",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+  "priority": 9,
+  "note": "Moon: modelled annual average at 2 cm depth. Mars: annual mean from the climate database."
+ },
+ {
+  "name": "temp_swing_K",
+  "label": "Day-night temperature swing",
+  "dimension": "thermal",
+  "quantity": "temperature_delta",
+  "unit": "K_delta",
+  "concept": "diurnal_swing",
+  "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+  "priority": 8
+ },
+ {
+  "name": "wind_ms",
+  "label": "Mean wind speed",
+  "dimension": "dust",
+  "quantity": "speed",
+  "unit": "m_per_s",
+  "concept": "wind_speed",
+  "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+  "priority": 6
+ },
+ {
+  "name": "dust_tau",
+  "label": "Dust optical depth",
+  "dimension": "dust",
+  "quantity": "optical_depth",
+  "unit": "unitless",
+  "concept": "dust_optical_depth",
+  "version": "NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+  "priority": 6
+ },
+ {
+  "name": "surf_temp_max_K",
+  "label": "Annual maximum surface temperature",
+  "dimension": "thermal",
+  "quantity": "temperature",
+  "unit": "K",
+  "concept": "annual_max_temperature",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0)",
+  "priority": 8
+ },
+ {
+  "name": "shallow_ice_share",
+  "label": "Area with ice stable in the top metre",
+  "dimension": "water",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "shallow_ice_stability",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0)",
+  "priority": 9,
+  "note": "Share of the site where water ice would survive within 1 m of the surface."
+ },
+ {
+  "name": "subsurface_h2o_share",
+  "label": "Water in the shallow subsurface",
+  "dimension": "water",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "subsurface_water",
+  "version": "Mars Odyssey GRS element concentration maps (ODY-M-GRS-5-ELEMENTS-V1.0), smoothed 5x5 deg",
+  "priority": 7,
+  "note": "Water-equivalent hydrogen in roughly the top metre, as a weight fraction, from Odyssey GRS neutron data. 5x5 degree bins, so a regional value around the site."
+ },
+ {
+  "name": "slope_deg",
+  "label": "Mean slope",
+  "dimension": "terrain",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "slope",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+  "priority": 9,
+  "note": "Moon: slope of the Diviner surface triangles. Mars: slope over a 3.7 km baseline. Baselines differ."
+ },
+ {
+  "name": "roughness_deg",
+  "label": "Terrain roughness",
+  "dimension": "terrain",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "slope_variability",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+  "priority": 7,
+  "note": "Spread (standard deviation) of slope inside the site radius: how broken the ground is. Moon: across Diviner surface triangles. Mars: across MOLA grid cells. Baselines differ."
+ },
+ {
+  "name": "relief_m",
+  "label": "Relief within the site",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "relief",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+  "priority": 6,
+  "note": "Standard deviation of elevation inside the site radius."
+ },
+ {
+  "name": "surf_pressure_Pa",
+  "label": "Surface pressure",
+  "dimension": "physics",
+  "quantity": "pressure",
+  "unit": "Pa",
+  "concept": "surface_pressure",
+  "version": "MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0); NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739; NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716; NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489); NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean; NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom",
+  "priority": 7,
+  "uncertainty": 90.0,
+  "note": "Mars: from the climate database where entered, otherwise estimated from MOLA elevation as 610 Pa x exp(-elevation / 10.8 km); it also varies by roughly a quarter over the Martian year. Moon: set to 0 (no atmosphere), a physical prior."
+ },
+ {
+  "name": "elevation_m",
+  "label": "Elevation",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "elevation",
+  "version": "LRO Diviner Polar Resource Product v2 (LRO-L-DLRE-5-PRP-V2.0); MGS MOLA MEGDR 16 px/deg topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+  "priority": 1,
+  "comparable": false,
+  "note": "Measured from each body\u2019s own reference surface."
+ }
+]

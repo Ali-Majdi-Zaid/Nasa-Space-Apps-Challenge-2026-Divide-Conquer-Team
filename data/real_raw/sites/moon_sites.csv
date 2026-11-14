@@ -1,0 +1,8 @@
+target_id,body,name,lat,lon,radius_km,description
+moon-shackleton-rim,Moon,Shackleton crater rim,-89.45,137.0,5,Rim of Shackleton crater near the south pole.
+moon-connecting-ridge,Moon,Shackleton to de Gerlache ridge,-89.45,222.7,5,Sunlit ridge between Shackleton and de Gerlache craters.
+moon-shackleton-floor,Moon,Shackleton crater floor,-89.67,129.8,4,Permanently shadowed crater floor.
+moon-malapert,Moon,Malapert massif,-86.0,357.1,8,High massif with long sunlight and Earth visibility.
+moon-haworth,Moon,Haworth crater,-87.45,354.8,10,Large permanently shadowed crater.
+moon-cabeus,Moon,Cabeus crater,-85.3,317.9,10,Shadowed crater where LCROSS detected water.
+moon-faustini,Moon,Faustini crater,-87.2,84.3,10,Permanently shadowed crater.

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import astronomy, benchmark as bm, campaign, cleaning as cl, derived, planner
+from . import astronomy, benchmark as bm, campaign, campaign_map, cleaning as cl, derived, planner
 from .agent import Check, RelationshipAgent
 from .io import Dataset, load
 from .matching import MIN_DATA_SHARE, Matcher
@@ -26,6 +26,17 @@ _DASHBOARD = Path(__file__).resolve().parent.parent / "dashboard"
 def _clean(values, digits=4):
     """JSON-safe list: NaN -> None, rounded."""
     return [None if (v is None or np.isnan(v)) else round(float(v), digits) for v in values]
+
+
+_SOURCE_TAGS = [("NASA POWER", "NASA POWER climatology"), ("Diviner", "LRO Diviner"), ("MOLA", "MGS MOLA topography"),
+                ("terrain", "Terrain tiles"), ("InSight", "InSight TWINS/PS (PDS)"), ("REMS", "MSL REMS (PDS)"),
+                ("MEDA", "Mars 2020 MEDA (PDS)"), ("Phoenix", "Phoenix MET (PDS)"), ("Viking", "Viking Lander 1 (PDS)")]
+
+
+def data_sources(ds: Dataset) -> list[str]:
+    """Short names of the datasets behind the columns, from their provenance strings."""
+    text = " ".join(c.version for c in list(ds.earth_cols.values()) + list(ds.target_cols.values())).lower()
+    return [name for key, name in _SOURCE_TAGS if key.lower() in text]
 
 
 def build_payload(ds: Dataset, agent_result, matcher: Matcher, runs=None, cleaning=None, start=None) -> dict:
@@ -67,6 +78,7 @@ def build_payload(ds: Dataset, agent_result, matcher: Matcher, runs=None, cleani
 
     return dict(
         synthetic=ds.synthetic,
+        data_sources=data_sources(ds),
         generated=date.today().isoformat(),
         dims=DIMENSIONS,
         presets=PRESETS,
@@ -250,8 +262,10 @@ def run(data_dir: str | Path, out_dir: str | Path, max_tool_calls: int = 15, pro
 
     matcher = Matcher(ds, agent_result)
     payload = build_payload(ds, agent_result, matcher, runs, cleaning, start)
+    payload["campaign_map"] = True   # the dashboard embeds campaign_map.html
     (out / "relationships.json").write_text(json.dumps(payload["agent"], indent=1), encoding="utf-8")
     (out / "results.json").write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
     (out / "report.md").write_text(build_report(ds, agent_result, matcher, runs, cleaning, start), encoding="utf-8")
     (out / "dashboard.html").write_text(build_dashboard(payload), encoding="utf-8")
+    (out / "campaign_map.html").write_text(campaign_map.build(payload), encoding="utf-8")
     return dict(dataset=ds, agent=agent_result, matcher=matcher, payload=payload, out=out, runs=runs, cleaning=cleaning)

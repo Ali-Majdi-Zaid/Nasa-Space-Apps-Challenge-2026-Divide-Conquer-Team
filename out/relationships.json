@@ -1,25 +1,20 @@
 {
- "used": 2,
+ "used": 0,
  "max": 15,
  "runs": [
   {
-   "run": 17,
-   "used": 2,
+   "run": 25,
+   "used": 0,
    "max": 15,
    "log": [
     "Computed 'grazing_sun_share' for 422 Earth cells from latitude.",
     "Computed 'grazing_sun_share' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
     "Computed 'insolation_wm2' for 422 Earth cells from latitude.",
     "Computed 'insolation_wm2' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
-    "Equation review reused from the cache (library and metadata unchanged).",
-    "Language model proposed 14 pairings (saved to the cache).",
-    "Proposer suggested 14 candidate pairings.",
-    "Screened out shallow_ice_share ~ soil_wetness: The columns are tagged as different things ('shallow_ice_stability' and 'soil_moisture') with no registered relation between them.",
+    "Proposer suggested 13 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-    "Reused 10 decisions from the relationship store (data unchanged).",
-    "Tool call 1: roughness_deg ~ roughness_deg -> accepted (confidence 0.44)",
-    "Tool call 2: subsurface_h2o_share ~ soil_wetness -> accepted (confidence 0.50)",
-    "Run 17 finished: 12 accepted, 0 pending, 2 denied; 2 of 15 tool calls used.",
+    "Reused 12 decisions from the relationship store (data unchanged).",
+    "Run 25 finished: 12 accepted, 0 pending, 2 denied; 0 of 15 tool calls used.",
     "Derived 'daily_high_c' (Typical daily high) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'daily_low_c' (Typical daily low) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'liquid_window_c' (Liquid-water temperature window) from surface_pressure. [Magnus saturation vapour pressure fit: Alduchov & Eskridge (1996), J. Appl. Meteorol. 35, 601-609.]",
@@ -28,28 +23,55 @@
    ]
   },
   {
-   "run": 18,
+   "run": 26,
    "used": 0,
    "max": 15,
    "log": [
-    "Language model proposed 19 pairings (saved to the cache).",
-    "Proposer suggested 19 candidate pairings.",
-    "Screened out shallow_ice_share ~ soil_wetness: The columns are tagged as different things ('shallow_ice_stability' and 'soil_moisture') with no registered relation between them.",
+    "Proposer suggested 18 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
     "Reused 17 decisions from the relationship store (data unchanged).",
-    "Run 18 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
+    "Run 26 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
    ]
   }
  ],
  "log": [
-  "Language model proposed 19 pairings (saved to the cache).",
-  "Proposer suggested 19 candidate pairings.",
-  "Screened out shallow_ice_share ~ soil_wetness: The columns are tagged as different things ('shallow_ice_stability' and 'soil_moisture') with no registered relation between them.",
+  "Proposer suggested 18 candidate pairings.",
   "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
   "Reused 17 decisions from the relationship store (data unchanged).",
-  "Run 18 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
+  "Run 26 finished: 17 accepted, 0 pending, 2 denied; 0 of 15 tool calls used."
  ],
  "relationships": [
+  {
+   "id": "shallow_ice_share__none",
+   "target_col": "shallow_ice_share",
+   "earth_col": "",
+   "dimension": "water",
+   "verdict": "denied",
+   "confidence": 0.0,
+   "rationale": "",
+   "conversion": "",
+   "bandwidth": 0.0,
+   "sigma": 0.0,
+   "earth_lo": 0.0,
+   "earth_hi": 0.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Earth counterpart",
+     "outcome": "fail",
+     "detail": "No Earth column was proposed as a counterpart."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 26,
+   "pending_reason": "",
+   "target_label": "Area with ice stable in the top metre",
+   "earth_label": "No counterpart",
+   "target_source": "dataset",
+   "target_note": "Share of the site where water ice would survive within 1 m of the surface.",
+   "formula": ""
+  },
   {
    "id": "surf_temp_mean_K__temp_mean_c",
    "target_col": "surf_temp_mean_K",
@@ -383,52 +405,6 @@
    "earth_label": "Warmest-month daily high",
    "target_source": "dataset",
    "target_note": "",
-   "formula": ""
-  },
-  {
-   "id": "shallow_ice_share__soil_wetness",
-   "target_col": "shallow_ice_share",
-   "earth_col": "soil_wetness",
-   "dimension": "water",
-   "verdict": "denied",
-   "confidence": 0.0,
-   "rationale": "Earth soil wetness serves as a functional proxy for near-surface water ice abundance.",
-   "conversion": "",
-   "bandwidth": 0.0,
-   "sigma": 0.0,
-   "earth_lo": 0.0,
-   "earth_hi": 0.0,
-   "scale": "linear",
-   "checks": [
-    {
-     "name": "Columns exist",
-     "outcome": "pass",
-     "detail": "Both columns are present in the datasets."
-    },
-    {
-     "name": "Comparable across bodies",
-     "outcome": "pass",
-     "detail": "Neither column depends on a local reference."
-    },
-    {
-     "name": "Same physical quantity",
-     "outcome": "pass",
-     "detail": "Both are a fraction."
-    },
-    {
-     "name": "Concepts agree",
-     "outcome": "fail",
-     "detail": "The columns are tagged as different things ('shallow_ice_stability' and 'soil_moisture') with no registered relation between them."
-    }
-   ],
-   "scored": true,
-   "origin": "checked",
-   "decided_in_run": 18,
-   "pending_reason": "",
-   "target_label": "Area with ice stable in the top metre",
-   "earth_label": "Surface soil wetness",
-   "target_source": "dataset",
-   "target_note": "Share of the site where water ice would survive within 1 m of the surface.",
    "formula": ""
   },
   {
@@ -783,7 +759,7 @@
    "dimension": "terrain",
    "verdict": "denied",
    "confidence": 0.0,
-   "rationale": "Both measure terrain height relative to each body's standard reference surface.",
+   "rationale": "Both columns measure the same thing.",
    "conversion": "",
    "bandwidth": 0.0,
    "sigma": 0.0,
@@ -804,7 +780,7 @@
    ],
    "scored": true,
    "origin": "checked",
-   "decided_in_run": 18,
+   "decided_in_run": 26,
    "pending_reason": "",
    "target_label": "Elevation",
    "earth_label": "Elevation",

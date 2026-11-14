@@ -98,7 +98,7 @@ def main():
     for run in result["runs"]:
         for line in run["log"]:
             print(line)
-    print(f"\nWrote {result['out']}/report.md, dashboard.html, results.json, relationships.json, relationships.sqlite")
+    print(f"\nWrote {result['out']}/report.md, dashboard.html, campaign_map.html, results.json, relationships.json, relationships.sqlite")
 
 
 if __name__ == "__main__":

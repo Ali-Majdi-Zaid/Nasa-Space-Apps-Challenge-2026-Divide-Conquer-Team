@@ -61,7 +61,9 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
     lons = matcher.ds.earth["lon"].to_numpy(float)
     ids = matcher.ds.earth.index
     tb = np.nan_to_num(tiebreak, nan=-1.0)
-    out = dict(start=list(start) if start else None, rows=[])
+    out = dict(start=list(start) if start else None, rows=[], requirements=[r.label for r in reqs], masks=[],
+               scores=[None if np.isnan(v) else round(float(v), 3) for v in np.asarray(tiebreak, dtype=float)],
+               profiles=0)   # scores: overall match of each cell (0-1); profiles: distinct pass/fail patterns
     if not reqs:
         return out
 
@@ -72,6 +74,7 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
     rep: dict[int, int] = {}
     for i, row in enumerate(passes):
         m = int(sum(w for w, ok in zip(weights, row) if ok))
+        out["masks"].append(m)   # bit j set when this cell passes requirement j (the map page routes from these)
         if not m:
             continue
         if m not in rep:
@@ -86,6 +89,7 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
             elif tb[i] > tb[j]:
                 rep[m] = i
     masks = list(rep)
+    out["profiles"] = len(masks)
     goal = 0
     for m in masks:
         goal |= m
@@ -95,10 +99,13 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
     for k in range(1, max_sites + 1):
         best = None   # (covered, -km, order)
         budget = MAX_SUBSETS
+        n_cand = 0
+        stats: dict[int, list] = {}   # covered -> [how many combos reach it, their two shortest routes]
         for combo in combinations(range(len(masks)), min(k, len(masks))):
             budget -= 1
             if budget < 0:
                 break
+            n_cand += 1
             union = 0
             for i in combo:
                 union |= masks[i]
@@ -107,12 +114,15 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
                 continue
             idx = [rep[masks[i]] for i in combo]
             order, km = _best_order(idx, lats, lons, start)
+            st = stats.setdefault(covered, [0, []])
+            st[0] += 1
+            st[1] = sorted(st[1] + [km])[:2]
             if best is None or (covered, -km) > (best[0], -best[1]):
                 best = (covered, km, order, union)
+        exact = budget >= 0
         if budget < 0:   # greedy fallback: grow the best (k-1)-route by its best extension
             prev = out["rows"][-1] if out["rows"] else None
-            chosen = [int(np.argmax([popcount(m) for m in masks]))] if prev is None else None
-            # keep it simple: extend previous stops with the mask adding most coverage
+            # extend the previous row's stops with the cell that adds the most coverage
             have = 0
             stops = [s["index"] for s in (prev["stops"] if prev else [])]
             for s in stops:
@@ -126,13 +136,19 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
             for s in order:
                 union |= int(sum(w for w, ok in zip(weights, passes[s]) if ok))
             best = (popcount(union), km, order, union)
+            stats = {}
         covered, km, order, union = best
+        st = stats.get(covered, [1, [km]])
+        runner = st[1][1] if len(st[1]) > 1 else None
         out["rows"].append(dict(
             k=len(order), covered=covered,
             labels=[reqs[j].label for j in range(len(reqs)) if union >> j & 1],
             km=round(km, 0),
             stops=[dict(cell_id=ids[i], index=int(i), lat=round(lats[i], 2), lon=round(lons[i], 2))
-                   for i in order]))
+                   for i in order],
+            # the evidence for "best": every way of choosing k profiles was examined (unless exact is False),
+            # `ties` of them reach this coverage, and the next shortest of those is `runner_up_km` long
+            candidates=n_cand, ties=int(st[0]), runner_up_km=None if runner is None else round(runner, 0), exact=exact))
         if covered >= max_cover:
             break   # more sites cannot cover more; the curve is complete
     return out

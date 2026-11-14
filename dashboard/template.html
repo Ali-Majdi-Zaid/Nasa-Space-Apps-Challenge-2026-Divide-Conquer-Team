@@ -59,6 +59,7 @@ a { color: inherit; }
 header p { margin: .2rem 0 0; color: var(--muted); }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .themebtn { flex: none; padding: .35rem .75rem; background: var(--surface); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; font-size: .9rem; }
+.campmap { display: block; width: 100%; height: 42rem; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); }
 .notice { margin: .9rem 0 0; padding: .55rem .8rem; border-left: 4px solid var(--warn); background: var(--surface); font-size: .9rem; max-width: none; }
 button, select, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -264,7 +265,7 @@ code { font-size: .85em; word-break: break-all; }
   var D = __PAYLOAD__;
   var LAND = __LAND__;   // land outlines: rings of [lon, lat, ...] in tenths of a degree (Natural Earth, public domain)
   var UNITS = { degC: "°C", degC_delta: "°C", K_delta: "K", deg: "°", fraction: "", unitless: "", index: "",
-                m_per_s: "m/s", per_1000km2: "per 1000 km²", days_per_year: "days/yr", mm_per_day: "mm/day" };
+                m_per_s: "m/s", per_1000km2: "per 1000 km²", days_per_year: "days/yr", mm_per_day: "mm/day", W_per_m2: "W/m²" };
   var SHORT = { terrain: "Terrain", thermal: "Temperature", illumination: "Light", water: "Water, ice", dust: "Dust, wind",
                 geology: "Geology", habitability: "Habitability", physics: "Atmosphere" };
   var WORDS = { match: "testable", partial: "partly", breaks_down: "breaks down", not_tested: "not tested yet" };
@@ -640,7 +641,7 @@ code { font-size: .85em; word-break: break-all; }
   }
 
   // ------------------------------------------------- field campaign routing
-  var campState = { start: (live.t.campaign && live.t.campaign.start) || null };
+  var campState = { start: undefined };   // undefined until first drawn: then the pipeline's start point, if any
 
   function haverKm(la1, lo1, la2, lo2) {
     var r = Math.PI / 180, a = Math.sin((la2 - la1) * r / 2), b = Math.sin((lo2 - lo1) * r / 2);
@@ -710,16 +711,42 @@ code { font-size: .85em; word-break: break-all; }
     return rows;
   }
 
-  function campaignSection(nReq) {
+  function sameStart(a, b) { return (!a && !b) || (!!a && !!b && a[0] === b[0] && a[1] === b[1]); }
+
+  function mapUrl() {
     var s = campState.start;
-    var rows = campaignCurve(s);
+    return "campaign_map.html?target=" + encodeURIComponent(live.t.id) + (s ? "#start=" + s[0] + "," + s[1] : "#free");
+  }
+
+  function campaignSection(nReq) {
+    var pre = live.t.campaign;
+    if (campState.start === undefined) campState.start = (pre && pre.start) || null;
     var h = '<h3>Field campaign: cost against coverage</h3>' +
       '<p class="muted small">Heavy equipment that needs setting up favours fewer sites; portable instruments favour fewer kilometres. ' +
-      'Each row is the best campaign for that number of sites: most requirements covered, shortest route among ties.</p>' +
-      '<p>Start from latitude <input id="camp-lat" type="number" step="any" min="-90" max="90" style="width:6em" value="' + (s ? s[0] : "") + '"> ' +
+      'Each row is the best campaign for that number of sites: most requirements covered, shortest route among ties. ' +
+      'Pick the row that matches your equipment.</p>' +
+      '<div id="camp-section">' + campaignInner(nReq) + "</div>";
+    if (D.campaign_map) {
+      h += '<h3>On the map</h3><p class="muted small">Click the map to set the start point, or drag the red pin; the table above follows. ' +
+        'The cursor\'s latitude and longitude show live; click a campaign card in the map panel to draw it. Map tiles need an internet connection. ' +
+        '<a id="camp-map-link" href="' + mapUrl() + '" target="_blank" rel="noopener">Open the map in its own tab</a>.</p>' +
+        '<iframe id="camp-map" class="campmap" src="' + mapUrl() + '" title="Campaign routes on a world map"></iframe>';
+    }
+    return h;
+  }
+
+  function campaignInner(nReq) {
+    var pre = live.t.campaign, s = campState.start;
+    // The pipeline precomputed the curve for its own start point (the report shows the same rows);
+    // any other start point is routed here in the browser from the same pass/fail requirements.
+    var precomputed = !!(pre && pre.rows && sameStart(s, pre.start));
+    var rows = precomputed ? pre.rows : campaignCurve(s);
+    var h = '<p>Start from latitude <input id="camp-lat" type="number" step="any" min="-90" max="90" style="width:6em" value="' + (s ? s[0] : "") + '"> ' +
       'longitude <input id="camp-lon" type="number" step="any" min="-180" max="180" style="width:6em" value="' + (s ? s[1] : "") + '"> ' +
       '<button type="button" onclick="EMcampaign()">Plan routes</button>' +
-      (s ? ' <button type="button" onclick="EMcampaign(true)">Clear start</button>' : "") + "</p>";
+      (s ? ' <button type="button" onclick="EMcampaign(true)">Clear start</button>' : "") +
+      ' <span class="muted small">' + (s ? "Routes start at " + ll(s[0], s[1]) + "." : "No start point: the route is free-floating, so its length is the distance between the stops only.") +
+      (precomputed ? "" : " Computed in your browser.") + "</span></p>";
     if (!rows.length) return h + "<p>No requirement is testable, so there is nothing to route.</p>";
     h += '<div class="scroll"><table><thead><tr><th>Sites</th><th>Covers</th><th class="num">Route km</th><th>Stops in order' + (s ? " (from your start)" : "") + "</th></tr></thead><tbody>";
     rows.forEach(function (r) {
@@ -729,11 +756,28 @@ code { font-size: .85em; word-break: break-all; }
     return h + "</tbody></table></div>";
   }
 
+  document.getElementById("view").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.id && e.target.id.indexOf("camp-") === 0) EMcampaign();
+  });
+  function redrawCampaign(tellMap) {
+    var box = document.getElementById("camp-section");
+    if (box) box.innerHTML = campaignInner(live.t.plan.requirements.length);
+    var link = document.getElementById("camp-map-link");
+    if (link) link.setAttribute("href", mapUrl());
+    var frame = document.getElementById("camp-map");
+    if (tellMap && frame && frame.contentWindow) frame.contentWindow.postMessage({ type: "earthmimic-set-start", target: live.t.id, start: campState.start }, "*");
+  }
   window.EMcampaign = function (clear) {
     var la = parseFloat(document.getElementById("camp-lat").value), lo = parseFloat(document.getElementById("camp-lon").value);
-    campState.start = (clear || isNaN(la) || isNaN(lo)) ? null : [la, lo];
-    render();
+    campState.start = (clear || isNaN(la) || isNaN(lo)) ? null : [Math.max(-90, Math.min(90, la)), Math.round((((lo + 180) % 360 + 360) % 360 - 180) * 100) / 100];
+    redrawCampaign(true);
   };
+  window.addEventListener("message", function (e) {   // the embedded map reports a start point set by clicking it
+    var d = e.data;
+    if (!d || d.type !== "earthmimic-start" || !live || d.target !== live.t.id) return;
+    campState.start = d.start ? [d.start[0], d.start[1]] : null;
+    redrawCampaign(false);
+  });
 
   function viewValidation() {
     var rows = [];

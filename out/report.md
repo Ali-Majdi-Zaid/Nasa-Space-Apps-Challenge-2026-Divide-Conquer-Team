@@ -16,17 +16,17 @@ Earth cells: 422. Targets: 13.
 
 ## Relationship agent
 
-- Run 17: 2 of 15 tool calls used.
-- Run 18: 0 of 15 tool calls used.
+- Run 25: 0 of 15 tool calls used.
+- Run 26: 0 of 15 tool calls used.
 
 | Target column | Earth column | Status | Confidence | Deciding check |
 |---|---|---|---|---|
+| shallow_ice_share | - | denied | 0.00 | No Earth column was proposed as a counterpart. |
 | surf_temp_mean_K | temp_mean_c | accepted | 1.00 | All checks passed. |
 | temp_swing_K | temp_swing_c | accepted | 1.00 | All checks passed. |
 | wind_ms | wind_ms | accepted (input only) | 1.00 | Wind speed alone ignores how thin the air is, so the same speed means very different forces on different worlds. Sites are compared on wind force instead. |
 | dust_tau | dust_aod | accepted | 1.00 | All checks passed. |
 | surf_temp_max_K | warm_month_high_c | accepted | 0.60 | Related but not identical concepts; confidence starts at 0.60. |
-| shallow_ice_share | soil_wetness | denied | 0.00 | The columns are tagged as different things ('shallow_ice_stability' and 'soil_moisture') with no registered relation between them. |
 | subsurface_h2o_share | soil_wetness | accepted | 0.50 | Related but not identical concepts; confidence starts at 0.50. |
 | slope_deg | slope_deg | accepted | 0.99 | All checks passed. |
 | roughness_deg | roughness_deg | accepted | 0.44 | Moves almost in step with 'slope_deg' (rank correlation +0.96); counted at half weight so the same signal is not counted twice. |
@@ -94,6 +94,14 @@ Test plan: 4 requirements can be tested on Earth. The best single site passes 2.
 - Southern mid-latitudes (55.0°S, 128.6°W): terrain roughness, relief within the site
 - Northern mid-latitudes (25.0°N, 38.2°E): annual maximum surface temperature
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 2 of 4 | 0 | Southern mid-latitudes (65.0°S, 108.0°E) |
+| 2 | 3 of 4 | 5,837 | Southern mid-latitudes (65.0°S, 108.0°E) -> Southern mid-latitudes (55.0°S, 128.6°W) |
+| 3 | 4 of 4 | 17,460 | Northern mid-latitudes (25.0°N, 38.2°E) -> Southern mid-latitudes (65.0°S, 108.0°E) -> Southern mid-latitudes (55.0°S, 128.6°W) |
+
 ## Moon: Shackleton to de Gerlache ridge
 
 Sunlit ridge between Shackleton and de Gerlache craters.
@@ -128,6 +136,14 @@ Test plan: 5 requirements can be tested on Earth. The best single site passes 2.
 - McMurdo Dry Valleys (77.5°S, 162.0°E): relief within the site, share of the day above freezing
 - Northern mid-latitudes (25.0°N, 136.4°E): mean slope, terrain roughness
 - Northern mid-latitudes (55.0°N, 94.3°E): annual maximum surface temperature, relief within the site
+
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 2 of 5 | 0 | McMurdo Dry Valleys (77.5°S, 162.0°E) |
+| 2 | 4 of 5 | 4,775 | Northern mid-latitudes (25.0°N, 136.4°E) -> Northern mid-latitudes (55.0°N, 94.3°E) |
+| 3 | 5 of 5 | 5,561 | Northern mid-latitudes (25.0°N, 136.4°E) -> Northern mid-latitudes (55.0°N, 128.6°E) -> Northern mid-latitudes (55.0°N, 94.3°E) |
 
 ## Moon: Shackleton crater floor
 
@@ -164,6 +180,13 @@ Test plan: 4 requirements can be tested on Earth. The best single site passes 2.
 - McMurdo Dry Valleys (77.5°S, 162.0°E): relief within the site, share of the day above freezing
 - Southern mid-latitudes (55.0°S, 128.6°W): mean slope, terrain roughness
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 2 of 4 | 0 | McMurdo Dry Valleys (77.5°S, 162.0°E) |
+| 2 | 4 of 4 | 3,614 | McMurdo Dry Valleys (77.5°S, 162.0°E) -> Southern mid-latitudes (55.0°S, 128.6°W) |
+
 ## Moon: Malapert massif
 
 High massif with long sunlight and Earth visibility.
@@ -199,6 +222,13 @@ Test plan: 3 requirements can be tested on Earth. The best single site passes 2.
 - Southern mid-latitudes (65.0°S, 108.0°E): relief within the site, share of the day above freezing
 - Southern mid-latitudes (55.0°S, 128.6°W): terrain roughness, relief within the site
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 2 of 3 | 0 | Southern mid-latitudes (65.0°S, 108.0°E) |
+| 2 | 3 of 3 | 3,568 | Antarctic (85.0°S, 180.0°W) -> Southern mid-latitudes (55.0°S, 128.6°W) |
+
 ## Moon: Haworth crater
 
 Large permanently shadowed crater.
@@ -232,6 +262,13 @@ Test plan: 4 requirements can be tested on Earth. The best single site passes 3.
 
 - McMurdo Dry Valleys (77.5°S, 162.0°E): mean slope, relief within the site, share of the day above freezing
 - Southern mid-latitudes (65.0°S, 108.0°E): mean slope, terrain roughness, share of the day above freezing
+
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 3 of 4 | 0 | McMurdo Dry Valleys (77.5°S, 162.0°E) |
+| 2 | 4 of 4 | 2,244 | McMurdo Dry Valleys (77.5°S, 162.0°E) -> Southern mid-latitudes (65.0°S, 108.0°E) |
 
 ## Moon: Cabeus crater
 
@@ -267,6 +304,13 @@ Test plan: 5 requirements can be tested on Earth. The best single site passes 4.
 - Southern mid-latitudes (45.0°S, 108.0°W): annual maximum surface temperature, mean slope, terrain roughness, relief within the site
 - Northern mid-latitudes (65.0°N, 132.0°W): annual maximum surface temperature, relief within the site, share of the day above freezing
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 4 of 5 | 0 | Southern mid-latitudes (45.0°S, 108.0°W) |
+| 2 | 5 of 5 | 7,392 | Southern mid-latitudes (65.0°S, 108.0°E) -> Southern mid-latitudes (45.0°S, 108.0°W) |
+
 ## Moon: Faustini crater
 
 Permanently shadowed crater.
@@ -296,6 +340,13 @@ Test plan: 4 requirements can be tested on Earth. The best single site passes 3.
 
 - McMurdo Dry Valleys (77.5°S, 162.0°E): mean slope, terrain roughness, share of the day above freezing
 - Antarctic (75.0°S, 60.0°W): terrain roughness, relief within the site, share of the day above freezing
+
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 3 of 4 | 0 | McMurdo Dry Valleys (77.5°S, 162.0°E) |
+| 2 | 4 of 4 | 2,853 | McMurdo Dry Valleys (77.5°S, 162.0°E) -> Antarctic (75.0°S, 60.0°W) |
 
 ## Mars: Jezero crater (Perseverance)
 
@@ -332,6 +383,14 @@ Test plan: 8 requirements can be tested on Earth. The best single site passes 6.
 - Northern mid-latitudes (35.0°N, 80.7°E): mean slope, terrain roughness, relief within the site, time with the sun low on the horizon, share of the day above freezing
 - Antarctic (85.0°S, 60.0°E): mean surface temperature, mean solar energy flux, share of the day above freezing
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 6 of 8 | 0 | Arctic (75.0°N, 20.0°W) |
+| 2 | 7 of 8 | 5,564 | Arctic (75.0°N, 20.0°W) -> Northern mid-latitudes (25.0°N, 16.4°W) |
+| 3 | 8 of 8 | 10,838 | Tropics (5.0°S, 80.0°W) -> Antarctic (75.0°S, 140.0°W) -> Antarctic (85.0°S, 60.0°E) |
+
 ## Mars: Gale crater (Curiosity)
 
 Crater floor at the foot of a layered mountain.
@@ -367,6 +426,14 @@ Test plan: 9 requirements can be tested on Earth. The best single site passes 6.
 - Antarctic (85.0°S, 60.0°E): mean surface temperature, mean solar energy flux, share of the day above freezing
 - Tropics (5.0°S, 140.0°E): terrain roughness, time with the sun low on the horizon, wind force on surfaces
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 6 of 9 | 0 | Southern mid-latitudes (65.0°S, 108.0°E) |
+| 2 | 8 of 9 | 7,133 | Southern mid-latitudes (65.0°S, 108.0°E) -> Tropics (5.0°S, 140.0°E) |
+| 3 | 9 of 9 | 9,574 | Antarctic (85.0°S, 60.0°E) -> Southern mid-latitudes (65.0°S, 108.0°E) -> Tropics (5.0°S, 140.0°E) |
+
 ## Mars: Elysium Planitia (InSight)
 
 Smooth volcanic plain.
@@ -401,6 +468,14 @@ Test plan: 9 requirements can be tested on Earth. The best single site passes 5.
 - Tropics (5.0°S, 70.0°W): mean slope, terrain roughness, relief within the site, time with the sun low on the horizon, wind force on surfaces
 - Antarctic (75.0°S, 100.0°E): mean surface temperature, relief within the site, mean solar energy flux, share of the day above freezing
 - Antarctic (75.0°S, 20.0°W): mean solar energy flux, typical daily high, share of the day above freezing
+
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 5 of 9 | 0 | Antarctic (75.0°S, 180.0°W) |
+| 2 | 8 of 9 | 8,398 | Antarctic (75.0°S, 20.0°W) -> Tropics (5.0°S, 70.0°W) |
+| 3 | 9 of 9 | 10,060 | Antarctic (85.0°S, 60.0°E) -> Antarctic (75.0°S, 20.0°W) -> Tropics (5.0°S, 70.0°W) |
 
 ## Mars: Chryse Planitia (Viking 1)
 
@@ -438,6 +513,13 @@ Test plan: 7 requirements can be tested on Earth. The best single site passes 5.
 - Antarctic (75.0°S, 140.0°E): mean slope, relief within the site, mean solar energy flux, typical daily high, share of the day above freezing
 - Tropics (15.0°N, 77.1°E): mean slope, terrain roughness, relief within the site, time with the sun low on the horizon
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 5 of 7 | 0 | Arctic (75.0°N, 140.0°E) |
+| 2 | 7 of 7 | 6,678 | Tropics (15.0°S, 15.4°E) -> Antarctic (75.0°S, 20.0°E) |
+
 ## Mars: Vastitas Borealis (Phoenix)
 
 High-latitude plain with shallow ground ice.
@@ -472,6 +554,14 @@ Test plan: 7 requirements can be tested on Earth. The best single site passes 5.
 - Antarctic (75.0°S, 60.0°E): mean slope, relief within the site, typical daily high, share of the day above freezing
 - Antarctic (85.0°S, 60.0°E): mean surface temperature, share of the day above freezing
 
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 5 of 7 | 0 | Northern mid-latitudes (65.0°N, 108.0°E) |
+| 2 | 6 of 7 | 1,417 | Antarctic (75.0°S, 60.0°E) -> Southern mid-latitudes (65.0°S, 84.0°E) |
+| 3 | 7 of 7 | 2,529 | Antarctic (85.0°S, 60.0°E) -> Antarctic (75.0°S, 60.0°E) -> Southern mid-latitudes (65.0°S, 84.0°E) |
+
 ## Mars: Arcadia Planitia
 
 Mid-latitude plain with shallow ice; candidate human landing zone.
@@ -503,3 +593,11 @@ Test plan: 6 requirements can be tested on Earth. The best single site passes 4.
 - Arctic (75.0°N, 140.0°E): mean slope, terrain roughness, relief within the site, mean solar energy flux
 - Northern mid-latitudes (35.0°N, 80.7°W): mean slope, terrain roughness, relief within the site, time with the sun low on the horizon
 - Northern mid-latitudes (25.0°N, 27.3°E): water in the shallow subsurface, mean slope, terrain roughness, relief within the site
+
+Field campaign (free-floating route): best coverage and shortest route per number of sites. Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.
+
+| Sites | Requirements covered | Route km | Stops in order |
+|---|---|---|---|
+| 1 | 4 of 6 | 0 | Arctic (75.0°N, 140.0°E) |
+| 2 | 5 of 6 | 1,910 | Northern mid-latitudes (35.0°N, 43.5°E) -> Northern mid-latitudes (25.0°N, 27.3°E) |
+| 3 | 6 of 6 | 6,529 | Northern mid-latitudes (25.0°N, 27.3°E) -> Northern mid-latitudes (35.0°N, 43.5°E) -> Arctic (75.0°N, 20.0°E) |

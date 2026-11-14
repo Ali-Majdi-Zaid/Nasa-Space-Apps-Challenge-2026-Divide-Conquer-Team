@@ -12,12 +12,12 @@ from unittest import mock
 import numpy as np
 import pandas as pd
 
-from earthmimic import astronomy, cleaning, demo_data, derived, pipeline, planner
+from earthmimic import astronomy, campaign, campaign_map, cleaning, demo_data, derived, pipeline, planner
 from earthmimic.agent import LLMProposer, Proposal, RelationshipAgent
 from earthmimic.benchmark import known_analog_benchmark
 from earthmimic.io import load
 from earthmimic.llm import CachedProposer, anthropic_complete
-from earthmimic.matching import Matcher
+from earthmimic.matching import Matcher, haversine_km
 from earthmimic.presets import PRESETS
 from earthmimic.schema import BODIES, DIMENSIONS, convert, convert_delta
 from earthmimic.sensitivity import stability
@@ -431,6 +431,99 @@ class TestPlanner(Base):
         self.assertLessEqual(next(r for r in reqs if r.target_col == "noon_sun_elev_deg").hi, 90.0)
 
 
+class TestCampaign(Base):
+    def _check(self, tid, curve, start):
+        reqs, _ = planner.requirements(self.matcher, tid)
+        passes = planner.pass_matrix(self.matcher, reqs)
+        lat, lon = self.ds.earth["lat"].to_numpy(float), self.ds.earth["lon"].to_numpy(float)
+        rows = curve["rows"]
+        self.assertEqual(curve["start"], list(start) if start else None)
+        for n, row in enumerate(rows, 1):
+            self.assertEqual(row["k"], n)                       # one more site per row
+            self.assertEqual(len(row["stops"]), n)
+            self.assertEqual(len({s["cell_id"] for s in row["stops"]}), n)
+            covered = {j for s in row["stops"] for j in range(len(reqs)) if passes[s["index"], j]}
+            self.assertEqual(len(covered), row["covered"])        # every claimed pass is real
+            self.assertEqual(sorted(row["labels"]), sorted(reqs[j].label for j in covered))
+            km, prev = 0.0, start
+            for s in row["stops"]:
+                self.assertEqual(self.ds.earth.index[s["index"]], s["cell_id"])
+                if prev is not None:
+                    km += haversine_km(prev[0], prev[1], lat[s["index"]], lon[s["index"]])
+                prev = (lat[s["index"]], lon[s["index"]])
+            self.assertAlmostEqual(km, row["km"], delta=1.0)     # the printed length is the route's length
+        for a, b in zip(rows, rows[1:]):
+            self.assertGreaterEqual(b["covered"], a["covered"])  # more sites never cover less
+        self.assertEqual(curve["requirements"], [r.label for r in reqs])
+        self.assertEqual(len(curve["masks"]), len(self.ds.earth))   # one pass/fail mask per cell, for the map page
+        self.assertEqual(len(curve["scores"]), len(self.ds.earth))
+        for row in rows:   # the evidence that a row is the best: how many alternatives, how many tie, the runner-up
+            self.assertGreaterEqual(row["candidates"], 1)
+            self.assertGreaterEqual(row["ties"], 1)
+            self.assertIn(row["exact"], (True, False))
+            if row["runner_up_km"] is not None:
+                self.assertGreaterEqual(row["runner_up_km"], row["km"])
+        for i, m in enumerate(curve["masks"]):
+            self.assertEqual([j for j in range(len(reqs)) if m >> j & 1], [j for j in range(len(reqs)) if passes[i, j]])
+        return reqs, passes
+
+    def test_curve_ends_at_everything_coverable(self):
+        for tid in self.ds.targets.index:
+            total = self.matcher.score(tid, BAL).total
+            curve = campaign.curve(self.matcher, tid, total)
+            reqs, passes = self._check(tid, curve, None)
+            pl = planner.plan(self.matcher, tid, total)
+            coverable = len(pl.requirements) - len(pl.uncovered)
+            if curve["rows"]:
+                self.assertEqual(curve["rows"][-1]["covered"], coverable)
+                self.assertEqual(curve["rows"][0]["covered"], int(passes.sum(axis=1).max()))
+                self.assertLessEqual(curve["rows"][-1]["k"], len(pl.sites))   # never worse than the test plan
+            else:
+                self.assertEqual(coverable, 0)
+
+    def test_start_point_is_part_of_the_route(self):
+        tid = self.ds.targets.index[0]
+        total = self.matcher.score(tid, BAL).total
+        start = (33.3, 44.4)
+        curve = campaign.curve(self.matcher, tid, total, start)
+        self._check(tid, curve, start)
+        free = campaign.curve(self.matcher, tid, total)
+        self.assertEqual([r["covered"] for r in curve["rows"]], [r["covered"] for r in free["rows"]])  # coverage does not depend on where you start
+        first = curve["rows"][0]["stops"][0]
+        self.assertAlmostEqual(curve["rows"][0]["km"], haversine_km(33.3, 44.4, first["lat"], first["lon"]), delta=1.0)
+
+    def test_greedy_fallback_stays_consistent(self):
+        tid = self.ds.targets.index[0]
+        total = self.matcher.score(tid, BAL).total
+        with mock.patch.object(campaign, "MAX_SUBSETS", 1):
+            curve = campaign.curve(self.matcher, tid, total, (10.0, 20.0))
+        self.assertTrue(curve["rows"])
+        self._check(tid, curve, (10.0, 20.0))
+
+
+class TestCampaignMap(Base):
+    def test_map_page_carries_every_target_and_the_sync_protocol(self):
+        payload = self.run_["payload"]
+        self.assertTrue(payload["campaign_map"])
+        html = (self.tmp / "out" / "campaign_map.html").read_text(encoding="utf-8")
+        for t in payload["targets"]:
+            self.assertIn(json.dumps(t["name"])[1:-1], html)
+        for needle in ("earthmimic-start", "earthmimic-set-start", "maplibre-gl", "openfreemap", "World_Imagery", "mousemove"):
+            self.assertIn(needle, html)
+        for placeholder in ("__DATA__", "__VERSION__"):
+            self.assertNotIn(placeholder, html)
+        data = campaign_map.map_data(payload)
+        self.assertIsInstance(data["sources"], list)
+        for t in data["targets"]:   # every requirement carries its band and the Earth column to read the value from
+            self.assertEqual([d["label"] for d in t["detail"]], t["requirements"])
+            for d in t["detail"]:
+                self.assertIn(d["earth_col"], data["earth"]["cols"])
+                self.assertLessEqual(d["lo"], d["hi"])
+        self.assertEqual(len(data["earth"]["name"]), len(self.ds.earth))
+        self.assertTrue(all(data["earth"]["name"]))
+        self.assertEqual([t["id"] for t in data["targets"]], list(self.ds.targets.index))
+
+
 class TestValidation(Base):
     def test_planted_cells_are_recovered(self):
         """Recovery test: cells built to resemble a target must rank near the top for it."""
@@ -456,7 +549,7 @@ class TestValidation(Base):
 
 class TestOutputs(Base):
     def test_files_are_written(self):
-        for name in ("report.md", "dashboard.html", "results.json", "relationships.json", "relationships.sqlite"):
+        for name in ("report.md", "dashboard.html", "results.json", "relationships.json", "relationships.sqlite", "campaign_map.html"):
             self.assertTrue((self.tmp / "out" / name).stat().st_size > 0)
         html = (self.tmp / "out" / "dashboard.html").read_text()
         self.assertNotIn("__PAYLOAD__", html)

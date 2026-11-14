@@ -72,7 +72,7 @@ UNIT_CONVERSIONS = {
 _PRETTY_UNITS = {
     "degC": "°C", "degC_delta": "°C", "K_delta": "K", "deg": "°", "fraction": "", "unitless": "",
     "index": "", "m_per_s": "m/s", "per_1000km2": "per 1000 km²", "days_per_year": "days/yr",
-    "share_of_year": "% of the year", "mm_per_day": "mm/day",
+    "share_of_year": "% of the year", "mm_per_day": "mm/day", "W_per_m2": "W/m²", "kPa": "kPa", "m": "m",
 }
 
 

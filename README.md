@@ -16,8 +16,9 @@ Built for the NASA Space Apps challenge on planetary analogs.
     pip install -r requirements.txt
     python -m earthmimic demo            # generate raw demo data, clean it, run everything
     open out/dashboard.html              # interactive dashboard (one self-contained file)
+    open out/campaign_map.html           # campaign routes on a real world map; click to set the start
     cat out/report.md                    # the same results as text
-    python -m unittest discover -s tests # 69 tests
+    python -m unittest discover -s tests # 73 tests
 
 Python 3.10 or newer. One test also uses Node.js if it is installed.
 
@@ -38,6 +39,8 @@ Python 3.10 or newer. One test also uses Node.js if it is installed.
 | Sensitivity | `sensitivity.py` | Re-ranks 300 times with perturbed weights and confidences. |
 | Validation | `benchmark.py` | Do known analogs rank near the top unprompted? Which top sites are far from every known analog? |
 | Test planner | `planner.py` | Turns each testable property into a pass/fail requirement and finds the smallest set of sites that together pass all of them. |
+| Campaign planner | `campaign.py` | For each number of sites, the sites that cover the most requirements and the shortest route between them: a cost-coverage curve. |
+| Campaign map | `campaign_map.py` | A real world map (MapLibre GL: vector tiles, satellite, 3D globe) of every Earth cell and the campaign routes, with live cursor coordinates; click it or type coordinates to set the start. |
 | Real-data ingestion | `ingest.py` | Downloads LRO Diviner, MGS MOLA, NASA POWER and Earth terrain data, merges hand-entered Mars climate values, and builds the raw data folder. |
 | Language model | `llm.py` | Optional: lets a model propose pairings. Proposals are cached, and still have to pass every check. |
 | Dashboard | `dashboard/` | Six views: Analogs, Limits, Test plan, Validation, Agent, Data. Re-scores live in the browser. |
@@ -54,7 +57,15 @@ back to system fonts without internet).
   target lies beyond anything on Earth.
 - **Limits:** a matrix of every target against every dimension, showing what
   is testable, partly testable, or breaks down.
-- **Test plan:** which site covers which requirement, and the tolerance bands.
+- **Test plan:** which site covers which requirement, the tolerance bands, and
+  the field campaign curve: for one, two, three... sites, the most requirements
+  covered and the shortest route. Type a starting point, or click the embedded
+  world map (`campaign_map.html`, also usable on its own) to set it; the routes
+  are recomputed in the browser and drawn on the map as great-circle arcs.
+  The map shows the cursor's latitude and longitude live, places every marker
+  by coordinates, and offers street, light, dark and satellite base maps on a
+  flat map or a 3D globe. It needs an internet connection for the map tiles;
+  everything else works offline.
 - **Validation, Agent, Data:** rankings of known analogs, the agent's
   decisions, and the cleaning report.
 
@@ -111,6 +122,11 @@ At each target site a property is one of:
 
     python -m earthmimic fetch --out data/real_raw
     python -m earthmimic run --raw data/real_raw --data data/real --out out
+
+Add `--start LAT,LON` (for example `--start 33.3,44.4`) to route the field
+campaigns in the report and dashboard from your own base; without it the
+routes are free-floating and the dashboard lets you type a start later, or
+click one on the map.
 
 `fetch` needs internet and about 700 MB of disk. It pulls together five
 sources, each read according to its published label or documentation:
@@ -246,7 +262,8 @@ and the run log says so.
 - Sun geometry assumes a circular orbit and ignores terrain shadowing and
   refraction. Daily high and low are approximated as mean plus or minus half
   the day-night swing. The boiling point uses the Magnus approximation.
-- The test planner minimises the number of sites. It does not yet know travel
-  cost, access or permits.
+- The campaign planner measures travel as great-circle distance between the
+  stops. It does not yet know roads, access or permits, and it visits one
+  representative cell per distinct set of passed requirements.
 - Similarity is computed per property. It does not yet compare imagery,
   spectra or spatial texture.

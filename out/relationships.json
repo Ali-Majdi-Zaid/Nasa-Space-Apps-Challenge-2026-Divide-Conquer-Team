@@ -1,32 +1,21 @@
 {
- "used": 18,
+ "used": 0,
  "max": 15,
  "runs": [
   {
-   "run": 1,
-   "used": 13,
+   "run": 21,
+   "used": 0,
    "max": 15,
    "log": [
     "Computed 'grazing_sun_share' for 494 Earth cells from latitude.",
     "Computed 'grazing_sun_share' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
     "Computed 'insolation_wm2' for 494 Earth cells from latitude.",
     "Computed 'insolation_wm2' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
-    "Proposer suggested 14 candidate pairings.",
+    "Named 471 unnamed Earth cells from their own climate and terrain values.",
+    "Proposer suggested 17 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-    "Tool call 1: surf_temp_mean_K ~ temp_mean_c -> accepted (confidence 1.00)",
-    "Tool call 2: slope_deg ~ slope_deg -> accepted (confidence 1.00)",
-    "Tool call 3: temp_swing_K ~ temp_swing_c -> accepted (confidence 1.00)",
-    "Tool call 4: grazing_sun_share ~ grazing_sun_share -> accepted (confidence 1.00)",
-    "Tool call 5: roughness_deg ~ roughness_deg -> accepted (confidence 0.50)",
-    "Tool call 6: surf_pressure_Pa ~ pressure_kpa -> accepted (confidence 1.00)",
-    "Tool call 7: insolation_wm2 ~ insolation_wm2 -> accepted (confidence 0.50)",
-    "Tool call 8: wind_ms ~ wind_ms -> accepted (confidence 1.00)",
-    "Tool call 9: dust_tau ~ dust_aod -> accepted (confidence 1.00)",
-    "Tool call 10: relief_m ~ relief_m -> accepted (confidence 0.50)",
-    "Tool call 11: albedo ~ albedo -> accepted (confidence 1.00)",
-    "Tool call 12: surf_temp_max_K ~ warm_month_high_c -> accepted (confidence 0.60)",
-    "Tool call 13: subsurface_h2o_share ~ soil_wetness -> accepted (confidence 0.50)",
-    "Run 1 finished: 13 accepted, 0 pending, 2 denied; 13 of 15 tool calls used.",
+    "Reused 16 decisions from the relationship store (data unchanged).",
+    "Run 21 finished: 16 accepted, 0 pending, 1 denied; 0 of 15 tool calls used.",
     "Derived 'daily_high_c' (Typical daily high) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'daily_low_c' (Typical daily low) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
     "Derived 'liquid_window_c' (Liquid-water temperature window) from surface_pressure. [Magnus saturation vapour pressure fit: Alduchov & Eskridge (1996), J. Appl. Meteorol. 35, 601-609.]",
@@ -35,65 +24,24 @@
    ]
   },
   {
-   "run": 2,
-   "used": 5,
+   "run": 22,
+   "used": 0,
    "max": 15,
    "log": [
-    "Proposer suggested 19 candidate pairings.",
+    "Proposer suggested 22 candidate pairings.",
     "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-    "Reused 13 decisions from the relationship store (data unchanged).",
-    "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
-    "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
-    "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
-    "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
-    "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
-    "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
+    "Reused 21 decisions from the relationship store (data unchanged).",
+    "Run 22 finished: 21 accepted, 0 pending, 1 denied; 0 of 15 tool calls used."
    ]
   }
  ],
  "log": [
-  "Proposer suggested 19 candidate pairings.",
+  "Proposer suggested 22 candidate pairings.",
   "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
-  "Reused 13 decisions from the relationship store (data unchanged).",
-  "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
-  "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
-  "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
-  "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
-  "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
-  "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
+  "Reused 21 decisions from the relationship store (data unchanged).",
+  "Run 22 finished: 21 accepted, 0 pending, 1 denied; 0 of 15 tool calls used."
  ],
  "relationships": [
-  {
-   "id": "shallow_ice_share__none",
-   "target_col": "shallow_ice_share",
-   "earth_col": "",
-   "dimension": "water",
-   "verdict": "denied",
-   "confidence": 0.0,
-   "rationale": "",
-   "conversion": "",
-   "bandwidth": 0.0,
-   "sigma": 0.0,
-   "earth_lo": 0.0,
-   "earth_hi": 0.0,
-   "scale": "linear",
-   "checks": [
-    {
-     "name": "Earth counterpart",
-     "outcome": "fail",
-     "detail": "No Earth column was proposed as a counterpart."
-    }
-   ],
-   "scored": true,
-   "origin": "checked",
-   "decided_in_run": 2,
-   "pending_reason": "",
-   "target_label": "Area with ice stable in the top metre",
-   "earth_label": "No counterpart",
-   "target_source": "dataset",
-   "target_note": "Share of the site where water ice would survive within 1 m of the surface.",
-   "formula": ""
-  },
   {
    "id": "surf_temp_mean_K__temp_mean_c",
    "target_col": "surf_temp_mean_K",
@@ -152,7 +100,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 1,
+   "decided_in_run": 9,
    "pending_reason": "",
    "target_label": "Mean surface temperature",
    "earth_label": "Mean surface temperature",
@@ -218,7 +166,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 1,
+   "decided_in_run": 9,
    "pending_reason": "",
    "target_label": "Day-night temperature swing",
    "earth_label": "Day-night temperature swing",
@@ -289,7 +237,7 @@
    ],
    "scored": false,
    "origin": "reused",
-   "decided_in_run": 1,
+   "decided_in_run": 9,
    "pending_reason": "",
    "target_label": "Mean wind speed",
    "earth_label": "Mean wind speed at 10 m",
@@ -355,12 +303,78 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 1,
+   "decided_in_run": 9,
    "pending_reason": "",
    "target_label": "Dust optical depth",
    "earth_label": "Aerosol optical depth",
    "target_source": "dataset",
    "target_note": "",
+   "formula": ""
+  },
+  {
+   "id": "uvb_wm2__uvb_wm2",
+   "target_col": "uvb_wm2",
+   "earth_col": "uvb_wm2",
+   "dimension": "habitability",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.1334321719792439,
+   "sigma": 0.17790956263899185,
+   "earth_lo": 0.05465,
+   "earth_hi": 0.5,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a irradiance."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in W_per_m2."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.0546 W/m\u00b2 to 0.5 W/m\u00b2 (typical spread 0.178 W/m\u00b2)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 9,
+   "pending_reason": "",
+   "target_label": "Surface UV-B irradiance",
+   "earth_label": "Surface UV-B irradiance",
+   "target_source": "dataset",
+   "target_note": "Mars: from Curiosity REMS midday UV-B readings, spread over the sol assuming a sine-shaped day (an estimate, about 25% uncertain). REMS band is 280 to 320 nm; Earth's is 280 to 315 nm. Mars has no ozone layer, so UV-B at the ground exceeds anything on Earth.",
    "formula": ""
   },
   {
@@ -430,6 +444,72 @@
    "formula": ""
   },
   {
+   "id": "shallow_ice_share__frozen_ground_share",
+   "target_col": "shallow_ice_share",
+   "earth_col": "frozen_ground_share",
+   "dimension": "water",
+   "verdict": "accepted",
+   "confidence": 0.6,
+   "rationale": "'shallow_ice_stability' is registered as related to 'frozen_ground' (prior 0.6).",
+   "conversion": "",
+   "bandwidth": 0.18532246108228317,
+   "sigma": 0.24709661477637757,
+   "earth_lo": 0.0,
+   "earth_hi": 1.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in fraction."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "warn",
+     "detail": "Related but not identical concepts; confidence starts at 0.60."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0 to 1 (typical spread 0.247)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 7,
+   "pending_reason": "",
+   "target_label": "Area with ice stable in the top metre",
+   "earth_label": "Share of the year the ground is frozen at 1 m depth",
+   "target_source": "dataset",
+   "target_note": "Share of the site where water ice would survive within 1 m of the surface.",
+   "formula": ""
+  },
+  {
    "id": "subsurface_h2o_share__soil_wetness",
    "target_col": "subsurface_h2o_share",
    "earth_col": "soil_wetness",
@@ -493,6 +573,72 @@
    "earth_label": "Surface soil wetness",
    "target_source": "dataset",
    "target_note": "Water-equivalent hydrogen in roughly the top metre, as a weight fraction, from Odyssey GRS neutron data. 5x5 degree bins, so a regional value around the site.",
+   "formula": ""
+  },
+  {
+   "id": "precip_mm_day__precip_mm_day",
+   "target_col": "precip_mm_day",
+   "earth_col": "precip_mm_day",
+   "dimension": "water",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 1.1522424017790955,
+   "sigma": 1.5363232023721274,
+   "earth_lo": 0.01,
+   "earth_hi": 10.017450000000002,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a precipitation_rate."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in mm_per_day."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.01 mm/day to 10 mm/day (typical spread 1.54 mm/day)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 5,
+   "pending_reason": "",
+   "target_label": "Precipitation",
+   "earth_label": "Precipitation",
+   "target_source": "physical prior",
+   "target_note": "Set to 0: the Moon has no atmosphere, and on present-day Mars no rain reaches the ground (only trace frost and CO2 snow). Compared with NASA POWER precipitation on Earth, so the driest places on Earth score best.",
    "formula": ""
   },
   {
@@ -827,7 +973,7 @@
    ],
    "scored": true,
    "origin": "reused",
-   "decided_in_run": 1,
+   "decided_in_run": 9,
    "pending_reason": "",
    "target_label": "Surface pressure",
    "earth_label": "Surface pressure",
@@ -863,7 +1009,7 @@
    ],
    "scored": true,
    "origin": "checked",
-   "decided_in_run": 2,
+   "decided_in_run": 22,
    "pending_reason": "",
    "target_label": "Elevation",
    "earth_label": "Elevation",
@@ -1065,7 +1211,7 @@
     }
    ],
    "scored": true,
-   "origin": "checked",
+   "origin": "reused",
    "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Typical daily high",
@@ -1136,7 +1282,7 @@
     }
    ],
    "scored": true,
-   "origin": "checked",
+   "origin": "reused",
    "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Typical daily low",
@@ -1207,7 +1353,7 @@
     }
    ],
    "scored": true,
-   "origin": "checked",
+   "origin": "reused",
    "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Liquid-water temperature window",
@@ -1278,7 +1424,7 @@
     }
    ],
    "scored": true,
-   "origin": "checked",
+   "origin": "reused",
    "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Share of the day above freezing",
@@ -1354,7 +1500,7 @@
     }
    ],
    "scored": true,
-   "origin": "checked",
+   "origin": "reused",
    "decided_in_run": 2,
    "pending_reason": "",
    "target_label": "Wind force on surfaces",

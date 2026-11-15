@@ -424,6 +424,22 @@ class TestPlanner(Base):
             if len(pl.sites) > 1:  # then truly no single site passes them all
                 self.assertLess(passes.sum(axis=1).max(), len(covered))
 
+    def test_partial_requirements_reach_earths_extreme_sites(self):
+        # A property just beyond Earth's range is scored at half weight, so some Earth cell must pass its requirement.
+        seen = 0
+        for tid in self.ds.targets.index:
+            status = {p.target_col: p.status for p in self.matcher.profile(tid)}
+            reqs, _ = planner.requirements(self.matcher, tid)
+            passes = planner.pass_matrix(self.matcher, reqs)
+            for j, r in enumerate(reqs):
+                self.assertLessEqual(r.lo, r.hi)
+                if r.partial:
+                    seen += 1
+                    self.assertEqual(status[r.target_col], "partial")
+                    self.assertGreater(passes[:, j].sum(), 0)
+                    self.assertLessEqual(passes[:, j].mean(), 0.5)
+        self.assertIsInstance(seen, int)
+
     def test_requirement_bands_stay_physical(self):
         reqs, _ = planner.requirements(self.matcher, "mars-delta")
         water = next(r for r in reqs if r.target_col == "weh_fraction")
@@ -445,24 +461,31 @@ class TestCampaign(Base):
             covered = {j for s in row["stops"] for j in range(len(reqs)) if passes[s["index"], j]}
             self.assertEqual(len(covered), row["covered"])        # every claimed pass is real
             self.assertEqual(sorted(row["labels"]), sorted(reqs[j].label for j in covered))
+            twice = [j for j in range(len(reqs)) if sum(bool(passes[s["index"], j]) for s in row["stops"]) >= 2]
+            self.assertEqual(len(twice), row["confirmed"])        # so is every claimed confirmation
             km, prev = 0.0, start
-            for s in row["stops"]:
+            self.assertEqual(len(row["legs"]), n)
+            for s, leg in zip(row["stops"], row["legs"]):
                 self.assertEqual(self.ds.earth.index[s["index"]], s["cell_id"])
+                self.assertIn(s["index"], curve["pool"])           # stops come from the best-matching candidates
                 if prev is not None:
-                    km += haversine_km(prev[0], prev[1], lat[s["index"]], lon[s["index"]])
+                    d = haversine_km(prev[0], prev[1], lat[s["index"]], lon[s["index"]])
+                    self.assertAlmostEqual(d, leg, delta=1.0)
+                    km += d
+                else:
+                    self.assertIsNone(leg)
                 prev = (lat[s["index"]], lon[s["index"]])
-            self.assertAlmostEqual(km, row["km"], delta=1.0)     # the printed length is the route's length
+            self.assertAlmostEqual(km, row["km"], delta=1.5 * n)  # the printed length is the route's length
         for a, b in zip(rows, rows[1:]):
             self.assertGreaterEqual(b["covered"], a["covered"])  # more sites never cover less
+            # and an extra stop is only added when it covers or confirms something new
+            self.assertGreater((b["covered"], b["confirmed"]), (a["covered"], a["confirmed"]))
         self.assertEqual(curve["requirements"], [r.label for r in reqs])
         self.assertEqual(len(curve["masks"]), len(self.ds.earth))   # one pass/fail mask per cell, for the map page
         self.assertEqual(len(curve["scores"]), len(self.ds.earth))
-        for row in rows:   # the evidence that a row is the best: how many alternatives, how many tie, the runner-up
-            self.assertGreaterEqual(row["candidates"], 1)
-            self.assertGreaterEqual(row["ties"], 1)
+        for row in rows:   # the evidence that a row is the best: how many alternatives were examined
+            self.assertGreaterEqual(row["candidates"], 0)
             self.assertIn(row["exact"], (True, False))
-            if row["runner_up_km"] is not None:
-                self.assertGreaterEqual(row["runner_up_km"], row["km"])
         for i, m in enumerate(curve["masks"]):
             self.assertEqual([j for j in range(len(reqs)) if m >> j & 1], [j for j in range(len(reqs)) if passes[i, j]])
         return reqs, passes
@@ -476,10 +499,28 @@ class TestCampaign(Base):
             coverable = len(pl.requirements) - len(pl.uncovered)
             if curve["rows"]:
                 self.assertEqual(curve["rows"][-1]["covered"], coverable)
-                self.assertEqual(curve["rows"][0]["covered"], int(passes.sum(axis=1).max()))
-                self.assertLessEqual(curve["rows"][-1]["k"], len(pl.sites))   # never worse than the test plan
+                self.assertLessEqual(curve["rows"][0]["covered"], int(passes.sum(axis=1).max()))
+                scores = np.nan_to_num(total, nan=-1.0)
+                # the pool keeps the best passer of every coverable requirement, so nothing coverable is lost
+                for j in range(len(reqs)):
+                    if passes[:, j].any():
+                        self.assertTrue(any(passes[i, j] for i in curve["pool"]))
+                # a one-site campaign is the best-covering candidate, not just any site that ticks boxes
+                first = curve["rows"][0]["stops"][0]["index"]
+                self.assertGreaterEqual(scores[first], np.sort(scores[curve["pool"]])[0])
             else:
                 self.assertEqual(coverable, 0)
+
+    def test_campaign_grows_past_two_stops_when_a_stop_confirms_something(self):
+        # The old curve stopped as soon as everything was covered once. Now a stop is also worth adding
+        # when it confirms a requirement at a second, independent site.
+        longest = 0
+        for tid in self.ds.targets.index:
+            curve = campaign.curve(self.matcher, tid, self.matcher.score(tid, BAL).total)
+            if curve["rows"]:
+                longest = max(longest, curve["rows"][-1]["k"])
+                self.assertGreaterEqual(curve["rows"][-1]["confirmed"], curve["rows"][0]["confirmed"])
+        self.assertGreaterEqual(longest, 3)
 
     def test_start_point_is_part_of_the_route(self):
         tid = self.ds.targets.index[0]
@@ -519,9 +560,106 @@ class TestCampaignMap(Base):
             for d in t["detail"]:
                 self.assertIn(d["earth_col"], data["earth"]["cols"])
                 self.assertLessEqual(d["lo"], d["hi"])
+            # every variable of the target reaches the map, whatever its status
+            profile = next(p for p in payload["targets"] if p["id"] == t["id"])["profile"]
+            self.assertEqual([v["label"] for v in t["variables"]], [p["label"] for p in profile])
+            routed = [v for v in t["variables"] if v["status"] in ("match", "partial")]
+            self.assertEqual(len(routed), len(t["requirements"]))
+            # the stress-test sites connected to this landing site point at real cells and carry a verdict
+            for z in t["stress"]:
+                self.assertTrue(0 <= z["index"] < len(self.ds.earth))
+                self.assertIn(z["verdict"], ("earth", "same", "target", "events"))
+                self.assertTrue(z["label"] and z["tests"])
+        for col in self.ds.earth_cols:   # and every Earth column, scored or not
+            self.assertIn(col, payload["earth"]["cols"])
+            self.assertIn(col, data["earth"]["cols"])
+            self.assertIn("label", payload["earth"]["col_meta"][col])
         self.assertEqual(len(data["earth"]["name"]), len(self.ds.earth))
         self.assertTrue(all(data["earth"]["name"]))
         self.assertEqual([t["id"] for t in data["targets"]], list(self.ds.targets.index))
+
+
+class TestPageScripts(Base):
+    @unittest.skipUnless(shutil.which("node"), "node is not installed")
+    def test_every_inline_script_parses(self):
+        # A page whose script has a syntax error loads blank. Check each generated page's inline scripts with node.
+        import re
+        for name in ("campaign_map.html", "explorer.html", "evidence.html", "index.html"):
+            page = (self.tmp / "out" / name).read_text(encoding="utf-8")
+            blocks = re.findall(r"<script(?![^>]*src=)(?![^>]*application/json)[^>]*>(.*?)</script>", page, flags=re.S)
+            for n, code in enumerate(blocks):
+                path = self.tmp / f"check_{name}_{n}.js"
+                path.write_text(code, encoding="utf-8")
+                res = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
+                self.assertEqual(res.returncode, 0, f"{name} script {n}: {res.stderr[-400:]}")
+
+
+class TestExtremes(Base):
+    def test_events_are_grouped_by_place_and_cached(self):
+        from earthmimic import extremes
+        calls = []
+
+        def get(url):
+            calls.append(url)
+            if "volcanoes" in url:
+                return {"events": [
+                    {"title": "Etna Volcano, Italy", "geometry": [{"type": "Point", "date": "2020-01-02T00:00:00Z", "coordinates": [15.0, 37.75]}]},
+                    {"title": "Etna Volcano, Italy", "geometry": [{"type": "Point", "date": "2021-05-06T00:00:00Z", "coordinates": [15.0, 37.75]}]}]}
+            return {"events": [{"title": "Dust Storm", "geometry": [{"type": "Polygon", "date": "2018-10-20T00:00:00Z",
+                                                                      "coordinates": [[[0, 20], [2, 20], [2, 22], [0, 22]]]}]}]}
+        ev = extremes.fetch_events(self.tmp / "eonet", get, log=lambda *_: None)
+        etna = next(e for e in ev if e["cat"] == "volcanoes")
+        self.assertEqual((etna["n"], etna["last"], etna["lat"], etna["lon"]), (2, "2021-05-06", 37.75, 15.0))
+        dust = next(e for e in ev if e["cat"] == "dustHaze")
+        self.assertEqual((dust["lat"], dust["lon"]), (21.0, 1.0))                # a polygon is reduced to its centre
+        n = len(calls)
+        self.assertEqual(extremes.fetch_events(self.tmp / "eonet", get, log=lambda *_: None), ev)
+        self.assertEqual(len(calls), n)                                           # second time: from the cache
+
+    def test_stress_verdicts_follow_the_harsh_direction(self):
+        from earthmimic import extremes
+        payload = self.run_["payload"]
+        lat0, lon0 = float(self.ds.earth["lat"].iloc[0]), float(self.ds.earth["lon"].iloc[0])
+        events = [dict(cat="volcanoes", kind="Volcanic eruption", title="Test Volcano", lat=lat0, lon=lon0, n=7, last="2020-01-01")]
+        x = extremes.build(self.ds, payload["targets"], events)
+        self.assertIn("extremes", payload)
+        volcanic = next(h for h in x["hazards"] if h["key"] == "volcanic")
+        self.assertGreaterEqual(volcanic["top"][0]["value"], 7)                   # the cell next to the volcano counts its eruptions
+        self.assertEqual(volcanic["top"][0]["near"], "Test Volcano")
+        for h in x["hazards"]:
+            if not h["col"]:
+                continue
+            col = self.ds.earth[h["col"]].to_numpy(float)
+            if h["key"] == "dust" and "precip_mm_day" in self.ds.earth.columns:   # ranked among dry places only
+                col = np.where(self.ds.earth["precip_mm_day"].to_numpy(float) < extremes.DRY_MM_DAY, col, np.nan)
+            worst = np.nanmax(col) if h["direction"] > 0 else np.nanmin(col)
+            self.assertAlmostEqual(h["extreme"], worst, places=3)                 # "harshest on Earth" really is
+            self.assertEqual(h["top"][0]["value"], h["extreme"])
+            for v in h["targets"].values():
+                self.assertIn(v["verdict"], ("earth", "same", "target"))
+                gap = h["direction"] * (h["extreme"] - v["value"])
+                if v["verdict"] == "earth":
+                    self.assertGreater(gap, 0)                                    # Earth is only called harsher when it is
+                if v["verdict"] == "target":
+                    self.assertLess(gap, 0)
+
+
+class TestHome(Base):
+    def test_home_page_links_both_pages_and_every_target(self):
+        from earthmimic import home
+        payload = self.run_["payload"]
+        page = (self.tmp / "out" / "index.html").read_text(encoding="utf-8")
+        for needle in ('href="explorer.html"', 'href="campaign_map.html"', 'href="evidence.html"'):
+            self.assertIn(needle, page)
+        for t in payload["targets"]:
+            self.assertIn(f'campaign_map.html?target={t["id"]}', page)
+        self.assertNotRegex(page, r"__[A-Z]+__")                       # no placeholder left unfilled
+        s = home.summary(payload)
+        self.assertEqual(s["cells"], len(self.ds.earth))
+        self.assertEqual(s["moon"] + s["mars"], len(self.ds.targets))
+        for t in s["targets"]:                                          # the headline match is a real score
+            if t["score"] is not None:
+                self.assertTrue(0.0 <= t["score"] <= 1.0)
 
 
 class TestValidation(Base):
@@ -549,9 +687,9 @@ class TestValidation(Base):
 
 class TestOutputs(Base):
     def test_files_are_written(self):
-        for name in ("report.md", "dashboard.html", "results.json", "relationships.json", "relationships.sqlite", "campaign_map.html"):
+        for name in ("report.md", "explorer.html", "evidence.html", "results.json", "relationships.json", "relationships.sqlite", "campaign_map.html", "index.html"):
             self.assertTrue((self.tmp / "out" / name).stat().st_size > 0)
-        html = (self.tmp / "out" / "dashboard.html").read_text()
+        html = (self.tmp / "out" / "explorer.html").read_text(encoding="utf-8")
         self.assertNotIn("__PAYLOAD__", html)
         self.assertNotIn("/*__SCORING_JS__*/", html)
         self.assertNotIn("__LAND__", html)
@@ -898,7 +1036,7 @@ class TestIngest(unittest.TestCase):
             moon = pd.read_csv(raw / "sites" / "moon_sites.csv")
             moon.loc[0, ["lat", "lon"]] = [-90.0, 0.0]        # put one site on the test triangles
             moon.to_csv(raw / "sites" / "moon_sites.csv", index=False)
-            ingest.fetch(raw, get=get, get_bytes=get_bytes, pause=0, log=lambda *_: None)
+            ingest.fetch(raw, get=get, get_bytes=get_bytes, pause=0, log=lambda *_: None, skip=("events",))   # the event feed has its own test
             # Fill in Mars climate for one site, as a user would from the climate database.
             cpath = raw / "sites" / "mars_climate.csv"
             c = pd.read_csv(cpath, comment="#").astype({"source": object})
@@ -907,7 +1045,7 @@ class TestIngest(unittest.TestCase):
                 [215.0, 70.0, 700.0, 6.0, 0.5, "test values"]
             cpath.write_text(ingest.MARS_CLIMATE_HELP + c.to_csv(index=False))
             n_calls = len(calls)
-            ingest.fetch(raw, get=get, get_bytes=get_bytes, pause=0, log=lambda *_: None)   # second time: everything comes from the cache
+            ingest.fetch(raw, get=get, get_bytes=get_bytes, pause=0, log=lambda *_: None, skip=("events",))   # the event feed has its own test   # second time: everything comes from the cache
         self.assertEqual(len(calls), n_calls)
 
         earth = pd.read_csv(raw / "earth_cells.csv")

@@ -23,6 +23,7 @@ from .matching import Matcher
 from .schema import bounds_for
 
 MAX_COMBINATIONS = 2_000_000   # beyond this the exact search hands over to a greedy one
+EXTREME_SHARE = 0.05           # a partly reproducible property is passed by Earth's most extreme 5% of sites
 
 
 @dataclass
@@ -35,6 +36,7 @@ class Requirement:
     lo: float
     hi: float
     n_pass: int = 0          # how many Earth cells pass it
+    partial: bool = False    # target lies just beyond Earth's range; the band reaches back to Earth's extreme sites
 
 
 @dataclass
@@ -63,7 +65,18 @@ def requirements(matcher: Matcher, target_id: str, tolerance: float = 1.0) -> tu
             floor, ceil = bounds_for(matcher.ds.earth_cols[p.earth_col])   # never ask for the impossible
             lo = lo if floor is None else max(lo, floor)
             hi = hi if ceil is None else min(hi, ceil)
-            reqs.append(Requirement(p.target_col, p.label, p.earth_col, p.unit, p.target_value, lo, hi))
+            # Scoring gives a partly reproducible property half weight at Earth's most extreme
+            # sites. The plan must be able to visit those sites too, or the property silently
+            # drops out of every route: stretch the band back to Earth's extreme tail.
+            partial = False
+            if p.status == "partial":
+                x = matcher.ds.earth[p.earth_col].to_numpy(float)
+                x = x[~np.isnan(x)]
+                if len(x) and p.target_value > x.max():
+                    lo, partial = min(lo, float(np.quantile(x, 1 - EXTREME_SHARE))), True
+                elif len(x) and p.target_value < x.min():
+                    hi, partial = max(hi, float(np.quantile(x, EXTREME_SHARE))), True
+            reqs.append(Requirement(p.target_col, p.label, p.earth_col, p.unit, p.target_value, lo, hi, partial=partial))
         elif p.status == "breaks_down":
             untestable.append(dict(label=p.label, reason=p.reason))
     return reqs, untestable

@@ -1,0 +1,135 @@
+[
+ {
+  "name": "temp_mean_c",
+  "label": "Mean surface temperature",
+  "dimension": "thermal",
+  "quantity": "temperature",
+  "unit": "degC",
+  "concept": "mean_temperature",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "warm_month_high_c",
+  "label": "Warmest-month daily high",
+  "dimension": "thermal",
+  "quantity": "temperature",
+  "unit": "degC",
+  "concept": "warmest_month_high",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+  "note": "Mean daily maximum air temperature of the warmest month."
+ },
+ {
+  "name": "temp_swing_c",
+  "label": "Day-night temperature swing",
+  "dimension": "thermal",
+  "quantity": "temperature_delta",
+  "unit": "degC_delta",
+  "concept": "diurnal_swing",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "wind_ms",
+  "label": "Mean wind speed at 10 m",
+  "dimension": "dust",
+  "quantity": "speed",
+  "unit": "m_per_s",
+  "concept": "wind_speed",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "pressure_kpa",
+  "label": "Surface pressure",
+  "dimension": "physics",
+  "quantity": "pressure",
+  "unit": "kPa",
+  "concept": "surface_pressure",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "soil_wetness",
+  "label": "Surface soil wetness",
+  "dimension": "water",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "soil_moisture",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "uv_index",
+  "label": "Surface UV index",
+  "dimension": "habitability",
+  "quantity": "uv_index",
+  "unit": "index",
+  "concept": "uv",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "precip_mm_day",
+  "label": "Precipitation",
+  "dimension": "water",
+  "quantity": "precipitation_rate",
+  "unit": "mm_per_day",
+  "concept": "precipitation",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "albedo",
+  "label": "Surface albedo",
+  "dimension": "geology",
+  "quantity": "fraction",
+  "unit": "fraction",
+  "concept": "albedo",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)"
+ },
+ {
+  "name": "dust_aod",
+  "label": "Aerosol optical depth",
+  "dimension": "dust",
+  "quantity": "optical_depth",
+  "unit": "unitless",
+  "concept": "dust_optical_depth",
+  "version": "NASA POWER climatology API (MERRA-2 / CERES long-term means)",
+  "note": "All airborne particles at 550 nm, not dust alone."
+ },
+ {
+  "name": "slope_deg",
+  "label": "Mean slope",
+  "dimension": "terrain",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "slope",
+  "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+  "note": "Slope over a baseline of about 3.7 km, within 25 km of the location."
+ },
+ {
+  "name": "roughness_deg",
+  "label": "Terrain roughness",
+  "dimension": "terrain",
+  "quantity": "angle",
+  "unit": "deg",
+  "concept": "slope_variability",
+  "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+  "note": "Spread (standard deviation) of slope within 25 km of the location: how broken the ground is, as opposed to how steep it is on average."
+ },
+ {
+  "name": "relief_m",
+  "label": "Relief within the site",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "relief",
+  "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+  "note": "Standard deviation of elevation within 25 km of the location."
+ },
+ {
+  "name": "elevation_m",
+  "label": "Elevation",
+  "dimension": "terrain",
+  "quantity": "length",
+  "unit": "m",
+  "concept": "elevation",
+  "version": "Terrain Tiles on AWS Open Data (terrarium; SRTM, GMTED and others)",
+  "comparable": false,
+  "note": "Measured from sea level."
+ }
+]

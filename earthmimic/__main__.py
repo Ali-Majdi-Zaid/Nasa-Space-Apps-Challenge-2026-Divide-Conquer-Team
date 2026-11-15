@@ -48,7 +48,7 @@ def main():
     f = sub.add_parser("fetch", help="download real NASA data (Diviner, MOLA, POWER) into a raw data folder")
     f.add_argument("--out", default="data/real_raw")
     f.add_argument("--grid-step", type=float, default=10.0, help="spacing in degrees of the default Earth grid")
-    f.add_argument("--skip", nargs="*", default=[], choices=["moon", "mars", "terrain"], help="sources to leave out")
+    f.add_argument("--skip", nargs="*", default=[], choices=["moon", "mars", "terrain", "events"], help="sources to leave out")
     f.add_argument("--no-verify-ssl", action="store_true",
                    help="skip security-certificate checks (last resort if downloads fail with a certificate error)")
     c = sub.add_parser("clean", help="clean a raw data folder")
@@ -98,7 +98,7 @@ def main():
     for run in result["runs"]:
         for line in run["log"]:
             print(line)
-    print(f"\nWrote {result['out']}/report.md, dashboard.html, campaign_map.html, results.json, relationships.json, relationships.sqlite")
+    print(f"\nWrote {result['out']}/index.html (start here), explorer.html, campaign_map.html, evidence.html, report.md, results.json, relationships.json, relationships.sqlite")
 
 
 if __name__ == "__main__":

@@ -458,13 +458,18 @@ def read_grs_h2o(path: Path, sites: pd.DataFrame, log=print) -> pd.DataFrame:
 
 # ------------------------------------------------------------- Earth: POWER
 POWER_PARAMETERS = ["TS", "T2M", "T2M_MAX", "T2M_MIN", "T2M_RANGE", "WS10M", "PS", "GWETTOP",
-                    "ALLSKY_SFC_UV_INDEX", "PRECTOTCORR", "ALLSKY_SRF_ALB", "AOD_55"]
+                    "ALLSKY_SFC_UV_INDEX", "PRECTOTCORR", "ALLSKY_SRF_ALB", "AOD_55", "TSOIL4"]
+# TSOIL4 is MERRA-2 soil temperature in layer 4 (0.68 to 1.44 m deep): the ground "about a metre down".
+FROZEN_PARAMETERS = ("TSOIL4",)   # for these, also report the share of months at or below 0 degC
+# Asked from POWER's "SB" community, which reports them as a daily-mean irradiance in W/m2
+# (the "AG" community gives a daily dose rounded too coarsely to tell sites apart).
+POWER_SB_PARAMETERS = ["ALLSKY_SFC_UVB"]
 POWER_FILL = -999.0
 _MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 
-def power_url(lat: float, lon: float, parameters: list[str]) -> str:
-    query = urllib.parse.urlencode(dict(parameters=",".join(parameters), community="AG",
+def power_url(lat: float, lon: float, parameters: list[str], community: str = "AG") -> str:
+    query = urllib.parse.urlencode(dict(parameters=",".join(parameters), community=community,
                                         longitude=f"{lon:.4f}", latitude=f"{lat:.4f}", format="JSON"), safe=",")
     return f"{POWER_URL}?{query}"
 
@@ -500,6 +505,8 @@ def parse_power(payload: dict) -> dict:
         out[name] = annual if not np.isnan(annual) else (float(np.mean(monthly)) if monthly else np.nan)
         if monthly:
             out[name + "_MONTH_MAX"], out[name + "_MONTH_MIN"] = max(monthly), min(monthly)
+            if name in FROZEN_PARAMETERS:
+                out[name + "_FROZEN_SHARE"] = float(np.mean([m <= 0.0 for m in monthly]))
     return out
 
 
@@ -528,6 +535,17 @@ def fetch_power(sites: pd.DataFrame, cache_dir: Path, get=_get_json, pause: floa
         cache = cache_dir / f"{s['lat']:+.2f}_{s['lon']:+.2f}.json"
         if cache.exists():
             payload = json.loads(cache.read_text(encoding="utf-8"))
+            have = payload.get("properties", {}).get("parameter", {})
+            missing = [p for p in POWER_PARAMETERS if p not in have and p not in payload.get("_unavailable", [])]
+            if missing and isinstance(have, dict) and have:
+                try:   # the cache predates these parameters: ask for just them and merge
+                    extra = get(power_url(s["lat"], s["lon"], missing))["properties"]["parameter"]
+                    time.sleep(pause)
+                except (IOError, urllib.error.HTTPError, KeyError, TypeError):
+                    extra = {}
+                have.update(extra)
+                payload["_unavailable"] = sorted(set(payload.get("_unavailable", [])) | (set(missing) - set(extra)))
+                cache.write_text(json.dumps(payload), encoding="utf-8")
         else:
             if params is None:
                 params = working_power_parameters(s["lat"], s["lon"], POWER_PARAMETERS, get, log)
@@ -537,8 +555,27 @@ def fetch_power(sites: pd.DataFrame, cache_dir: Path, get=_get_json, pause: floa
                 log(f"  warning: no data for {s['cell_id']} ({err}); left empty")
                 rows.append(dict(cell_id=s["cell_id"]))
                 continue
+            got = payload.get("properties", {}).get("parameter", {}) if isinstance(payload, dict) else {}
+            absent = sorted(set(POWER_PARAMETERS) - set(got))
+            if absent:   # remember what the service did not return, so reruns stay free
+                payload["_unavailable"] = absent
             cache.write_text(json.dumps(payload), encoding="utf-8")
             time.sleep(pause)
+        have = payload.get("properties", {}).get("parameter", {}) if isinstance(payload, dict) else {}
+        want = [p for p in POWER_SB_PARAMETERS if p not in have and p not in payload.get("_unavailable", [])]
+        if want and isinstance(have, dict) and have:
+            try:
+                reply = get(power_url(s["lat"], s["lon"], want, community="SB"))["properties"]["parameter"]
+                extra = {p: reply[p] for p in want if p in reply}
+                time.sleep(pause)
+                have.update(extra)
+                payload["_unavailable"] = sorted(set(payload.get("_unavailable", [])) | (set(want) - set(extra)))
+                cache.write_text(json.dumps(payload), encoding="utf-8")
+            except urllib.error.HTTPError:      # the service does not offer it: do not ask again
+                payload["_unavailable"] = sorted(set(payload.get("_unavailable", [])) | set(want))
+                cache.write_text(json.dumps(payload), encoding="utf-8")
+            except (IOError, KeyError, TypeError):
+                pass                            # a passing network problem: try again on the next run
         rows.append(dict(cell_id=s["cell_id"], **parse_power(payload)))
         if k % 50 == 0:
             log(f"  NASA POWER: {k} of {len(sites)} locations")
@@ -704,7 +741,50 @@ def fetch_terrain(sites: pd.DataFrame, cache_dir: Path, radius_km: float = 25.0,
 # -------------------------------------------------- Mars climate (filled by hand)
 # The Mars Climate Database (LMD, with ESA and CNES) has a public web interface but no
 # documented data API, so these few values per site are entered by hand from it.
-MARS_CLIMATE_COLUMNS = ["surf_temp_mean_K", "temp_swing_K", "surf_pressure_Pa", "wind_ms", "dust_tau"]
+MARS_CLIMATE_COLUMNS = ["surf_temp_mean_K", "temp_swing_K", "surf_pressure_Pa", "wind_ms", "dust_tau", "uvb_wm2"]
+
+# Curiosity REMS (MSL-M-REMS-5-MODRDR-V1.0) reports UV only as "global irradiance" when the Sun is within
+# 30 degrees of overhead; at other hours the photodiode readings are not corrected and are not usable.
+# So what can be measured is the midday UV-B irradiance. To compare it with Earth's daily-mean UV-B
+# it is spread over the sol assuming irradiance follows the sine of the Sun's height through the day:
+# mean = midday value x (2 / pi) x (daylight share of the sol).
+REMS_UVB_COLUMN, REMS_UV_FLAG_COLUMN = 18, 29     # zero-based positions in the MODRDR table
+
+
+def rems_midday_uvb(folder: Path) -> tuple[float, int]:
+    """Median over sols of the midday UV-B irradiance (W/m2) in the REMS files of `folder`, and the sol count."""
+    import csv
+    per_sol = []
+    for path in sorted(Path(folder).glob("rems_*_RMD.TAB")):
+        vals = []
+        with open(path, newline="") as fh:
+            for row in csv.reader(fh):
+                if len(row) <= REMS_UV_FLAG_COLUMN:
+                    continue
+                flag = row[REMS_UV_FLAG_COLUMN].strip()
+                # byte 0 = 1: global irradiance (Sun within 30 deg of overhead); byte 3 = 1: sensor not in shadow
+                if len(flag) < 5 or flag[0] != "1" or flag[3] != "1":
+                    continue
+                try:
+                    v = float(row[REMS_UVB_COLUMN])
+                except ValueError:
+                    continue
+                if v > 0:
+                    vals.append(v)
+        if len(vals) >= 30:
+            per_sol.append(float(np.median(vals)))
+    return (float(np.median(per_sol)), len(per_sol)) if per_sol else (float("nan"), 0)
+
+
+def daily_mean_from_midday(midday: float, lat_deg: float, obliquity_deg: float = 25.19) -> float:
+    """Annual-mean irradiance over day and night from a midday value, for a sine-shaped day.
+
+    The daylight share of the day averages one half over a year at any latitude outside the polar
+    circles, so the factor is (2 / pi) x 0.5.
+    """
+    if abs(lat_deg) >= 90.0 - obliquity_deg:
+        raise ValueError("the sine-day estimate is not valid inside the polar circles")
+    return midday * (2.0 / math.pi) * 0.5
 MARS_CLIMATE_HELP = (
     "# Fill in annual-mean values per site from the Mars Climate Database web interface "
     "(www-mars.lmd.jussieu.fr), then rerun fetch. Leave a cell empty if unknown.\n"
@@ -765,9 +845,14 @@ def earth_table(sites: pd.DataFrame, power: pd.DataFrame, terrain: pd.DataFrame 
         "pressure_kpa": get("PS"),
         "soil_wetness": get("GWETTOP"),
         "uv_index": get("ALLSKY_SFC_UV_INDEX"),
+        "uvb_wm2": get("ALLSKY_SFC_UVB"),
         "precip_mm_day": get("PRECTOTCORR"),
         "albedo": get("ALLSKY_SRF_ALB"),
         "dust_aod": get("AOD_55"),
+        # MERRA-2 has no soil model under land ice, so ice-sheet cells come back empty. Where even the
+        # warmest month's surface temperature stays at or below 0 degC the ground is frozen all year.
+        "frozen_ground_share": np.where(np.isnan(get("TSOIL4_FROZEN_SHARE")) & (get("TS_MONTH_MAX") <= 0.0),
+                                        1.0, get("TSOIL4_FROZEN_SHARE")),
         "slope_deg": get("slope_deg"),
         "roughness_deg": get("roughness_deg"),
         "relief_m": get("relief_m"),
@@ -796,10 +881,19 @@ def earth_table(sites: pd.DataFrame, power: pd.DataFrame, terrain: pd.DataFrame 
         _meta("pressure_kpa", "Surface pressure", "physics", "pressure", "kPa", "surface_pressure", v),
         _meta("soil_wetness", "Surface soil wetness", "water", "fraction", "fraction", "soil_moisture", v),
         _meta("uv_index", "Surface UV index", "habitability", "uv_index", "index", "uv", v),
+        _meta("uvb_wm2", "Surface UV-B irradiance", "habitability", "irradiance", "W_per_m2", "uvb_irradiance",
+              "NASA POWER climatology API (CERES SYN1deg all-sky surface UV-B)",
+              note="UV-B (280 to 315 nm) reaching the ground, averaged over day and night and over the year."),
         _meta("precip_mm_day", "Precipitation", "water", "precipitation_rate", "mm_per_day", "precipitation", v),
         _meta("albedo", "Surface albedo", "geology", "fraction", "fraction", "albedo", v),
         _meta("dust_aod", "Aerosol optical depth", "dust", "optical_depth", "unitless", "dust_optical_depth", v,
               note="All airborne particles at 550 nm, not dust alone."),
+        _meta("frozen_ground_share", "Share of the year the ground is frozen at 1 m depth", "water", "fraction", "fraction",
+              "frozen_ground", "NASA POWER climatology API (MERRA-2 soil temperature, layer 4, 0.68 to 1.44 m deep)",
+              note="Share of the 12 climatological months in which the soil about a metre down averages 0 degC or "
+                   "colder. 1 means frozen all year (permafrost conditions), so ice in the ground is stable there. "
+                   "Under ice sheets, where the model has no soil, it is set to 1 when the warmest month's "
+                   "surface temperature stays at or below 0 degC."),
         _meta("slope_deg", "Mean slope", "terrain", "angle", "deg", "slope", TERRAIN_VERSION,
               note=f"Slope over a baseline of about {TERRAIN_BASELINE_KM} km, within 25 km of the location."),
         _meta("roughness_deg", "Terrain roughness", "terrain", "angle", "deg", "slope_variability", TERRAIN_VERSION,
@@ -827,6 +921,7 @@ def targets_table(moon_sites, moon, mars_sites, mars, mars_climate=None, climate
         if sites is not None and values is not None and len(values):
             frames.append(sites.drop(columns=["radius_km"]).merge(values.drop(columns=["n_samples"]), on="target_id"))
     t = pd.concat(frames, ignore_index=True)
+    t["precip_mm_day"] = 0.0   # physical prior: no rain falls on the Moon or on present-day Mars
     dv, mv = SOURCES["diviner_prp_south"]["version"], SOURCES["mola_megt16"]["version"]
     both = f"{dv}; {mv}"
     cs = climate_source
@@ -837,6 +932,11 @@ def targets_table(moon_sites, moon, mars_sites, mars, mars_climate=None, climate
         _meta("temp_swing_K", "Day-night temperature swing", "thermal", "temperature_delta", "K_delta", "diurnal_swing", cs, priority=8),
         _meta("wind_ms", "Mean wind speed", "dust", "speed", "m_per_s", "wind_speed", cs, priority=6),
         _meta("dust_tau", "Dust optical depth", "dust", "optical_depth", "unitless", "dust_optical_depth", cs, priority=6),
+        _meta("uvb_wm2", "Surface UV-B irradiance", "habitability", "irradiance", "W_per_m2", "uvb_irradiance", cs,
+              priority=7, uncertainty=0.2,
+              note="Mars: from Curiosity REMS midday UV-B readings, spread over the sol assuming a sine-shaped day "
+                   "(an estimate, about 25% uncertain). REMS band is 280 to 320 nm; Earth's is 280 to 315 nm. "
+                   "Mars has no ozone layer, so UV-B at the ground exceeds anything on Earth."),
         _meta("surf_temp_max_K", "Annual maximum surface temperature", "thermal", "temperature", "K",
               "annual_max_temperature", dv, priority=8),
         _meta("shallow_ice_share", "Area with ice stable in the top metre", "water", "fraction", "fraction",
@@ -846,6 +946,11 @@ def targets_table(moon_sites, moon, mars_sites, mars, mars_climate=None, climate
               "subsurface_water", SOURCES["grs_h2o"]["version"], priority=7,
               note="Water-equivalent hydrogen in roughly the top metre, as a weight fraction, from Odyssey "
                    "GRS neutron data. 5x5 degree bins, so a regional value around the site."),
+        _meta("precip_mm_day", "Precipitation", "water", "precipitation_rate", "mm_per_day", "precipitation",
+              "Physical prior (no measurement needed)", priority=7, source="physical prior",
+              note="Set to 0: the Moon has no atmosphere, and on present-day Mars no rain reaches the ground "
+                   "(only trace frost and CO2 snow). Compared with NASA POWER precipitation on Earth, so the "
+                   "driest places on Earth score best."),
         _meta("slope_deg", "Mean slope", "terrain", "angle", "deg", "slope", both, priority=9,
               note="Moon: slope of the Diviner surface triangles. Mars: slope over a 3.7 km baseline. Baselines differ."),
         _meta("roughness_deg", "Terrain roughness", "terrain", "angle", "deg", "slope_variability", both, priority=7,
@@ -966,6 +1071,12 @@ def fetch(out_dir: str | Path, config_dir: str | Path | None = None, downloads_d
     known = known[known["cell_id"].isin(earth["cell_id"])]
     known.rename(columns={"known_analog": "name", "known_for": "body"})[["cell_id", "name", "body"]].to_csv(
         out / "known_analogs.csv", index=False)
+    if "events" not in skip:
+        from . import extremes
+        log("Earth: volcanic eruptions and dust storms from NASA EONET (cached in " + str(dl / "eonet") + ")")
+        events = extremes.fetch_events(dl / "eonet", get, log)
+        (out / "events.json").write_text(json.dumps(events), encoding="utf-8")
+        log(f"  {len(events)} places with recorded events")
     n_targets = len(targets) if targets is not None else "the existing"
     log(f"Wrote {len(earth)} Earth cells and {n_targets} target sites to {out}")
     return out

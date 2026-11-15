@@ -168,7 +168,7 @@ def clean_folder(raw_dir: str | Path, out_dir: str | Path) -> dict:
 
     earth.to_csv(out / "earth_cells.csv", index=False)
     targets.to_csv(out / "targets.csv", index=False)
-    for name in ("earth_meta.json", "targets_meta.json", "SYNTHETIC_DATA.txt", "demo_fixture.json"):
+    for name in ("earth_meta.json", "targets_meta.json", "SYNTHETIC_DATA.txt", "demo_fixture.json", "events.json"):
         if (raw / name).exists():
             shutil.copy(raw / name, out / name)
     if (raw / "known_analogs.csv").exists():

@@ -115,6 +115,10 @@ RELATED_CONCEPTS = {
     # temperatures, and only loosely trace liquid soil water.
     ("subsurface_water", "ground_ice"): 0.9,
     ("subsurface_water", "soil_moisture"): 0.5,
+    # Where on the Moon ice survives within a metre of the surface, against how much of the year
+    # Earth's ground is frozen a metre down. Both ask "is ice stable at this depth?", but one is a
+    # share of area and the other a share of time, so the pairing is trusted only partly.
+    ("shallow_ice_stability", "frozen_ground"): 0.6,
     # The hottest the ground gets in a year vs the mean daily high of the warmest month:
     # both describe the warm extreme, but the second is an average and reads lower.
     ("annual_max_temperature", "warmest_month_high"): 0.6,

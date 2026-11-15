@@ -188,8 +188,66 @@ ol.rank > li:last-child { border-bottom: 1px solid var(--line); }
 
 /* ---- status glyphs, matrix, tables */
 .g { width: .95rem; height: .95rem; vertical-align: -.15rem; flex: none; }
-.g-match { color: var(--ok); } .g-partial { color: var(--warn); } .g-breaks_down { color: var(--bad); } .g-not_tested { color: var(--muted); }
+.g-match { color: var(--ok); } .g-partial { color: var(--warn); } .g-breaks_down { color: var(--bad); } .g-not_tested { color: var(--muted); } .g-input_only { color: var(--muted); } .g-not_comparable { color: var(--muted); }
 .glyphs { display: inline-flex; flex-wrap: wrap; gap: 2px; }
+/* ---- simple view */
+#app.simple nav a.adv, #app.simple details.weights { display: none; }
+/* ---- one page, one question */
+.pages { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: .5rem 0 .2rem; font-size: .9rem; max-width: none; }
+.pages a { color: var(--muted); text-decoration: none; padding-bottom: .1rem; border-bottom: 2px solid transparent; }
+.pages a:hover { color: var(--ink); }
+.pages a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+#app.explorer #missionBox, #app.explorer nav { display: none; }
+#app.evidence #focusWrap { display: none !important; }
+#app.explorer #focusWrap { margin-top: 0 !important; }
+details.cantbe { max-width: 46rem; margin: 0 0 1rem; font-size: .9rem; }
+details.cantbe summary { cursor: pointer; color: var(--muted); }
+details.cantbe ul { margin: .5rem 0 0; padding-left: 1.2rem; }
+details.cantbe li { margin: .25rem 0; }
+.meter .vals { grid-column: 1 / -1; font-size: .8rem; color: var(--muted); }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: .9rem 1rem; margin: .2rem 0 1rem; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--gc, var(--ok)); max-width: 46rem; }
+.verdict .big { font-size: 2.3rem; font-weight: 700; line-height: 1; color: var(--gc, var(--ok)); white-space: nowrap; }
+.verdict .big small { display: block; font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: .3rem; }
+.verdict strong { display: block; font-size: 1.05rem; line-height: 1.3; }
+.verdict p { margin: .3rem 0 0; font-size: .9rem; color: var(--muted); max-width: none; }
+.g-ex { --gc: var(--ok); } .g-good { --gc: #5E9E3E; } .g-fair { --gc: var(--warn); } .g-none { --gc: var(--muted); } .g-bad { --gc: var(--bad); }
+.meters { display: grid; gap: .55rem; max-width: 34rem; margin: .4rem 0 .2rem; }
+.meter { display: grid; grid-template-columns: 1fr auto; gap: .1rem .8rem; align-items: baseline; font-size: .9rem; }
+.meter .gw { font-weight: 600; color: var(--gc); white-space: nowrap; }
+.meter .gw small { font-weight: 400; color: var(--muted); margin-left: .35rem; }
+.meter .mtrack { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.meter .mtrack i { display: block; height: 100%; border-radius: 4px; background: var(--gc); }
+.gscale { display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: .8rem; color: var(--muted); margin: .5rem 0 0; }
+.gscale span::before { content: ""; display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: var(--gc); margin-right: .35rem; }
+.row .score.words { font-size: .85rem; white-space: nowrap; }
+/* ---- stress tests */
+.hz { display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: .9rem; margin-top: 1rem; }
+.hz article { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--gc, var(--muted)); border-radius: 10px; padding: .9rem 1rem 1rem; }
+.hz h3 { margin: 0 0 .15rem; font-size: 1.1rem; }
+.hz .tests { font-size: .85rem; color: var(--muted); margin: 0 0 .6rem; max-width: none; }
+.hz .vd { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .03em; color: var(--gc); border: 1px solid var(--gc); border-radius: 999px; padding: .1rem .6rem; margin-bottom: .55rem; }
+.hz .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin: 0 0 .6rem; }
+.hz .cmp div { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem; }
+.hz .cmp b { display: block; font-size: 1.15rem; }
+.hz .cmp span { display: block; font-size: .75rem; color: var(--muted); }
+.hz ol { margin: 0; padding-left: 1.2rem; font-size: .88rem; }
+.hz ol li { margin: .15rem 0; }
+.hz .why { font-size: .82rem; color: var(--muted); margin: .6rem 0 0; max-width: none; }
+.hz .match { font-size: .88rem; margin: 0 0 .6rem; padding: .45rem .6rem; border-left: 3px solid var(--gc); background: var(--bg); border-radius: 0 6px 6px 0; max-width: none; }
+.hz .also { font-size: .82rem; color: var(--muted); margin: .5rem 0 0; max-width: none; }
+.sgrid td, .sgrid th { text-align: center; padding: .35rem .4rem; }
+.sgrid th:first-child, .sgrid td:first-child { text-align: left; white-space: nowrap; }
+.sgrid thead th { font-size: .72rem; line-height: 1.15; vertical-align: bottom; max-width: 5.5rem; }
+.sgrid thead th small { display: block; font-weight: 400; }
+.sgrid td button { width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 0; background: var(--gc); cursor: pointer; opacity: .9; padding: 0; }
+.sgrid td button:hover { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
+.sgrid td .na { color: var(--muted); }
+.sgrid tr.cur td, .sgrid th.cur { background: var(--surface); }
+.sdetail { margin: .8rem 0 0; padding: .7rem .9rem; border: 1px solid var(--line); border-left: 4px solid var(--gc, var(--muted)); border-radius: 8px; background: var(--surface); max-width: 46rem; }
+.sdetail strong { display: block; }
+.sdetail p { margin: .25rem 0 0; font-size: .9rem; max-width: none; }
+.row .score.words b { color: var(--gc); font-weight: 600; margin-left: .3rem; }
 table { border-collapse: collapse; width: 100%; font-size: .9rem; }
 .scroll { overflow-x: auto; }
 th, td { text-align: left; padding: .4rem .6rem .4rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -233,26 +291,31 @@ code { font-size: .85em; word-break: break-all; }
   <symbol id="g-partial" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 2a4 4 0 0 0 0 8z" fill="currentColor"/></symbol>
   <symbol id="g-breaks_down" viewBox="0 0 12 12"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="g-not_tested" viewBox="0 0 12 12"><circle cx="6" cy="6" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+  <symbol id="g-input_only" viewBox="0 0 12 12"><path d="M2 6h6M5.5 3l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="g-not_comparable" viewBox="0 0 12 12"><path d="M2.5 6h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </defs></svg>
 <div class="wrap" id="app">
   <header>
-    <div class="top"><h1>EarthMimic</h1><button type="button" id="theme" class="themebtn">Dark mode</button></div>
-    <p>Where on Earth to rehearse a Moon or Mars mission, and where the comparison stops working.</p>
+    <div class="top"><h1><a href="index.html" title="Back to the home page" style="color:inherit;text-decoration:none">EarthMimic</a></h1><span><button type="button" id="mode" class="themebtn" aria-pressed="false" hidden>Detailed view</button> <button type="button" id="theme" class="themebtn">Dark mode</button></span></div>
+    <p class="pages"><a href="index.html">Home</a><a href="explorer.html" data-page="explorer">Explorer</a><a href="campaign_map.html">Field trip map</a><a href="evidence.html" data-page="evidence">Evidence</a></p>
+    <p id="tagline"></p>
     <div id="notice"></div>
   </header>
 
   <section class="controls" aria-label="Choose a target and a mission">
     <div class="field"><span id="tl">Target site</span><div class="targets" id="targets" role="group" aria-labelledby="tl"></div></div>
     <div class="field">
+      <div id="missionBox">
       <label><span>Mission</span><select id="preset"></select></label>
       <p class="muted small" id="presetAbout" style="margin:.35rem 0 0"></p>
       <details class="weights"><summary>Adjust the weights</summary><div class="sliders" id="sliders"></div></details>
-      <label style="display:block;margin-top:.8rem"><span>Rank by</span><select id="focus"></select></label>
+      </div>
+      <label id="focusWrap" style="display:block;margin-top:.8rem"><span id="focusLabel">Rank by</span><select id="focus"></select></label>
     </div>
   </section>
 
   <nav aria-label="Views">
-    <a href="#analogs">Analogs</a><a href="#limits">Limits</a><a href="#plan">Test plan</a><a href="#validation">Validation</a><a href="#agent">Agent</a><a href="#data">Data</a>
+
   </nav>
   <main id="view"></main>
 </div>
@@ -268,11 +331,18 @@ code { font-size: .85em; word-break: break-all; }
                 m_per_s: "m/s", per_1000km2: "per 1000 km²", days_per_year: "days/yr", mm_per_day: "mm/day", W_per_m2: "W/m²" };
   var SHORT = { terrain: "Terrain", thermal: "Temperature", illumination: "Light", water: "Water, ice", dust: "Dust, wind",
                 geology: "Geology", habitability: "Habitability", physics: "Atmosphere" };
-  var WORDS = { match: "testable", partial: "partly", breaks_down: "breaks down", not_tested: "not tested yet" };
-  var TABS = ["analogs", "limits", "plan", "validation", "agent", "data"];
+  var WORDS = { match: "testable", partial: "partly", breaks_down: "breaks down", not_tested: "no target data yet",
+                input_only: "input to a derived property", not_comparable: "not comparable" };
+  var UNSCORED = ["not_tested", "input_only", "not_comparable"];
+  // The same code serves two pages. Explorer: one landing site, one property, one answer.
+  // Evidence: how we know (validation, limits, the pairing agent, the data).
+  var PAGE = "__PAGE__" === "evidence" ? "evidence" : "explorer";
+  var TABS = PAGE === "explorer" ? ["analogs"] : ["validation", "limits", "agent", "data"];
+  var TAB_LABELS = { analogs: "Explorer", validation: "Validation", limits: "Limits", agent: "Pairing agent", data: "Data" };
   var P = D.params, N = D.earth.ids.length;
   var REL = {}; D.agent.relationships.forEach(function (r) { REL[r.id] = r; });
-  var state = { target: D.targets[0].id, preset: "balanced", weights: Object.assign({}, D.presets.balanced.weights), selected: null, focus: null };
+  var state = { target: D.targets[0].id, preset: "balanced", weights: Object.assign({}, D.presets.balanced.weights), selected: null, focus: null, simple: true };
+  state.simple = PAGE === "explorer";
   var cache = {};  // per-target similarities
   var live = null; // results for the current target and weights
 
@@ -281,6 +351,21 @@ code { font-size: .85em; word-break: break-all; }
   function unitName(u) { return u in UNITS && UNITS[u] ? UNITS[u] : u; }
   function val(v, unit) { if (v == null) return "no data"; if (unit === "share_of_year") return num(100 * v) + "% of the year"; var u = unit in UNITS ? UNITS[unit] : unit; return num(v) + (u === "°" ? u : u ? " " + u : ""); }
   function pct(v) { return Math.round(v * 100) + "%"; }
+  // One word for how alike a single property is (a site counts as matching it from about 60% up)...
+  function grade(x) {
+    if (x == null || x !== x) return { cls: "g-none", word: "No data" };
+    x = Math.round(100 * x) / 100;
+    return x >= 0.9 ? { cls: "g-ex", word: "Excellent" } : x >= 0.75 ? { cls: "g-good", word: "Good" } :
+           x >= 0.6 ? { cls: "g-fair", word: "Fair" } : { cls: "g-bad", word: "Too different" };
+  }
+  // ...and for a whole site, which is an average over many properties and so runs lower.
+  function siteGrade(x) {
+    if (x == null || x !== x) return { cls: "g-none", word: "No data" };
+    x = Math.round(100 * x) / 100;
+    return x >= 0.8 ? { cls: "g-ex", word: "Very close match" } : x >= 0.65 ? { cls: "g-good", word: "Close match" } :
+           x >= 0.5 ? { cls: "g-fair", word: "Partial match" } : { cls: "g-bad", word: "Weak match" };
+  }
+  function few(n, one, many) { return n + " " + (n === 1 ? one : many); }
   function ll(la, lo) { return Math.abs(la).toFixed(1) + "°" + (la >= 0 ? "N" : "S") + ", " + Math.abs(lo).toFixed(1) + "°" + (lo >= 0 ? "E" : "W"); }
   function coords(i) { return ll(D.earth.lat[i], D.earth.lon[i]); }
   function tcoords(t) { return ll(t.lat, t.lon > 180 ? t.lon - 360 : t.lon); }
@@ -325,8 +410,9 @@ code { font-size: .85em; word-break: break-all; }
     }).join("");
     document.getElementById("app").setAttribute("data-body", target().body);
     var fs = document.getElementById("focus");
-    fs.innerHTML = '<option value="">All properties, weighted by mission</option>' + EM.usedPairs(target()).map(function (p) {
-      return '<option value="' + esc(p.target_col) + '">Only: ' + esc(p.label) + "</option>"; }).join("");
+    document.getElementById("focusLabel").textContent = PAGE === "explorer" ? "Property" : "Rank by";
+    fs.innerHTML = '<option value="">' + (PAGE === "explorer" ? "Overall match (all properties together)" : "All properties, weighted by mission") + "</option>" + EM.usedPairs(target()).map(function (p) {
+      return '<option value="' + esc(p.target_col) + '">' + (PAGE === "explorer" ? "" : "Only: ") + esc(p.label) + "</option>"; }).join("");
     fs.value = state.focus || "";
   }
 
@@ -491,11 +577,40 @@ code { font-size: .85em; word-break: break-all; }
 
   function rowHtml(i) {
     return '<li><button type="button" class="row" data-i="' + i + '" data-row="1" aria-pressed="' + (i === state.selected) + '"><span class="n">' + live.rank[i] +
-      '</span><span><span class="name">' + esc(cellName(i)) + '</span><span class="sub">' + coords(i) + " " + tags(i) + '</span></span><span class="score">' +
-      (has(i) ? live.total[i].toFixed(3) : "n/a") + '</span><span class="sbar"><i style="width:' + (has(i) ? pct(live.total[i]) : "0") + '"></i></span></button></li>';
+      '</span><span><span class="name">' + esc(cellName(i)) + '</span><span class="sub">' + coords(i) + " " + tags(i) + '</span></span>' + (state.simple
+        ? '<span class="score words ' + siteGrade(has(i) ? live.total[i] : null).cls + '">' + (has(i) ? pct(live.total[i]) : "n/a") + "<b>" + siteGrade(has(i) ? live.total[i] : null).word + "</b></span>"
+        : '<span class="score">' + (has(i) ? live.total[i].toFixed(3) : "n/a") + "</span>") + '<span class="sbar"><i style="width:' + (has(i) ? pct(live.total[i]) : "0") + '"></i></span></button></li>';
+  }
+
+  // The comparison in plain words: one verdict, one graded bar per property, and what Earth cannot do.
+  function simplePanel(i) {
+    var t = live.t, total = has(i) ? live.total[i] : null, g = siteGrade(total), where = t.body === "Moon" ? "the Moon" : t.body;
+    var props = [];
+    live.used.forEach(function (p, j) { if (state.focus ? p.target_col === state.focus : live.u[j] > 0) props.push({ p: p, s: live.sims[j][i] }); });
+    props.sort(function (a, b) { return (b.s === b.s ? b.s : -1) - (a.s === a.s ? a.s : -1); });
+    var okN = props.filter(function (x) { return x.s >= 0.6; }).length;
+    var broken = t.profile.filter(function (p) { return p.status === "breaks_down"; });
+    var noData = t.profile.filter(function (p) { return p.status === "not_tested"; }).length;
+    var h = '<p class="eyebrow">Earth site, rank ' + live.rank[i] + " of " + N + "</p><h2>" + esc(cellName(i)) + '</h2><p class="muted small">' + coords(i) + " " + tags(i) + "</p>" +
+      '<div class="verdict ' + g.cls + '"><div class="big">' + (total == null ? "n/a" : pct(total)) + "<small>alike</small></div><div><strong>" + g.word + " for " + esc(t.name) + ".</strong>" +
+      (state.focus ? "<p>On this one property only. Choose “Overall match” above to compare everything at once.</p></div></div>"
+        : "<p>It matches " + okN + " of the " + few(props.length, "property", "properties") + " Earth can test. The percentage is the average across them.</p></div></div>") +
+      "<h3>" + (state.focus ? "The numbers" : "Property by property") + "</h3>" + '<div class="meters">' + props.map(function (x) {
+        var gr = grade(x.s === x.s ? x.s : null), here = D.earth.cols[x.p.earth_col] ? D.earth.cols[x.p.earth_col][i] : null;
+        return '<div class="meter ' + gr.cls + '"><span>' + esc(x.p.label) + '</span><span class="gw">' + gr.word + "<small>" + (x.s === x.s ? pct(x.s) : "") + "</small></span>" +
+          '<span class="mtrack"><i style="width:' + (x.s === x.s ? Math.max(3, Math.round(100 * x.s)) : 0) + '%"></i></span>' +
+          '<span class="vals">' + val(here, x.p.unit) + " here · " + val(x.p.target_value, x.p.unit) + " at " + esc(t.name) + "</span></div>";
+      }).join("") + "</div>" +
+      '<p class="gscale"><span class="g-ex">Excellent 90%+</span><span class="g-good">Good 75%+</span><span class="g-fair">Fair 60%+</span><span class="g-bad">Too different</span></p>' +
+      '<p class="muted small">100% means this place has exactly the value measured on ' + where + ". Below 60% it does not count as a match.</p>";
+    if (broken.length || noData) h += "<h3>What this place cannot tell you</h3><p class=\"small\">" +
+      (broken.length ? few(broken.length, "property", "properties") + " cannot be reproduced anywhere on Earth: " + broken.map(function (p) { return esc(p.label.toLowerCase()); }).join(", ") + ". " : "") +
+      (noData ? few(noData, "more has", "more have") + " no measurement yet on " + where + "." : "") + "</p>";
+    return h + '<p class="muted small"><a href="campaign_map.html?target=' + encodeURIComponent(t.id) + '">Plan a field trip for this landing site</a> · <a href="evidence.html">See the evidence and sources</a></p>';
   }
 
   function panel(i) {
+    if (state.simple) return simplePanel(i);
     var t = live.t, dims = EM.dimScores(live.sims, live.used, i);
     var h = '<div class="vs"><div class="side"><p class="eyebrow">Target on ' + (t.body === "Moon" ? "the Moon" : esc(t.body)) + "</p><strong>" + esc(t.name) + '</strong><span class="sub">' + tcoords(t) +
       '</span></div><div class="mid"><span class="big">' + (has(i) ? live.total[i].toFixed(2) : "n/a") + '</span><span class="sub">match</span></div><div class="side"><p class="eyebrow">Earth site, rank ' +
@@ -531,24 +646,67 @@ code { font-size: .85em; word-break: break-all; }
   }
 
   function cannot(i) {
+    if (state.simple) return "";
     var broken = live.t.profile.filter(function (p) { return p.status === "breaks_down"; });
-    if (!broken.length) return "";
+    if (!broken.length) return others(i);
     var h = '<section class="cannot"><h2>What no Earth site reproduces</h2><p class="muted small">Left out of the score. The dot is the selected site, for reference.</p>';
     broken.forEach(function (p) {
       var col = D.earth.cols[p.earth_col], x = col ? col[i] : undefined, st = strip(p, x);
       h += '<div class="prop"><span class="label">' + glyph("breaks_down") + " " + esc(p.label) + "</span>" + (st || '<span class="strip"></span>') +
         '<span class="sim"></span><span class="cap">' + esc(st ? stripCap(p, x) : p.reason) + "</span></div>";
     });
-    return h + "</section>";
+    return h + "</section>" + others(i);
+  }
+
+  // Variables that are neither scored nor broken, and Earth measurements with no counterpart on the target.
+  function unscoredList(t) {
+    var rest = t.profile.filter(function (p) { return UNSCORED.indexOf(p.status) >= 0; });
+    if (!rest.length) return "";
+    return '<ul class="status">' + rest.map(function (p) {
+      return "<li>" + glyph(p.status) + " <strong>" + esc(p.label) + '</strong> <span class="muted small">' + WORDS[p.status] + '</span><span class="why">' + esc(p.reason) + "</span></li>";
+    }).join("") + "</ul>";
+  }
+  function others(i) {
+    var t = live.t, M = D.earth.col_meta || {}, seen = {}, h = "", list = unscoredList(t);
+    t.profile.forEach(function (p) { if (p.earth_col) seen[p.earth_col] = 1; });
+    if (list) h += '<section class="cannot"><h2>Not scored for this target</h2><p class="muted small">Shown so nothing is hidden. None of these moves the score.</p>' + list + "</section>";
+    var extra = Object.keys(M).filter(function (c) { return !seen[c] && D.earth.cols[c]; });
+    if (extra.length) h += '<section class="cannot"><h2>Also measured at this Earth site</h2><p class="muted small">Earth variables with no scored counterpart on this target. For reference only.</p>' +
+      '<div class="scroll"><table><thead><tr><th>Variable</th><th>Dimension</th><th class="num">This site</th></tr></thead><tbody>' + extra.map(function (c) {
+        return "<tr><td>" + esc(M[c].label) + "</td><td>" + esc(SHORT[M[c].dimension] || M[c].dimension) + '</td><td class="num">' + val(D.earth.cols[c][i], M[c].unit) + "</td></tr>";
+      }).join("") + "</tbody></table></div></section>";
+    return h;
+  }
+
+  // The Explorer's single answer: the closest place on Earth, for the chosen property or overall.
+  function answerLine() {
+    var t = live.t, i = live.top[0];
+    if (i == null || !has(i)) return "";
+    var where = cellName(i) + " (" + coords(i) + ")";
+    if (state.focus) {
+      var p = live.used.filter(function (q) { return q.target_col === state.focus; })[0], g = grade(live.total[i]);
+      return '<div class="verdict ' + g.cls + '"><div class="big">' + pct(live.total[i]) + "<small>alike</small></div><div><strong>Closest on Earth for " + esc(p.label.toLowerCase()) + ": " + esc(where) + ".</strong>" +
+        "<p>" + val(D.earth.cols[p.earth_col][i], p.unit) + " there, " + val(p.target_value, p.unit) + " at " + esc(t.name) + ". " + g.word + ".</p></div></div>";
+    }
+    var sg = siteGrade(live.total[i]);
+    return '<div class="verdict ' + sg.cls + '"><div class="big">' + pct(live.total[i]) + "<small>alike</small></div><div><strong>Best overall match on Earth: " + esc(where) + ".</strong>" +
+      "<p>" + sg.word + " across the " + few(live.used.length, "property", "properties") + " Earth can test. Pick one property above to look at it alone.</p></div></div>";
+  }
+  function cantLine() {
+    var broken = live.t.profile.filter(function (p) { return p.status === "breaks_down"; });
+    if (!broken.length) return "";
+    return '<details class="cantbe"><summary>' + few(broken.length, "property", "properties") + " of this site cannot be reproduced anywhere on Earth</summary><ul>" +
+      broken.map(function (p) { return "<li><strong>" + esc(p.label) + ".</strong> " + esc(p.reason) + "</li>"; }).join("") + "</ul></details>";
   }
 
   function viewAnalogs() {
     var t = live.t, top = live.top, extra = top.indexOf(state.selected) < 0 && has(state.selected) ? state.selected : null;
     var head = '<div><p class="eyebrow">Target site on ' + (t.body === "Moon" ? "the Moon" : esc(t.body)) + "</p><h2>" + esc(t.name) + '</h2><p class="muted">' + esc(t.description) + " " + tcoords(t) + ".</p></div>";
     if (!live.used.length) return '<div class="thead">' + head + "</div>" +
-      '<p>Nothing about this site can be tested on Earth with the current data, so no sites are ranked. <a href="#limits">See why</a>.</p>';
+      '<p>Nothing about this site can be tested on Earth with the current data, so no sites are ranked. <a href="evidence.html#limits">See why</a>.</p>';
     var fresh = top.filter(isNew).length;
-    var facts = '<dl class="facts"><div><dt>' + live.total[top[0]].toFixed(2) + "</dt><dd>best match score, out of 1</dd></div><div><dt>" + pct(live.coverage) +
+    var facts = PAGE === "explorer" ? "<div>" + answerLine() + cantLine() + "</div>" : '<dl class="facts"><div><dt>' + (state.simple ? pct(live.total[top[0]]) : live.total[top[0]].toFixed(2)) + "</dt><dd>" +
+      (state.simple ? "alike: the best Earth site found (" + siteGrade(live.total[top[0]]).word.toLowerCase() + ")" : "best match score, out of 1") + "</dd></div><div><dt>" + pct(live.coverage) +
       '</dt><dd>of this site can be tested on Earth. <a href="#limits">See the limits</a></dd></div><div><dt>' + fresh + " of " + top.length +
       "</dt><dd>top sites are far from any known analog</dd></div></dl>";
     return '<div class="thead">' + head + facts + "</div>" +
@@ -560,13 +718,14 @@ code { font-size: .85em; word-break: break-all; }
       '<span><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>Selected</span><span>Point at a dot for details, click to compare.</span></div>' +
       '<div class="duo"><section><h2>Closest Earth sites</h2><p class="muted small">' + (state.focus
         ? "Ranked on one property only: " + esc(live.used.filter(function (p) { return p.target_col === state.focus; })[0].label.toLowerCase()) + ". Mission weights are ignored."
+        : state.simple ? "How alike each place is to the target, across everything Earth can test. Pick one to see why."
         : "Scores run from 0 to 1 across the properties Earth can test. Pick a site to compare it with the target.") + "</p>" +
       '<ol class="rank">' + top.map(rowHtml).join("") + "</ol>" +
       (extra != null ? '<h3>Picked on the map</h3><ol class="rank">' + rowHtml(extra) + "</ol>" : "") + '</section><section class="panel" id="panel">' + panel(state.selected) + "</section>" + cannot(state.selected) + "</div>";
   }
 
   function cellGlyphs(t, d) {
-    var count = { match: 0, partial: 0, breaks_down: 0, not_tested: 0 }, s = "", words = [];
+    var count = { match: 0, partial: 0, breaks_down: 0, not_tested: 0, input_only: 0, not_comparable: 0 }, s = "", words = [];
     t.profile.forEach(function (p) { if (p.dimension === d && p.status in count) count[p.status]++; });
     Object.keys(count).forEach(function (st) {
       for (var k = 0; k < count[st]; k++) s += glyph(st);
@@ -578,7 +737,7 @@ code { font-size: .85em; word-break: break-all; }
   function viewLimits() {
     var dims = Object.keys(D.dims).filter(function (d) { return D.targets.some(function (t) { return t.profile.some(function (p) { return p.dimension === d && p.status in WORDS; }); }); });
     var h = "<h2>What Earth can and cannot stand in for</h2><p>Each mark is one property of a target site. Earth is never a full match: the crosses are where a field test on Earth would tell you nothing about the real site.</p>" +
-      '<p class="key"><span>' + glyph("match") + "testable on Earth</span><span>" + glyph("partial") + "only partly</span><span>" + glyph("breaks_down") + "breaks down</span><span>" + glyph("not_tested") + "not tested yet</span></p>" +
+      '<p class="key"><span>' + glyph("match") + "testable on Earth</span><span>" + glyph("partial") + "only partly</span><span>" + glyph("breaks_down") + "breaks down</span><span>" + glyph("not_tested") + "no target data yet</span><span>" + glyph("input_only") + "input to a derived property</span><span>" + glyph("not_comparable") + "not comparable</span></p>" +
       '<div class="scroll"><table class="matrix"><thead><tr><th>Target site</th>' + dims.map(function (d) { return "<th>" + esc(SHORT[d] || D.dims[d]) + "</th>"; }).join("") +
       "<th>Earth can test</th></tr></thead><tbody>" + D.targets.map(function (t) {
         var cov = EM.coverage(t.profile, state.weights);
@@ -588,7 +747,7 @@ code { font-size: .85em; word-break: break-all; }
     var groups = [["breaks_down", "Where the analogy breaks down", "No Earth site reproduces these. They are left out of the score so they cannot quietly drag it down."],
       ["partial", "Only partly reproducible", "Earth comes close at its extremes. These count at half weight."],
       ["match", "Testable on Earth", "The target value falls inside the range found on Earth."],
-      ["not_tested", "Not tested yet", "Waiting for more data or another agent run."],
+      ["not_tested", "No target data yet", "The target dataset has no value for this site, or the pairing is waiting for another agent run."],
       ["input_only", "Used only as an input", "Not scored directly; a derived property takes its place."],
       ["not_comparable", "Not comparable between worlds", ""]];
     var prof = live.t.profile;
@@ -612,32 +771,124 @@ code { font-size: .85em; word-break: break-all; }
     return h;
   }
 
+  function simplePlan() {
+    var t = live.t, pl = t.plan, R = pl.requirements, rows = (t.campaign && t.campaign.rows) || [], last = rows[rows.length - 1];
+    var broken = t.profile.filter(function (p) { return p.status === "breaks_down"; });
+    var h = "<h2>Field trip plan for " + esc(t.name) + "</h2>";
+    if (!R.length || !last) return h + "<p>Nothing about this site can be tested on Earth with the current data.</p>";
+    var full = last.covered === R.length;
+    h += '<div class="verdict ' + (full ? "g-ex" : "g-fair") + '"><div class="big">' + last.covered + "/" + R.length + "<small>properties</small></div><div><strong>" +
+      (full ? "A trip to " + few(last.k, "place", "places") + " tests everything Earth can test." : "A trip to " + few(last.k, "place", "places") + " tests " + last.covered + " of " + R.length + " properties.") + "</strong>" +
+      "<p>No single place on Earth is like " + esc(t.name) + " in every way, so the plan combines places. The best single place covers " + rows[0].covered + " of " + R.length +
+      ". With " + last.k + ", " + few(last.confirmed || 0, "property is", "properties are") + " also double-checked at a second place.</p></div></div>";
+    h += "<h3>What gets tested</h3><p class=\"small\">" + R.map(function (r) { return esc(r.label); }).join(" · ") + ".</p>";
+    if (broken.length) h += "<h3>What needs a lab instead</h3><p class=\"small\">" + few(broken.length, "property", "properties") + " cannot be reproduced anywhere on Earth: " +
+      broken.map(function (p) { return esc(p.label.toLowerCase()); }).join(", ") + ". Plan a chamber or a simulation for these.</p>";
+    return h + campaignSection(R.length);
+  }
+
+  // ------------------------------------------------------------ stress tests
+  var stressPick = { hz: null, tg: null };   // the dot last clicked in the hazard-by-site grid
+  function stressDetail(hz, tg) {
+    var X = D.extremes, z = X && X.hazards.filter(function (q) { return q.key === hz; })[0], x = D.targets.filter(function (q) { return q.id === tg; })[0];
+    var c = z && x && z.targets[tg];
+    if (!c) return "";
+    var where = x.body === "Moon" ? "the Moon" : x.body, cls = { earth: "g-ex", same: "g-good", target: "g-bad" }[c.verdict];
+    var say = c.verdict === "earth" ? "Earth can be harsher than " + esc(x.name) + " here, so equipment can be over-tested with margin."
+      : c.verdict === "same" ? "Earth gets about as harsh as " + esc(x.name) + " here: a realistic rehearsal."
+      : esc(x.name) + " is harsher than anywhere on Earth here. The site below is the nearest Earth gets; a chamber has to cover the rest.";
+    return '<div class="sdetail ' + cls + '"><strong>' + esc(z.label) + " at " + esc(x.name) + " (" + esc(where) + ")</strong><p>" + say + "</p>" +
+      (c.site ? "<p>Go to <b>" + esc(c.site.name) + '</b> <span class="muted">' + coords(c.site.index) + "</span>: " + val(c.site.value, z.unit) + " there, " + val(c.value, z.unit) + " at the landing site. " +
+        "The harshest place on Earth reaches " + val(z.extreme, z.unit) + ".</p>" : "") + '<p class="muted">Tests ' + esc(z.tests) + ".</p></div>";
+  }
+  // Not "where is it alike?" but "where is Earth harsh enough to break equipment first?".
+  function viewStress() {
+    var X = D.extremes, t = live.t, where = t.body === "Moon" ? "the Moon" : t.body;
+    var h = "<h2>Stress tests for " + esc(t.name) + "</h2><p>The other tabs look for places that <em>resemble</em> the landing site. This one looks for Earth at its most extreme: " +
+      "a dust storm, fresh lava, the coldest plateau. None of them looks like " + where + " as a whole, but each pushes one kind of stress as far as Earth can. If equipment survives there, it has earned some trust.</p>";
+    if (!X || !X.hazards.length) return h + "<p>No hazard data in this run.</p>";
+    var V = { earth: ["g-ex", "Harsher on Earth: over-test here"], same: ["g-good", "About as harsh: realistic rehearsal"],
+              target: ["g-bad", "Harsher on " + where + ": Earth goes part of the way"] };
+    var known = X.hazards.filter(function (z) { return z.targets[t.id]; });
+    var over = known.filter(function (z) { return z.targets[t.id].verdict !== "target"; }).length;
+    if (known.length) h += '<div class="verdict ' + (over >= known.length / 2 ? "g-ex" : "g-fair") + '"><div class="big">' + over + "/" + known.length + "<small>hazards</small></div><div><strong>Earth can match or exceed " +
+      esc(t.name) + " on " + over + " of the " + known.length + " hazards measured on both worlds.</strong><p>For the rest, Earth's worst is still gentler than " + where +
+      ", so a chamber or a simulation has to finish the job.</p></div></div>";
+    // ---- every hazard against every landing site
+    var WORD = { earth: "Earth is harsher", same: "about as harsh", target: "harsher there" }, CLS = { earth: "g-ex", same: "g-good", target: "g-bad" };
+    var short = function (n) { return n.replace(/\s*\(.*\)$/, ""); };
+    h += '<h3 style="margin-top:1.6rem">Which landing site does each extreme rehearse?</h3>' +
+      '<p class="muted small">Each dot is one hazard at one landing site. Click a dot for the Earth site that comes closest to that landing site on that hazard.</p>' +
+      '<p class="key"><span class="g-ex"><i class="sw" style="background:var(--gc)"></i>Earth is harsher: over-test</span><span class="g-good"><i class="sw" style="background:var(--gc)"></i>about as harsh: rehearse</span>' +
+      '<span class="g-bad"><i class="sw" style="background:var(--gc)"></i>harsher there: Earth goes part of the way</span><span>· not measured there</span></p>' +
+      '<div class="scroll"><table class="sgrid"><thead><tr><th>Hazard</th>' + D.targets.map(function (x) {
+        return '<th' + (x.id === t.id ? ' class="cur"' : "") + ">" + esc(short(x.name)) + "<small>" + esc(x.body) + "</small></th>"; }).join("") + "</tr></thead><tbody>" +
+      X.hazards.filter(function (z) { return !z.events; }).map(function (z) {
+        return "<tr><td>" + esc(z.label) + "</td>" + D.targets.map(function (x) {
+          var c = z.targets[x.id];
+          return "<td" + (x.id === t.id ? ' class="cur"' : "") + ">" + (c ? '<button type="button" class="' + CLS[c.verdict] + '" data-hz="' + esc(z.key) + '" data-tg="' + esc(x.id) +
+            '" title="' + esc(z.label + " at " + x.name + ": " + WORD[c.verdict]) + '" aria-label="' + esc(z.label + " at " + x.name + ": " + WORD[c.verdict]) + '"></button>' : '<span class="na">·</span>') + "</td>";
+        }).join("") + "</tr>";
+      }).join("") + '</tbody></table></div><div id="sdetail">' + stressDetail(stressPick.hz, stressPick.tg) + "</div>";
+
+    h += '<h3 style="margin-top:1.8rem">Hazard by hazard, for ' + esc(t.name) + "</h3>";
+    h += '<div class="hz">' + X.hazards.map(function (z) {
+      var tv = z.targets[t.id], v = tv ? V[tv.verdict] : ["g-none", z.events ? "Recorded by NASA, not a measurement on " + where : "Not measured on " + where + " yet"];
+      var top = z.top[0];
+      // which landing sites this extreme serves, grouped by verdict
+      var groups = { earth: [], same: [], target: [] };
+      D.targets.forEach(function (x) { var c = z.targets[x.id]; if (c) groups[c.verdict].push(short(x.name)); });
+      var also = [["same", "Realistic rehearsal for"], ["earth", "Over-tests"], ["target", "Falls short of"]].filter(function (g) { return groups[g[0]].length; })
+        .map(function (g) { return g[1] + " " + esc(groups[g[0]].join(", ")); }).join(". ");
+      return '<article class="' + v[0] + '"><h3>' + esc(z.label) + '</h3><p class="tests">Tests ' + esc(z.tests) + '.</p><span class="vd">' + esc(v[1]) + "</span>" +
+        (tv && tv.site ? '<p class="match"><strong>Closest match for ' + esc(short(t.name)) + ":</strong> " + esc(tv.site.name) + ' <span class="muted">' + coords(tv.site.index) + "</span><br>" +
+          val(tv.site.value, z.unit) + " there against " + val(tv.value, z.unit) + " at the landing site.</p>" : "") +
+        '<div class="cmp"><div><b>' + (z.events ? top.value + " eruptions" : val(top.value, z.unit)) + "</b><span>harshest on Earth" + (z.events ? ", within " + X.near_km + " km" : "") + "</span></div><div><b>" +
+        (tv ? val(tv.value, z.unit) : "–") + "</b><span>at " + esc(t.name) + "</span></div></div>" +
+        "<ol>" + z.top.slice(0, 3).map(function (s) {
+          return "<li>" + esc(s.name) + ' <span class="muted">' + coords(s.index) + " · " + (z.events ? s.value + " eruptions" : val(s.value, z.unit)) + (s.near ? " · near " + esc(s.near) : "") + "</span></li>";
+        }).join("") + "</ol>" + (also ? '<p class="also">' + also + ".</p>" : "") + '<p class="why">' + esc(z.why) + "</p></article>";
+    }).join("") + "</div>";
+    h += '<p class="muted small" style="margin-top:1.2rem">' + (X.source ? "Eruptions and dust storms: " + esc(X.source) + ", " + X.n_volcano + " volcanoes and " + X.n_dust +
+      " dust storms on record. They are drawn on the campaign map too. " : "") + "The other hazards use the same NASA columns as the matching. A stress test checks robustness, not resemblance, so none of this enters the match score.</p>";
+    return h;
+  }
+
   function viewPlan() {
+    if (state.simple) return simplePlan();
     var pl = live.t.plan, R = pl.requirements, coverable = R.length - pl.uncovered.length;
     var h = "<h2>Test plan for " + esc(live.t.name) + "</h2><p>A field campaign needs yes-or-no answers. Each requirement is a tolerance band around the target value of one property. " +
       "A site passes it when its own value falls inside the band.</p>";
-    if (!R.length) return h + "<p>No property of this target can be tested on Earth with the current data.</p>";
+    var prof = live.t.profile, cnt = function (st) { return prof.filter(function (p) { return p.status === st; }).length; };
+    h += '<p class="small">This target has ' + prof.length + " variables: " + R.length + " become requirements and are routed on the map, " + cnt("breaks_down") +
+      " cannot be reproduced on Earth, " + cnt("not_tested") + " have no target data yet, and " + (cnt("input_only") + cnt("not_comparable")) + " are inputs or not comparable. All are listed below.</p>";
+    if (!R.length) return h + "<p>No property of this target can be tested on Earth with the current data.</p>" + unscoredBlock();
     h += '<dl class="facts" style="margin:1rem 0 1.25rem"><div><dt>' + R.length + "</dt><dd>requirements can be tested on Earth</dd></div><div><dt>" + pl.best_single.covers.length +
       "</dt><dd>passed by the best single site</dd></div><div><dt>" + pl.sites.length + "</dt><dd>" + (pl.sites.length === 1 ? "site passes " : "sites together pass ") + coverable +
       (pl.exact ? "; no smaller set can" : " (an estimate; the exact search was too large)") + "</dd></div></dl>";
     h += '<h3>Which site covers which requirement</h3><div class="scroll"><table class="matrix"><thead><tr><th>Requirement</th>' +
       pl.sites.map(function (s, k) { return "<th>Site " + (k + 1) + "<br>" + esc(cellName(s.index)) + '<br><span style="font-weight:400">' + coords(s.index) + "</span></th>"; }).join("") +
       '<th class="num">Earth cells passing</th></tr></thead><tbody>' + R.map(function (r, j) {
-        return '<tr><th scope="row">' + esc(r.label) + "</th>" + pl.sites.map(function (s) {
+        return '<tr><th scope="row">' + esc(r.label) + (r.partial ? ' <span class="muted small">closest Earth gets</span>' : "") + "</th>" + pl.sites.map(function (s) {
           return "<td>" + (s.covers.indexOf(j) >= 0 ? '<span role="img" aria-label="passes">' + glyph("match") + "</span>" : '<span class="muted" aria-label="does not pass">·</span>') + "</td>";
         }).join("") + '<td class="num">' + r.n_pass + "</td></tr>";
       }).join("") + "</tbody></table></div>";
     h += "<h3>The tolerance bands</h3>" + stripKey(false) + '<ul class="status">';
     R.forEach(function (r) {
       var p = live.t.profile.filter(function (q) { return q.target_col === r.target_col; })[0], st = p ? strip(p, null, [r.lo, r.hi]) : "";
-      h += '<li><div class="prop"><span class="label"><strong>' + esc(r.label) + "</strong></span>" + (st || '<span class="strip"></span>') + '<span class="sim"></span><span class="cap">must be between ' +
+      h += '<li><div class="prop"><span class="label"><strong>' + esc(r.label) + "</strong></span>" + (st || '<span class="strip"></span>') + '<span class="sim"></span><span class="cap">' + (r.partial ? "target is beyond Earth’s range; Earth’s most extreme sites pass, at half weight: " : "must be between ") +
         val(r.lo, r.unit) + " and " + val(r.hi, r.unit) + (p && REL[p.rel_id] ? " · Earth " + range(REL[p.rel_id].earth_lo, REL[p.rel_id].earth_hi, r.unit) : "") + "</span></div></li>";
     });
     h += "</ul>";
     if (pl.untestable.length) h += "<h3>Cannot be tested anywhere on Earth</h3><p class=\"muted small\">Plan a chamber, a simulator or an analysis for these instead.</p><ul class=\"status\">" +
       pl.untestable.map(function (u) { return "<li>" + glyph("breaks_down") + " <strong>" + esc(u.label) + '</strong><span class="why">' + esc(u.reason) + "</span></li>"; }).join("") + "</ul>";
+    h += unscoredBlock();
     h += campaignSection(R.length);
     return h;
+  }
+  function unscoredBlock() {
+    var list = unscoredList(live.t);
+    return list ? '<h3>Not in the plan, and why</h3><p class="muted small">These variables have no requirement because there is nothing to compare yet. New target data would bring them in.</p>' + list : "";
   }
 
   // ------------------------------------------------- field campaign routing
@@ -648,67 +899,25 @@ code { font-size: .85em; word-break: break-all; }
     return 2 * 6371 * Math.asin(Math.sqrt(a * a + Math.cos(la1 * r) * Math.cos(la2 * r) * b * b));
   }
 
+  // Which sites make up each campaign is decided by the pipeline (coverage, confirmation, match quality) and does
+  // not depend on the start point; only the visiting order and the distance do, so that is all that is redone here.
   function campaignCurve(start) {
-    var R = live.t.plan.requirements, rows = [];
-    if (!R.length) return rows;
-    var pass = [], i, j, m;
-    for (i = 0; i < N; i++) {
-      m = 0;
-      for (j = 0; j < R.length; j++) {
-        var v = D.earth.cols[R[j].earth_col] ? D.earth.cols[R[j].earth_col][i] : null;
-        if (v != null && v >= R[j].lo && v <= R[j].hi) m |= 1 << j;
-      }
-      pass.push(m);
-    }
-    var rep = {};
-    for (i = 0; i < N; i++) {
-      m = pass[i];
-      if (!m) continue;
-      if (!(m in rep)) rep[m] = i;
-      else if (start && haverKm(start[0], start[1], D.earth.lat[i], D.earth.lon[i]) <
-                        haverKm(start[0], start[1], D.earth.lat[rep[m]], D.earth.lon[rep[m]])) rep[m] = i;
-    }
-    var masks = Object.keys(rep).map(Number), goal = 0;
-    masks.forEach(function (x) { goal |= x; });
-    var pop = function (x) { var c = 0; while (x) { c += x & 1; x >>= 1; } return c; };
-    var routeKm = function (order) {
-      var km = 0, prev = start;
-      order.forEach(function (ix) { if (prev) km += haverKm(prev[0], prev[1], D.earth.lat[ix], D.earth.lon[ix]); prev = [D.earth.lat[ix], D.earth.lon[ix]]; });
-      return km;
-    };
-    var bestOrder = function (idx) {   // all permutations of up to 5 stops
-      var best = idx.slice(), bk = Infinity;
+    var pre = live.t.campaign;
+    return ((pre && pre.rows) || []).map(function (r) {
+      var idx = r.stops.map(function (x) { return x.index; }), best = idx.slice(), bk = Infinity;
+      var km = function (order) {
+        var dkm = 0, prev = start;
+        order.forEach(function (ix) { if (prev) dkm += haverKm(prev[0], prev[1], D.earth.lat[ix], D.earth.lon[ix]); prev = [D.earth.lat[ix], D.earth.lon[ix]]; });
+        return dkm;
+      };
       var perm = function (cur, rest) {
-        if (!rest.length) { var km = routeKm(cur); if (km < bk) { bk = km; best = cur.slice(); } return; }
+        if (!rest.length) { var v = km(cur); if (v < bk) { bk = v; best = cur.slice(); } return; }
         for (var q = 0; q < rest.length; q++) perm(cur.concat([rest[q]]), rest.slice(0, q).concat(rest.slice(q + 1)));
       };
       perm([], idx);
-      return { order: best, km: bk };
-    };
-    var maxCover = pop(goal);
-    for (var k = 1; k <= Math.min(5, masks.length); k++) {
-      var combos = [], pick = function (startAt, cur) {
-        if (cur.length === k) { combos.push(cur.slice()); return; }
-        for (var q = startAt; q < masks.length; q++) { cur.push(q); pick(q + 1, cur); cur.pop(); if (combos.length > 200000) return; }
-      };
-      pick(0, []);
-      var bestCov = 0;
-      combos.forEach(function (c) { var u = 0; c.forEach(function (q) { u |= masks[q]; }); if (pop(u) > bestCov) bestCov = pop(u); });
-      var best = null, tried = 0;
-      combos.forEach(function (c) {
-        var u = 0;
-        c.forEach(function (q) { u |= masks[q]; });
-        if (pop(u) !== bestCov || tried > 3000) return;
-        tried++;
-        var r = bestOrder(c.map(function (q) { return rep[masks[q]]; }));
-        if (!best || r.km < best.km) best = { covered: bestCov, km: r.km, order: r.order, union: u };
-      });
-      if (!best) break;
-      rows.push({ k: best.order.length, covered: best.covered, km: best.km, union: best.union,
-                  stops: best.order.map(function (ix) { return { index: ix, lat: D.earth.lat[ix], lon: D.earth.lon[ix] }; }) });
-      if (best.covered >= maxCover) break;
-    }
-    return rows;
+      return { k: r.k, covered: r.covered, confirmed: r.confirmed, mean_score: r.mean_score, km: bk,
+               stops: best.map(function (ix) { return { index: ix, lat: D.earth.lat[ix], lon: D.earth.lon[ix] }; }) };
+    });
   }
 
   function sameStart(a, b) { return (!a && !b) || (!!a && !!b && a[0] === b[0] && a[1] === b[1]); }
@@ -723,7 +932,7 @@ code { font-size: .85em; word-break: break-all; }
     if (campState.start === undefined) campState.start = (pre && pre.start) || null;
     var h = '<h3>Field campaign: cost against coverage</h3>' +
       '<p class="muted small">Heavy equipment that needs setting up favours fewer sites; portable instruments favour fewer kilometres. ' +
-      'Each row is the best campaign for that number of sites: most requirements covered, shortest route among ties. ' +
+      'Each row is the best campaign for that number of sites, drawn from the best-matching Earth sites: most requirements covered, then most confirmed at a second site, then best overall match. A stop is added only while it covers or confirms something. ' +
       'Pick the row that matches your equipment.</p>' +
       '<div id="camp-section">' + campaignInner(nReq) + "</div>";
     if (D.campaign_map) {
@@ -738,7 +947,7 @@ code { font-size: .85em; word-break: break-all; }
   function campaignInner(nReq) {
     var pre = live.t.campaign, s = campState.start;
     // The pipeline precomputed the curve for its own start point (the report shows the same rows);
-    // any other start point is routed here in the browser from the same pass/fail requirements.
+    // for any other start point the same stops are re-ordered here in the browser.
     var precomputed = !!(pre && pre.rows && sameStart(s, pre.start));
     var rows = precomputed ? pre.rows : campaignCurve(s);
     var h = '<p>Start from latitude <input id="camp-lat" type="number" step="any" min="-90" max="90" style="width:6em" value="' + (s ? s[0] : "") + '"> ' +
@@ -748,9 +957,10 @@ code { font-size: .85em; word-break: break-all; }
       ' <span class="muted small">' + (s ? "Routes start at " + ll(s[0], s[1]) + "." : "No start point: the route is free-floating, so its length is the distance between the stops only.") +
       (precomputed ? "" : " Computed in your browser.") + "</span></p>";
     if (!rows.length) return h + "<p>No requirement is testable, so there is nothing to route.</p>";
-    h += '<div class="scroll"><table><thead><tr><th>Sites</th><th>Covers</th><th class="num">Route km</th><th>Stops in order' + (s ? " (from your start)" : "") + "</th></tr></thead><tbody>";
+    h += '<div class="scroll"><table><thead><tr><th>Sites</th><th>Covers</th><th>Confirmed at 2+ sites</th><th>Mean match</th><th class="num">Route km</th><th>Stops in order' + (s ? " (from your start)" : "") + "</th></tr></thead><tbody>";
     rows.forEach(function (r) {
-      h += "<tr><td>" + r.k + "</td><td>" + r.covered + " of " + nReq + '</td><td class="num">' + Math.round(r.km).toLocaleString() + "</td><td>" +
+      h += "<tr><td>" + r.k + "</td><td>" + r.covered + " of " + nReq + "</td><td>" + (r.confirmed || 0) + "</td><td>" + (r.mean_score != null ? pct(r.mean_score) : "n/a") +
+        '</td><td class="num">' + Math.round(r.km).toLocaleString() + "</td><td>" +
         r.stops.map(function (st) { return esc(cellName(st.index)) + ' <span class="muted">(' + coords(st.index) + ")</span>"; }).join(" → ") + "</td></tr>";
     });
     return h + "</tbody></table></div>";
@@ -857,12 +1067,20 @@ code { font-size: .85em; word-break: break-all; }
     return h;
   }
 
-  function tab() { var h = location.hash.replace("#", ""); return TABS.indexOf(h) >= 0 ? h : "analogs"; }
+  function tab() { var h = location.hash.replace("#", ""); return TABS.indexOf(h) >= 0 ? h : TABS[0]; }
+  document.getElementById("app").classList.add(PAGE);
+  document.getElementById("app").classList.toggle("simple", state.simple);
+  document.title = "EarthMimic · " + (PAGE === "explorer" ? "Explorer" : "Evidence");
+  document.getElementById("tagline").textContent = PAGE === "explorer"
+    ? "Pick a landing site and one property. See where on Earth comes closest."
+    : "How we know: the checks behind the results, what Earth cannot do, and the data behind every number.";
+  document.querySelectorAll(".pages a[data-page]").forEach(function (a) { if (a.getAttribute("data-page") === PAGE) a.setAttribute("aria-current", "page"); });
+  document.querySelector("nav").innerHTML = TABS.map(function (k) { return '<a href="#' + k + '">' + TAB_LABELS[k] + "</a>"; }).join("");
   function draw() {
     var t = tab();
     document.querySelectorAll("nav a").forEach(function (a) { if (a.getAttribute("href") === "#" + t) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     document.getElementById("tip").hidden = true;
-    document.getElementById("view").innerHTML = { analogs: viewAnalogs, limits: viewLimits, plan: viewPlan, validation: viewValidation, agent: viewAgent, data: viewData }[t]();
+    document.getElementById("view").innerHTML = { analogs: viewAnalogs, limits: viewLimits, validation: viewValidation, agent: viewAgent, data: viewData }[t]();
     if (t === "analogs") paintMaps();
   }
   function refresh(resetSelection) { if (resetSelection) state.selected = null; compute(); drawControls(); draw(); }
@@ -892,6 +1110,12 @@ code { font-size: .85em; word-break: break-all; }
   });
   var view = document.getElementById("view"), tip = document.getElementById("tip");
   view.addEventListener("click", function (e) {
+    var dot = e.target.closest("[data-hz]");
+    if (dot) {
+      stressPick = { hz: dot.getAttribute("data-hz"), tg: dot.getAttribute("data-tg") };
+      document.getElementById("sdetail").innerHTML = stressDetail(stressPick.hz, stressPick.tg);
+      return;
+    }
     var tb = e.target.closest("[data-t]");
     if (tb) { pickTarget(tb.getAttribute("data-t")); return; }
     var el = e.target.closest("[data-i]"); if (!el) return;

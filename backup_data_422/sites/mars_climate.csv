@@ -1,0 +1,10 @@
+# Fill in annual-mean values per site from the Mars Climate Database web interface (www-mars.lmd.jussieu.fr), then rerun fetch. Leave a cell empty if unknown.
+# surf_temp_mean_K = surface temperature; temp_swing_K = daily max minus daily min surface temperature; surf_pressure_Pa = surface pressure; wind_ms = near-surface wind speed; dust_tau = dust column visible optical depth.
+# Put the database version and scenario you used in the source column.
+target_id,name,surf_temp_mean_K,temp_swing_K,surf_pressure_Pa,wind_ms,dust_tau,source
+mars-jezero,Jezero crater (Perseverance),223.04,62.18,715.63,2.66,,"NASA PDS: Mars 2020 MEDA calibrated env (ATS air temp, PS pressure, WS wind), 12 sols sampled every 56 sols over sols 15-631; wind from 5 sols (sensor damaged ~sol 489)"
+mars-gale,Gale crater (Curiosity),225.32,63.09,842.99,5.92,,"NASA PDS: MSL REMS MODRDR (MSL-M-REMS-5-MODRDR-V1.0), 12 sols sampled every 56 sols over sols 100-716"
+mars-elysium,Elysium Planitia (InSight),208.31,83.25,721.34,5.27,,"NASA PDS: InSight TWINS derived (air temp, wind) + PS calibrated (pressure), 12 sols sampled every 56 sols over sols 123-739"
+mars-chryse,Chryse Planitia (Viking 1),207.28,48.36,778.42,3.90,1.05,"NASA PDS: Viking Lander 1 binned met (VL1-M-MET-4-BINNED-P-T-V-CORR-V1.0), 333 sols; dust tau from VL1 camera opacity (504 obs); temp at 1.6 m boom"
+mars-vastitas,Vastitas Borealis (Phoenix),215.62,56.52,778.35,,,"NASA PDS: Phoenix MET reduced RDR 512-s averages, 69 sols; 151-sol northern-summer mission only - biased warm vs true annual mean"
+mars-arcadia,Arcadia Planitia,,,,,,

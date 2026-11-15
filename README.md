@@ -118,6 +118,55 @@ At each target site a property is one of:
 
 "Coverage" is the share of the mission's weight that Earth can test at all.
 
+Every variable is shown, whatever became of it. The dashboard (Analogs, Limits and
+Test plan tabs) and the campaign map list each target variable as a requirement,
+not reproducible on Earth, missing target data, input only or not comparable, with
+the reason. Earth variables with no counterpart on the target are listed per site
+for reference. A partly reproducible property becomes a requirement that Earth's
+most extreme 5% of sites pass, so it can appear on a route instead of dropping out.
+
+Field campaigns are built from the best-matching Earth sites only (the 24 best, plus
+the best site for each requirement). For each number of stops the campaign covers the
+most requirements, then confirms the most at a second independent site, then has the
+best overall match; a stop is added only while it covers or confirms something. The
+map page shows, per campaign, the distance of every leg, which variables each stop
+matches and the match percentage of each variable (100% at the target value, about
+61% at the edge of the pass band).
+
+Unnamed grid cells are named from their own NASA values and a coarse area lookup
+(`places.py`), for example "Cold hyper-arid high plateau, Central and East Asia".
+Precipitation on the targets is a physical prior of 0 (no rain on the Moon or on
+present-day Mars), compared with NASA POWER precipitation on Earth.
+
+Ice in the ground: the Moon's "area with ice stable in the top metre" (LRO Diviner) is
+paired with the share of the year Earth's ground is frozen about a metre down, from
+MERRA-2 soil temperature through NASA POWER. One is a share of area and the other a
+share of time, so the pairing carries a confidence of 0.6.
+
+Ultraviolet: Earth's surface UV-B irradiance (NASA POWER, CERES) is paired with UV-B at
+Gale crater from Curiosity REMS. REMS UV is only reliable around midday, so the midday
+value is spread over the sol assuming a sine-shaped day (`rems_midday_uvb` and
+`daily_mean_from_midday` in `ingest.py`). Only Gale has this measurement so far.
+
+Both pages open in a simple view: a plain-language verdict, one graded bar per property
+(Excellent 90%+, Good 75%+, Fair 60%+) and what Earth cannot reproduce. The dashboard's
+"Detailed view" button and the map's "Show details" button reveal the measured values,
+tolerance bands, agent log, validation and data provenance.
+
+Stress tests (`extremes.py`, the dashboard's Stress tests tab): for each hazard (cold, thermal
+cycling, dust, wind, UV, dryness, rough ground, frozen ground, thin air, volcanic ground) the
+harshest places on Earth and, per target, which world is harsher. Volcanic eruptions and dust
+storms come from NASA EONET and are drawn on the campaign map. Stress tests check robustness,
+not resemblance, so they never enter the match score.
+
+The run writes four pages, each answering one question: `index.html` (which landing site?),
+`explorer.html` (how does one place compare on one property?), `campaign_map.html` (where do I go
+and what do I test there?) and `evidence.html` (can I trust this?). Explorer and Evidence are
+built from the same template, `dashboard/template.html`.
+
+Start at `out/index.html`: a home page (`home.py`) with the run's headline numbers, a
+card per landing site that opens its field trip, and links to the dashboard and the map.
+
 ## Real data: the fetch command
 
     python -m earthmimic fetch --out data/real_raw

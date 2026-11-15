@@ -1,0 +1,1367 @@
+{
+ "used": 18,
+ "max": 15,
+ "runs": [
+  {
+   "run": 1,
+   "used": 13,
+   "max": 15,
+   "log": [
+    "Computed 'grazing_sun_share' for 494 Earth cells from latitude.",
+    "Computed 'grazing_sun_share' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
+    "Computed 'insolation_wm2' for 494 Earth cells from latitude.",
+    "Computed 'insolation_wm2' for 13 target sites from latitude and axial tilt; 0 used a supplied value.",
+    "Proposer suggested 14 candidate pairings.",
+    "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
+    "Tool call 1: surf_temp_mean_K ~ temp_mean_c -> accepted (confidence 1.00)",
+    "Tool call 2: slope_deg ~ slope_deg -> accepted (confidence 1.00)",
+    "Tool call 3: temp_swing_K ~ temp_swing_c -> accepted (confidence 1.00)",
+    "Tool call 4: grazing_sun_share ~ grazing_sun_share -> accepted (confidence 1.00)",
+    "Tool call 5: roughness_deg ~ roughness_deg -> accepted (confidence 0.50)",
+    "Tool call 6: surf_pressure_Pa ~ pressure_kpa -> accepted (confidence 1.00)",
+    "Tool call 7: insolation_wm2 ~ insolation_wm2 -> accepted (confidence 0.50)",
+    "Tool call 8: wind_ms ~ wind_ms -> accepted (confidence 1.00)",
+    "Tool call 9: dust_tau ~ dust_aod -> accepted (confidence 1.00)",
+    "Tool call 10: relief_m ~ relief_m -> accepted (confidence 0.50)",
+    "Tool call 11: albedo ~ albedo -> accepted (confidence 1.00)",
+    "Tool call 12: surf_temp_max_K ~ warm_month_high_c -> accepted (confidence 0.60)",
+    "Tool call 13: subsurface_h2o_share ~ soil_wetness -> accepted (confidence 0.50)",
+    "Run 1 finished: 13 accepted, 0 pending, 2 denied; 13 of 15 tool calls used.",
+    "Derived 'daily_high_c' (Typical daily high) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
+    "Derived 'daily_low_c' (Typical daily low) from mean_temperature, diurnal_swing. [Arithmetic identity for a periodic signal.]",
+    "Derived 'liquid_window_c' (Liquid-water temperature window) from surface_pressure. [Magnus saturation vapour pressure fit: Alduchov & Eskridge (1996), J. Appl. Meteorol. 35, 601-609.]",
+    "Derived 'thaw_share' (Share of the day above freezing) from mean_temperature, diurnal_swing. [Exact time-above-threshold of a sinusoid; first-order model of the diurnal temperature cycle.]",
+    "Derived 'wind_pressure_pa' (Wind force on surfaces) from surface_pressure, mean_temperature, wind_speed. [Dynamic pressure q = 1/2 rho v^2 with ideal-gas density; standard aerodynamics.]"
+   ]
+  },
+  {
+   "run": 2,
+   "used": 5,
+   "max": 15,
+   "log": [
+    "Proposer suggested 19 candidate pairings.",
+    "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
+    "Reused 13 decisions from the relationship store (data unchanged).",
+    "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
+    "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
+    "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
+    "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
+    "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
+    "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
+   ]
+  }
+ ],
+ "log": [
+  "Proposer suggested 19 candidate pairings.",
+  "Screened out elevation_m ~ elevation_m: Elevation depends on a local reference. Measured from each body\u2019s own reference surface.",
+  "Reused 13 decisions from the relationship store (data unchanged).",
+  "Tool call 1: daily_high_c ~ daily_high_c -> accepted (confidence 0.50)",
+  "Tool call 2: daily_low_c ~ daily_low_c -> accepted (confidence 0.50)",
+  "Tool call 3: liquid_window_c ~ liquid_window_c -> accepted (confidence 1.00)",
+  "Tool call 4: thaw_share ~ thaw_share -> accepted (confidence 1.00)",
+  "Tool call 5: wind_pressure_pa ~ wind_pressure_pa -> accepted (confidence 1.00)",
+  "Run 2 finished: 18 accepted, 0 pending, 2 denied; 5 of 15 tool calls used."
+ ],
+ "relationships": [
+  {
+   "id": "shallow_ice_share__none",
+   "target_col": "shallow_ice_share",
+   "earth_col": "",
+   "dimension": "water",
+   "verdict": "denied",
+   "confidence": 0.0,
+   "rationale": "",
+   "conversion": "",
+   "bandwidth": 0.0,
+   "sigma": 0.0,
+   "earth_lo": 0.0,
+   "earth_hi": 0.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Earth counterpart",
+     "outcome": "fail",
+     "detail": "No Earth column was proposed as a counterpart."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Area with ice stable in the top metre",
+   "earth_label": "No counterpart",
+   "target_source": "dataset",
+   "target_note": "Share of the site where water ice would survive within 1 m of the surface.",
+   "formula": ""
+  },
+  {
+   "id": "surf_temp_mean_K__temp_mean_c",
+   "target_col": "surf_temp_mean_K",
+   "earth_col": "temp_mean_c",
+   "dimension": "thermal",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "K -> degC",
+   "bandwidth": 14.37175685693106,
+   "sigma": 19.16234247590808,
+   "earth_lo": -57.5005,
+   "earth_hi": 30.615600000000004,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Target converted from K to degC."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span -57.5 \u00b0C to 30.6 \u00b0C (typical spread 19.2 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Mean surface temperature",
+   "earth_label": "Mean surface temperature",
+   "target_source": "dataset",
+   "target_note": "Moon: modelled annual average at 2 cm depth. Mars: annual mean from the climate database.",
+   "formula": ""
+  },
+  {
+   "id": "temp_swing_K__temp_swing_c",
+   "target_col": "temp_swing_K",
+   "earth_col": "temp_swing_c",
+   "dimension": "thermal",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "K_delta -> degC_delta",
+   "bandwidth": 3.4831356560415125,
+   "sigma": 4.644180874722017,
+   "earth_lo": 2.75465,
+   "earth_hi": 16.734450000000006,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature_delta."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Target converted from K_delta to degC_delta."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 2.75 \u00b0C to 16.7 \u00b0C (typical spread 4.64 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Day-night temperature swing",
+   "earth_label": "Day-night temperature swing",
+   "target_source": "dataset",
+   "target_note": "",
+   "formula": ""
+  },
+  {
+   "id": "wind_ms__wind_ms",
+   "target_col": "wind_ms",
+   "earth_col": "wind_ms",
+   "dimension": "dust",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 1.1313936249073389,
+   "sigma": 1.5085248332097851,
+   "earth_lo": 0.6746500000000001,
+   "earth_hi": 12.972600000000009,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a speed."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in m_per_s."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.675 m/s to 13 m/s (typical spread 1.51 m/s)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    },
+    {
+     "name": "Superseded by a derived variable",
+     "outcome": "warn",
+     "detail": "Wind speed alone ignores how thin the air is, so the same speed means very different forces on different worlds. Sites are compared on wind force instead."
+    }
+   ],
+   "scored": false,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Mean wind speed",
+   "earth_label": "Mean wind speed at 10 m",
+   "target_source": "dataset",
+   "target_note": "",
+   "formula": ""
+  },
+  {
+   "id": "dust_tau__dust_aod",
+   "target_col": "dust_tau",
+   "earth_col": "dust_aod",
+   "dimension": "dust",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.12231282431430689,
+   "sigma": 0.16308376575240918,
+   "earth_lo": 0.0,
+   "earth_hi": 0.9260500000000007,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a optical_depth."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in unitless."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0 to 0.926 (typical spread 0.163)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Dust optical depth",
+   "earth_label": "Aerosol optical depth",
+   "target_source": "dataset",
+   "target_note": "",
+   "formula": ""
+  },
+  {
+   "id": "surf_temp_max_K__warm_month_high_c",
+   "target_col": "surf_temp_max_K",
+   "earth_col": "warm_month_high_c",
+   "dimension": "thermal",
+   "verdict": "accepted",
+   "confidence": 0.6,
+   "rationale": "'annual_max_temperature' is registered as related to 'warmest_month_high' (prior 0.6).",
+   "conversion": "K -> degC",
+   "bandwidth": 7.21645663454411,
+   "sigma": 9.621942179392146,
+   "earth_lo": -19.11715,
+   "earth_hi": 49.877700000000004,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Target converted from K to degC."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "warn",
+     "detail": "Related but not identical concepts; confidence starts at 0.60."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span -19.1 \u00b0C to 49.9 \u00b0C (typical spread 9.62 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Annual maximum surface temperature",
+   "earth_label": "Warmest-month daily high",
+   "target_source": "dataset",
+   "target_note": "",
+   "formula": ""
+  },
+  {
+   "id": "subsurface_h2o_share__soil_wetness",
+   "target_col": "subsurface_h2o_share",
+   "earth_col": "soil_wetness",
+   "dimension": "water",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "'subsurface_water' is registered as related to 'soil_moisture' (prior 0.5).",
+   "conversion": "",
+   "bandwidth": 0.2223869532987398,
+   "sigma": 0.2965159377316531,
+   "earth_lo": 0.04465,
+   "earth_hi": 1.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in fraction."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "warn",
+     "detail": "Related but not identical concepts; confidence starts at 0.50."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.0447 to 1 (typical spread 0.297)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Water in the shallow subsurface",
+   "earth_label": "Surface soil wetness",
+   "target_source": "dataset",
+   "target_note": "Water-equivalent hydrogen in roughly the top metre, as a weight fraction, from Odyssey GRS neutron data. 5x5 degree bins, so a regional value around the site.",
+   "formula": ""
+  },
+  {
+   "id": "slope_deg__slope_deg",
+   "target_col": "slope_deg",
+   "earth_col": "slope_deg",
+   "dimension": "terrain",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.4927377920284829,
+   "sigma": 0.6569837227046439,
+   "earth_lo": 0.012106389323511263,
+   "earth_hi": 5.8075131009047105,
+   "scale": "log",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a angle."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in deg."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.0121\u00b0 to 5.81\u00b0 (typical spread 0.692\u00b0)."
+    },
+    {
+     "name": "Scale",
+     "outcome": "pass",
+     "detail": "Earth values span a factor of 480, so sites are compared by ratio (logarithmic scale) rather than by difference."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Mean slope",
+   "earth_label": "Mean slope",
+   "target_source": "dataset",
+   "target_note": "Moon: slope of the Diviner surface triangles. Mars: slope over a 3.7 km baseline. Baselines differ.",
+   "formula": ""
+  },
+  {
+   "id": "roughness_deg__roughness_deg",
+   "target_col": "roughness_deg",
+   "earth_col": "roughness_deg",
+   "dimension": "terrain",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.5569486162131663,
+   "sigma": 0.7425981549508884,
+   "earth_lo": 0.005817921009456917,
+   "earth_hi": 2.9716510195522856,
+   "scale": "log",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a angle."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in deg."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.00582\u00b0 to 2.97\u00b0 (typical spread 0.453\u00b0)."
+    },
+    {
+     "name": "Scale",
+     "outcome": "pass",
+     "detail": "Earth values span a factor of 511, so sites are compared by ratio (logarithmic scale) rather than by difference."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "warn",
+     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.97); counted at half weight so the same signal is not counted twice."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Terrain roughness",
+   "earth_label": "Terrain roughness",
+   "target_source": "dataset",
+   "target_note": "Spread (standard deviation) of slope inside the site radius: how broken the ground is. Moon: across Diviner surface triangles. Mars: across MOLA grid cells. Baselines differ.",
+   "formula": ""
+  },
+  {
+   "id": "relief_m__relief_m",
+   "target_col": "relief_m",
+   "earth_col": "relief_m",
+   "dimension": "terrain",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 69.22571552771295,
+   "sigma": 92.3009540369506,
+   "earth_lo": 1.9420213226435914,
+   "earth_hi": 753.1396337978799,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a length."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in m."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 1.94 m to 753 m (typical spread 92.3 m)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "warn",
+     "detail": "Moves almost in step with 'slope_deg' (rank correlation +0.98); counted at half weight so the same signal is not counted twice."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Relief within the site",
+   "earth_label": "Relief within the site",
+   "target_source": "dataset",
+   "target_note": "Standard deviation of elevation inside the site radius.",
+   "formula": ""
+  },
+  {
+   "id": "albedo__albedo",
+   "target_col": "albedo",
+   "earth_col": "albedo",
+   "dimension": "geology",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.09451445515196444,
+   "sigma": 0.12601927353595258,
+   "earth_lo": 0.05,
+   "earth_hi": 0.7853500000000003,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in fraction."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.05 to 0.785 (typical spread 0.126)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Surface albedo",
+   "earth_label": "Surface albedo",
+   "target_source": "dataset",
+   "target_note": "How bright the surface is: a proxy for dust cover versus exposed rock. Moon: LOLA 1064 nm albedo. Mars: TES broadband bolometric albedo. Wavelengths differ.",
+   "formula": ""
+  },
+  {
+   "id": "surf_pressure_Pa__pressure_kpa",
+   "target_col": "surf_pressure_Pa",
+   "earth_col": "pressure_kpa",
+   "dimension": "physics",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "Pa -> kPa",
+   "bandwidth": 5.551334321719793,
+   "sigma": 7.40177909562639,
+   "earth_lo": 54.9902,
+   "earth_hi": 101.6307,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a pressure."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Target converted from Pa to kPa."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 55 kPa to 102 kPa (typical spread 7.4 kPa)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Surface pressure",
+   "earth_label": "Surface pressure",
+   "target_source": "dataset",
+   "target_note": "Mars: from the climate database where entered, otherwise estimated from MOLA elevation as 610 Pa x exp(-elevation / 10.8 km); it also varies by roughly a quarter over the Martian year. Moon: set to 0 (no atmosphere), a physical prior.",
+   "formula": ""
+  },
+  {
+   "id": "elevation_m__elevation_m",
+   "target_col": "elevation_m",
+   "earth_col": "elevation_m",
+   "dimension": "terrain",
+   "verdict": "denied",
+   "confidence": 0.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.0,
+   "sigma": 0.0,
+   "earth_lo": 0.0,
+   "earth_hi": 0.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "fail",
+     "detail": "Elevation depends on a local reference. Measured from each body\u2019s own reference surface."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Elevation",
+   "earth_label": "Elevation",
+   "target_source": "dataset",
+   "target_note": "Measured from each body\u2019s own reference surface.",
+   "formula": ""
+  },
+  {
+   "id": "grazing_sun_share__grazing_sun_share",
+   "target_col": "grazing_sun_share",
+   "earth_col": "grazing_sun_share",
+   "dimension": "illumination",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.014671361502347418,
+   "sigma": 0.019561815336463225,
+   "earth_lo": 0.028973765432098765,
+   "earth_hi": 0.10396412037037037,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in share_of_year."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 2.9% of the year to 10.4% of the year (typical spread 1.96% of the year)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Time with the Sun low on the horizon",
+   "earth_label": "Time with the Sun low on the horizon",
+   "target_source": "computed",
+   "target_note": "Share of the year the Sun is 0 to 5 degrees above the horizon. Computed from latitude and axial tilt; ignores terrain shadowing and refraction.",
+   "formula": "sin(elevation) = sin(lat) sin(decl) + cos(lat) cos(decl) cos(hour angle), with sin(decl) = sin(tilt) sin(orbit angle)"
+  },
+  {
+   "id": "insolation_wm2__insolation_wm2",
+   "target_col": "insolation_wm2",
+   "earth_col": "insolation_wm2",
+   "dimension": "illumination",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 73.6560742536087,
+   "sigma": 98.20809900481159,
+   "earth_lo": 178.08897057953192,
+   "earth_hi": 415.52035439744037,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a irradiance."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in W_per_m2."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 178 W/m\u00b2 to 416 W/m\u00b2 (typical spread 98.2 W/m\u00b2)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "warn",
+     "detail": "Moves almost in step with 'grazing_sun_share' (rank correlation -0.97); counted at half weight so the same signal is not counted twice."
+    }
+   ],
+   "scored": true,
+   "origin": "reused",
+   "decided_in_run": 1,
+   "pending_reason": "",
+   "target_label": "Mean solar energy flux",
+   "earth_label": "Mean solar energy flux",
+   "target_source": "computed",
+   "target_note": "Annual-mean solar power per square metre of level ground, above any atmosphere. Computed from latitude, axial tilt and the body's distance from the Sun; ignores atmosphere, terrain shadowing and orbital eccentricity.",
+   "formula": "solar constant x mean over the year and day of max(0, sin(elevation))"
+  },
+  {
+   "id": "daily_high_c__daily_high_c",
+   "target_col": "daily_high_c",
+   "earth_col": "daily_high_c",
+   "dimension": "thermal",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 14.491984803558191,
+   "sigma": 19.322646404744255,
+   "earth_lo": -55.072475,
+   "earth_hi": 37.841525000000004,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in degC."
+    },
+    {
+     "name": "Same formula on both sides",
+     "outcome": "pass",
+     "detail": "Both computed as: mean temperature + half the day-night swing."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span -55.1 \u00b0C to 37.8 \u00b0C (typical spread 19.3 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "warn",
+     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.99); counted at half weight so the same signal is not counted twice."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Typical daily high",
+   "earth_label": "Typical daily high",
+   "target_source": "derived",
+   "target_note": "",
+   "formula": "mean temperature + half the day-night swing"
+  },
+  {
+   "id": "daily_low_c__daily_low_c",
+   "target_col": "daily_low_c",
+   "earth_col": "daily_low_c",
+   "dimension": "thermal",
+   "verdict": "accepted",
+   "confidence": 0.5,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 13.840113046701259,
+   "sigma": 18.453484062268345,
+   "earth_lo": -59.912475,
+   "earth_hi": 24.524200000000004,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in degC."
+    },
+    {
+     "name": "Same formula on both sides",
+     "outcome": "pass",
+     "detail": "Both computed as: mean temperature - half the day-night swing."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span -59.9 \u00b0C to 24.5 \u00b0C (typical spread 18.5 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "warn",
+     "detail": "Moves almost in step with 'temp_mean_c' (rank correlation +0.98); counted at half weight so the same signal is not counted twice."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Typical daily low",
+   "earth_label": "Typical daily low",
+   "target_source": "derived",
+   "target_note": "",
+   "formula": "mean temperature - half the day-night swing"
+  },
+  {
+   "id": "liquid_window_c__liquid_window_c",
+   "target_col": "liquid_window_c",
+   "earth_col": "liquid_window_c",
+   "dimension": "water",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 1.5986290535807344,
+   "sigma": 2.1315054047743125,
+   "earth_lo": 83.32573170001903,
+   "earth_hi": 99.34789733214274,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a temperature_delta."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in degC_delta."
+    },
+    {
+     "name": "Same formula on both sides",
+     "outcome": "pass",
+     "detail": "Both computed as: boiling point from the Magnus equation at surface pressure; 0 below the triple point (0.61 kPa)."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 83.3 \u00b0C to 99.3 \u00b0C (typical spread 2.13 \u00b0C)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Liquid-water temperature window",
+   "earth_label": "Liquid-water temperature window",
+   "target_source": "derived",
+   "target_note": "How many degrees above freezing water stays liquid before it boils at the site's pressure.",
+   "formula": "boiling point from the Magnus equation at surface pressure; 0 below the triple point (0.61 kPa)"
+  },
+  {
+   "id": "thaw_share__thaw_share",
+   "target_col": "thaw_share",
+   "earth_col": "thaw_share",
+   "dimension": "water",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.3098422906231888,
+   "sigma": 0.41312305416425177,
+   "earth_lo": 0.0,
+   "earth_hi": 1.0,
+   "scale": "linear",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a fraction."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in fraction."
+    },
+    {
+     "name": "Same formula on both sides",
+     "outcome": "pass",
+     "detail": "Both computed as: arccos(-mean / half swing) / pi for a sinusoidal day, clamped to [0, 1]."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0 to 1 (typical spread 0.413)."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Share of the day above freezing",
+   "earth_label": "Share of the day above freezing",
+   "target_source": "derived",
+   "target_note": "How much of a typical day the air sits above 0 degC, so ice or frost could start to melt.",
+   "formula": "arccos(-mean / half swing) / pi for a sinusoidal day, clamped to [0, 1]"
+  },
+  {
+   "id": "wind_pressure_pa__wind_pressure_pa",
+   "target_col": "wind_pressure_pa",
+   "earth_col": "wind_pressure_pa",
+   "dimension": "dust",
+   "verdict": "accepted",
+   "confidence": 1.0,
+   "rationale": "Both columns measure the same thing.",
+   "conversion": "",
+   "bandwidth": 0.2864065564184733,
+   "sigma": 0.38187540855796437,
+   "earth_lo": 0.2581187230371419,
+   "earth_hi": 95.25930926039847,
+   "scale": "log",
+   "checks": [
+    {
+     "name": "Columns exist",
+     "outcome": "pass",
+     "detail": "Both columns are present in the datasets."
+    },
+    {
+     "name": "Comparable across bodies",
+     "outcome": "pass",
+     "detail": "Neither column depends on a local reference."
+    },
+    {
+     "name": "Same physical quantity",
+     "outcome": "pass",
+     "detail": "Both are a pressure."
+    },
+    {
+     "name": "Units",
+     "outcome": "pass",
+     "detail": "Both in Pa."
+    },
+    {
+     "name": "Same formula on both sides",
+     "outcome": "pass",
+     "detail": "Both computed as: 0.5 x air density x wind speed squared, with density = pressure / (gas constant x temperature)."
+    },
+    {
+     "name": "Concept match",
+     "outcome": "pass",
+     "detail": "Identical concepts."
+    },
+    {
+     "name": "Earth data completeness",
+     "outcome": "pass",
+     "detail": "0.0% of Earth cells have no value."
+    },
+    {
+     "name": "Tells sites apart",
+     "outcome": "pass",
+     "detail": "Earth values span 0.258 Pa to 95.3 Pa (typical spread 6.33 Pa)."
+    },
+    {
+     "name": "Scale",
+     "outcome": "pass",
+     "detail": "Earth values span a factor of 369, so sites are compared by ratio (logarithmic scale) rather than by difference."
+    },
+    {
+     "name": "Not a duplicate signal",
+     "outcome": "pass",
+     "detail": "No already-accepted column in this dimension carries the same signal."
+    }
+   ],
+   "scored": true,
+   "origin": "checked",
+   "decided_in_run": 2,
+   "pending_reason": "",
+   "target_label": "Wind force on surfaces",
+   "earth_label": "Wind force on surfaces",
+   "target_source": "derived",
+   "target_note": "Dynamic pressure of the wind: what it actually exerts on dust grains, rovers and structures.",
+   "formula": "0.5 x air density x wind speed squared, with density = pressure / (gas constant x temperature)"
+  }
+ ]
+}

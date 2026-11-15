@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import astronomy, benchmark as bm, campaign, campaign_map, cleaning as cl, derived, planner
+from . import astronomy, benchmark as bm, campaign, campaign_map, cleaning as cl, derived, extremes, home, places, planner
 from .agent import Check, RelationshipAgent
 from .io import Dataset, load
 from .matching import MIN_DATA_SHARE, Matcher
@@ -31,6 +31,7 @@ def _clean(values, digits=4):
 _SOURCE_TAGS = [("NASA POWER", "NASA POWER climatology"), ("Diviner", "LRO Diviner"), ("MOLA", "MGS MOLA topography"),
                 ("terrain", "Terrain tiles"), ("InSight", "InSight TWINS/PS (PDS)"), ("REMS", "MSL REMS (PDS)"),
                 ("MEDA", "Mars 2020 MEDA (PDS)"), ("Phoenix", "Phoenix MET (PDS)"), ("Viking", "Viking Lander 1 (PDS)")]
+# data_sources() reads column provenance; the event feed has no column, so the pipeline adds it by name.
 
 
 def data_sources(ds: Dataset) -> list[str]:
@@ -97,7 +98,10 @@ def build_payload(ds: Dataset, agent_result, matcher: Matcher, runs=None, cleani
             window=dict(peak_hours=[windows[k]["peak_hours"] for k in lat_key],
                         peak_date=[windows[k]["peak_date"] for k in lat_key],
                         days_6h=[windows[k]["days_6h"] for k in lat_key]),
-            cols={c: _clean(ds.earth[c], 5) for c in used_cols}),
+            # every Earth variable, scored or not, so the dashboard and the map can show a site in full
+            cols={c: _clean(ds.earth[c], 5) for c in ds.earth_cols if c in ds.earth.columns},
+            col_meta={c: dict(label=m.label, unit=m.unit, dimension=m.dimension, source=m.source, scored=c in used_cols)
+                      for c, m in ds.earth_cols.items() if c in ds.earth.columns}),
         targets=targets,
         benchmark=bench,
     )
@@ -167,6 +171,10 @@ def build_report(ds: Dataset, agent_result, matcher: Matcher, runs=None, cleanin
             L += ["Where the analogy breaks down:", ""] + [f"- **{p.label}.** {p.reason}" for p in broken] + [""]
         if partial:
             L += ["Only partly reproducible:", ""] + [f"- **{p.label}.** {p.reason}" for p in partial] + [""]
+        other = [p for p in prof if p.status in ("not_tested", "input_only", "not_comparable")]
+        if other:
+            word = dict(not_tested="no target data yet", input_only="input to a derived property", not_comparable="not comparable")
+            L += ["Not scored, and why:", ""] + [f"- **{p.label}** ({word[p.status]}). {p.reason}" for p in other] + [""]
         if not res.used:
             L += ["Nothing about this site can be tested on Earth with the current data, so no sites are ranked.", ""]
         else:
@@ -196,18 +204,21 @@ def build_report(ds: Dataset, agent_result, matcher: Matcher, runs=None, cleanin
             curve = campaign.curve(matcher, tid, res.total, start)
             if curve["rows"]:
                 where = (f"from {start[0]:.1f}, {start[1]:.1f}" if start else "free-floating route")
-                L += [f"Field campaign ({where}): best coverage and shortest route per number of sites. "
+                L += [f"Field campaign ({where}): the best campaign per number of sites, drawn from the best-matching "
+                      "Earth sites. An extra stop is added only while it covers or confirms a requirement. "
                       "Heavy equipment favours fewer sites; portable equipment favours fewer kilometres.", "",
-                      "| Sites | Requirements covered | Route km | Stops in order |", "|---|---|---|---|"]
+                      "| Sites | Covered | Confirmed at 2+ sites | Mean match | Route km | Stops in order |", "|---|---|---|---|---|---|"]
                 for row in curve["rows"]:
                     stops = " -> ".join(_cell_name(ds, s["cell_id"], known_name) for s in row["stops"])
-                    L.append(f"| {row['k']} | {row['covered']} of {n_req} | {row['km']:,.0f} | {stops} |")
+                    mean = f"{row['mean_score']:.0%}" if row["mean_score"] is not None else "n/a"
+                    L.append(f"| {row['k']} | {row['covered']} of {n_req} | {row['confirmed']} | {mean} | {row['km']:,.0f} | {stops} |")
                 L.append("")
     return "\n".join(L)
 
 
-def build_dashboard(payload: dict) -> str:
-    template = (_DASHBOARD / "template.html").read_text(encoding="utf-8")
+def build_dashboard(payload: dict, page: str = "explorer") -> str:
+    """One template, two pages: 'explorer' (one site, one property, one answer) and 'evidence' (how we know)."""
+    template = (_DASHBOARD / "template.html").read_text(encoding="utf-8").replace("__PAGE__", page)
     scoring = (_DASHBOARD / "scoring.js").read_text(encoding="utf-8")
     land = json.dumps(json.loads((_DASHBOARD / "land.json").read_text(encoding="utf-8"))["rings"], separators=(",", ":"))
     data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
@@ -230,7 +241,10 @@ def run(data_dir: str | Path, out_dir: str | Path, max_tool_calls: int = 15, pro
         cleaning = json.loads(report_path.read_text(encoding="utf-8"))
 
     ds = load(data_dir)
+    renamed = 0 if ds.synthetic else places.name_cells(ds)   # synthetic cells have no real geography to describe
     setup_log = astronomy.add_columns(ds)
+    if renamed:
+        setup_log.append(f"Named {renamed} unnamed Earth cells from their own climate and terrain values.")
 
     review = advisor.review(derived.DERIVED, ds.target_cols, ds.earth_cols) if advisor else None
     if advisor and advisor.note:
@@ -263,9 +277,14 @@ def run(data_dir: str | Path, out_dir: str | Path, max_tool_calls: int = 15, pro
     matcher = Matcher(ds, agent_result)
     payload = build_payload(ds, agent_result, matcher, runs, cleaning, start)
     payload["campaign_map"] = True   # the dashboard embeds campaign_map.html
+    payload["extremes"] = extremes.build(ds, payload["targets"], extremes.load_events(data_dir))
     (out / "relationships.json").write_text(json.dumps(payload["agent"], indent=1), encoding="utf-8")
     (out / "results.json").write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
     (out / "report.md").write_text(build_report(ds, agent_result, matcher, runs, cleaning, start), encoding="utf-8")
-    (out / "dashboard.html").write_text(build_dashboard(payload), encoding="utf-8")
+    (out / "explorer.html").write_text(build_dashboard(payload, "explorer"), encoding="utf-8")
+    (out / "evidence.html").write_text(build_dashboard(payload, "evidence"), encoding="utf-8")
+    if (out / "dashboard.html").exists():   # replaced by the two pages above
+        (out / "dashboard.html").unlink()
     (out / "campaign_map.html").write_text(campaign_map.build(payload), encoding="utf-8")
+    (out / "index.html").write_text(home.build(payload), encoding="utf-8")
     return dict(dataset=ds, agent=agent_result, matcher=matcher, payload=payload, out=out, runs=runs, cleaning=cleaning)

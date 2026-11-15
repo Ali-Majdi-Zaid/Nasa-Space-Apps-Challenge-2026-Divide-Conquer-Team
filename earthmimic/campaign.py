@@ -8,11 +8,23 @@ expensive, so fewer stops win. Portable instruments make travel the cost,
 so shorter routes win.
 
 Rather than blending the two with made-up weights, this module keeps them
-separate: for each number of sites k = 1, 2, ... it finds the k sites that
-cover the most requirements, and among those the shortest route from an
-optional starting point. The result is a curve - coverage and kilometres
-per stop count - and the reader picks the row that matches their
-equipment.
+separate: for each number of sites k = 1, 2, ... it finds the best k-site
+campaign and the shortest route through it from an optional starting
+point. The result is a curve - coverage and kilometres per stop count -
+and the reader picks the row that matches their equipment.
+
+"Best" is decided in this order:
+
+1. most requirements covered (passed by at least one stop);
+2. most requirements confirmed (passed by two or more stops, so a result
+   at one site can be checked against an independent second site);
+3. highest overall match of the stops to the target.
+
+Stops are drawn only from the best-matching Earth sites (the candidate
+pool), plus the best-matching site for each requirement so nothing
+coverable is lost. A campaign therefore never detours to a poor analog
+just because it happens to tick a box, and the curve keeps growing while
+an extra stop still covers or confirms something.
 """
 from __future__ import annotations
 
@@ -24,6 +36,7 @@ from . import planner
 from .matching import Matcher, haversine_km
 
 MAX_SUBSETS = 500_000   # enumeration budget per k; beyond this the search turns greedy
+POOL_SIZE = 24          # stops are chosen among this many best-matching sites (plus one per requirement)
 
 
 def _route_km(order, lats, lons, start):
@@ -47,13 +60,34 @@ def _best_order(idx, lats, lons, start):
     return best, best_km
 
 
+def candidate_pool(passes: np.ndarray, tb: np.ndarray, size: int = POOL_SIZE) -> list[int]:
+    """Cells a campaign may stop at: the best-matching ones that pass something, plus the best passer of each requirement."""
+    useful = np.flatnonzero(passes.any(axis=1))
+    ranked = sorted(useful, key=lambda i: -tb[i])
+    pool = list(ranked[:size])
+    for j in range(passes.shape[1]):
+        col = [i for i in ranked if passes[i, j]]
+        if col and col[0] not in pool:
+            pool.append(col[0])
+    return [int(i) for i in pool]
+
+
+def _tally(masks):
+    """(requirements passed by at least one mask, requirements passed by two or more), as bit sets."""
+    once = twice = 0
+    for m in masks:
+        twice |= once & m
+        once |= m
+    return once, twice
+
+
 def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[float, float] | None = None,
           tolerance: float = 1.0, max_sites: int = 5) -> dict:
     """Cost-coverage curve for one target.
 
-    Returns {start, rows: [{k, covered, labels, km, stops}]}, where each row
-    is the best k-site campaign: most requirements covered, and among ties
-    the shortest route (from `start` if given, else free-floating).
+    Returns {start, rows: [{k, covered, confirmed, labels, km, legs, mean_score, stops}]}. Each row is the
+    best k-site campaign (see the module text for "best"), visited in the shortest order from `start`
+    if given, else free-floating.
     """
     reqs, _ = planner.requirements(matcher, target_id, tolerance)
     passes = planner.pass_matrix(matcher, reqs)
@@ -63,92 +97,53 @@ def curve(matcher: Matcher, target_id: str, tiebreak: np.ndarray, start: tuple[f
     tb = np.nan_to_num(tiebreak, nan=-1.0)
     out = dict(start=list(start) if start else None, rows=[], requirements=[r.label for r in reqs], masks=[],
                scores=[None if np.isnan(v) else round(float(v), 3) for v in np.asarray(tiebreak, dtype=float)],
-               profiles=0)   # scores: overall match of each cell (0-1); profiles: distinct pass/fail patterns
+               profiles=0, pool=[])   # scores: overall match of each cell (0-1); pool: the cells a campaign may stop at
     if not reqs:
         return out
 
-    # One representative cell per distinct set of passes. Among cells with the
-    # same passes prefer the closest to the start (cheapest to reach), then the
-    # best-scoring, so the route search only ever sees useful candidates.
     weights = 1 << np.arange(len(reqs), dtype=object)
-    rep: dict[int, int] = {}
-    for i, row in enumerate(passes):
-        m = int(sum(w for w, ok in zip(weights, row) if ok))
-        out["masks"].append(m)   # bit j set when this cell passes requirement j (the map page routes from these)
-        if not m:
-            continue
-        if m not in rep:
-            rep[m] = i
-        else:
-            j = rep[m]
-            if start is not None:
-                di = haversine_km(start[0], start[1], lats[i], lons[i])
-                dj = haversine_km(start[0], start[1], lats[j], lons[j])
-                if (di, -tb[i]) < (dj, -tb[j]):
-                    rep[m] = i
-            elif tb[i] > tb[j]:
-                rep[m] = i
-    masks = list(rep)
-    out["profiles"] = len(masks)
-    goal = 0
-    for m in masks:
-        goal |= m
-    max_cover = bin(goal).count("1")
-
+    cell_mask = [int(sum(w for w, ok in zip(weights, row) if ok)) for row in passes]
+    out["masks"] = cell_mask   # bit j set when this cell passes requirement j
+    pool = candidate_pool(passes, tb)
+    out["pool"], out["profiles"] = pool, len(pool)
+    if not pool:
+        return out
     popcount = lambda m: bin(m).count("1")
-    for k in range(1, max_sites + 1):
-        best = None   # (covered, -km, order)
-        budget = MAX_SUBSETS
-        n_cand = 0
-        stats: dict[int, list] = {}   # covered -> [how many combos reach it, their two shortest routes]
-        for combo in combinations(range(len(masks)), min(k, len(masks))):
-            budget -= 1
-            if budget < 0:
-                break
+
+    def key(combo):
+        once, twice = _tally([cell_mask[i] for i in combo])
+        return popcount(once), popcount(twice), sum(tb[i] for i in combo)
+
+    prev_key, chosen = None, []
+    for k in range(1, min(max_sites, len(pool)) + 1):
+        best, best_key, n_cand, exact = None, None, 0, True
+        for combo in combinations(pool, k):
             n_cand += 1
-            union = 0
-            for i in combo:
-                union |= masks[i]
-            covered = popcount(union)
-            if best and covered < best[0]:
-                continue
-            idx = [rep[masks[i]] for i in combo]
-            order, km = _best_order(idx, lats, lons, start)
-            st = stats.setdefault(covered, [0, []])
-            st[0] += 1
-            st[1] = sorted(st[1] + [km])[:2]
-            if best is None or (covered, -km) > (best[0], -best[1]):
-                best = (covered, km, order, union)
-        exact = budget >= 0
-        if budget < 0:   # greedy fallback: grow the best (k-1)-route by its best extension
-            prev = out["rows"][-1] if out["rows"] else None
-            # extend the previous row's stops with the cell that adds the most coverage
-            have = 0
-            stops = [s["index"] for s in (prev["stops"] if prev else [])]
-            for s in stops:
-                have |= int(sum(w for w, ok in zip(weights, passes[s]) if ok))
-            addable = [(popcount(m | have), i) for i, m in enumerate(masks) if rep[m] not in stops]
-            if addable:
-                _, i = max(addable)
-                stops = stops + [rep[masks[i]]]
-            order, km = _best_order(stops, lats, lons, start)
-            union = 0
-            for s in order:
-                union |= int(sum(w for w, ok in zip(weights, passes[s]) if ok))
-            best = (popcount(union), km, order, union)
-            stats = {}
-        covered, km, order, union = best
-        st = stats.get(covered, [1, [km]])
-        runner = st[1][1] if len(st[1]) > 1 else None
+            if n_cand > MAX_SUBSETS:
+                exact = False
+                break
+            kk = key(combo)
+            if best_key is None or kk > best_key:
+                best, best_key = combo, kk
+        if not exact:   # greedy fallback: grow the previous campaign by its best extension
+            n_cand = 0
+            best = max((tuple(chosen) + (i,) for i in pool if i not in chosen), key=key)
+            best_key = key(best)
+        # An extra stop must cover or confirm something new; otherwise the curve is complete.
+        if prev_key is not None and best_key[:2] <= prev_key[:2]:
+            break
+        prev_key, chosen = best_key, list(best)
+        order, km = _best_order(list(best), lats, lons, start)
+        once, twice = _tally([cell_mask[i] for i in order])
+        legs, prev = [], start
+        for i in order:
+            legs.append(None if prev is None else round(float(haversine_km(prev[0], prev[1], lats[i], lons[i])), 0))
+            prev = (lats[i], lons[i])
+        scores = [float(tb[i]) for i in order if tb[i] >= 0]
         out["rows"].append(dict(
-            k=len(order), covered=covered,
-            labels=[reqs[j].label for j in range(len(reqs)) if union >> j & 1],
-            km=round(km, 0),
-            stops=[dict(cell_id=ids[i], index=int(i), lat=round(lats[i], 2), lon=round(lons[i], 2))
-                   for i in order],
-            # the evidence for "best": every way of choosing k profiles was examined (unless exact is False),
-            # `ties` of them reach this coverage, and the next shortest of those is `runner_up_km` long
-            candidates=n_cand, ties=int(st[0]), runner_up_km=None if runner is None else round(runner, 0), exact=exact))
-        if covered >= max_cover:
-            break   # more sites cannot cover more; the curve is complete
+            k=len(order), covered=popcount(once), confirmed=popcount(twice),
+            labels=[reqs[j].label for j in range(len(reqs)) if once >> j & 1],
+            km=round(km, 0), legs=legs, mean_score=round(sum(scores) / len(scores), 3) if scores else None,
+            stops=[dict(cell_id=ids[i], index=int(i), lat=round(lats[i], 2), lon=round(lons[i], 2)) for i in order],
+            candidates=n_cand, exact=exact))
     return out
